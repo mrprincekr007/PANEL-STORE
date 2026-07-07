@@ -1,1 +1,1415 @@
+/* ==========================================================
+FILE : css/index.css
 
+PART : 1
+
+Ye Login Page ki CSS ka First Part hai.
+
+Isme Basic Setting
+Color Theme
+Background
+Glass Card
+
+sab banega.
+
+========================================================== */
+
+
+/* ==========================================
+RESET CSS
+
+Sab Browser me same Design lane ke liye.
+
+========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+*{
+
+margin:0;
+
+padding:0;
+
+box-sizing:border-box;
+
+font-family:'Poppins',sans-serif;
+
+-webkit-tap-highlight-color:transparent;
+
+}
+
+
+/* ==========================================
+ROOT COLOR
+
+Website ke Main Colors.
+
+Future me Theme Change karni ho
+to sirf isi Section ko edit karna.
+
+========================================== */
+
+:root{
+
+--bg:#050507;
+
+--card:#111116;
+
+--border:rgba(255,255,255,.08);
+
+--text:#ffffff;
+
+--text2:#9d9d9d;
+
+--red:#ff215d;
+
+--blue:#6558ff;
+
+--glass:rgba(255,255,255,.04);
+
+}
+
+
+/* ==========================================
+BODY DESIGN
+
+Pura Background
+
+Glow
+
+Center Alignment
+
+========================================== */
+
+body{
+
+background:var(--bg);
+
+color:var(--text);
+
+min-height:100vh;
+
+overflow-x:hidden;
+
+position:relative;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+padding:20px;
+
+}
+
+
+/* ==========================================
+BACKGROUND GLOW
+
+Premium Light Effect.
+
+========================================== */
+
+.background-glow{
+
+position:fixed;
+
+width:320px;
+
+height:320px;
+
+border-radius:50%;
+
+filter:blur(120px);
+
+opacity:.18;
+
+pointer-events:none;
+
+z-index:-1;
+
+animation:GlowMove 8s infinite ease-in-out;
+
+}
+
+.glow1{
+
+background:#ff004c;
+
+top:-120px;
+
+left:-120px;
+
+}
+
+.glow2{
+
+background:#5c46ff;
+
+bottom:-120px;
+
+right:-120px;
+
+animation-delay:4s;
+
+}
+
+@keyframes GlowMove{
+
+0%{
+
+transform:translateY(0) scale(1);
+
+}
+
+50%{
+
+transform:translateY(40px) scale(1.12);
+
+}
+
+100%{
+
+transform:translateY(0) scale(1);
+
+}
+
+}
+
+
+/* ==========================================
+MAIN LOGIN CONTAINER
+
+Ye Login Card ko
+Center me rakhega.
+
+========================================== */
+
+.login-container{
+
+width:100%;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+}
+
+
+/* ==========================================
+LOGIN CARD
+
+Ye Main Glass Card hai.
+
+Border
+
+Shadow
+
+Radius
+
+Future me yahi se change hoga.
+
+========================================== */
+
+.login-card{
+
+width:100%;
+
+max-width:430px;
+
+background:rgba(18,18,24,.82);
+
+backdrop-filter:blur(22px);
+
+border:1px solid var(--border);
+
+border-radius:28px;
+
+padding:32px 24px;
+
+position:relative;
+
+overflow:hidden;
+
+box-shadow:
+
+0 0 60px rgba(0,0,0,.45),
+
+0 0 30px rgba(255,33,93,.08);
+
+}
+
+
+/* Premium Top Light */
+
+.login-card::before{
+
+content:"";
+
+position:absolute;
+
+width:180px;
+
+height:180px;
+
+border-radius:50%;
+
+background:linear-gradient(
+
+135deg,
+
+rgba(255,33,93,.18),
+
+transparent
+
+);
+
+top:-80px;
+
+right:-80px;
+
+filter:blur(40px);
+
+}
+
+
+/* ==========================================
+LOGO SECTION
+
+Logo
+
+Website Name
+
+Subtitle
+
+========================================== */
+
+.logo-box{
+
+text-align:center;
+
+margin-bottom:28px;
+
+}
+
+.logo-circle{
+
+width:82px;
+
+height:82px;
+
+margin:auto;
+
+border-radius:50%;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+font-size:34px;
+
+background:linear-gradient(
+
+135deg,
+
+var(--red),
+
+var(--blue)
+
+);
+
+box-shadow:0 0 28px rgba(255,33,93,.30);
+
+animation:LogoPulse 2.5s infinite;
+
+}
+
+.logo-box h1{
+
+margin-top:18px;
+
+font-size:36px;
+
+font-weight:800;
+
+letter-spacing:3px;
+
+}
+
+.logo-box p{
+
+margin-top:8px;
+
+font-size:14px;
+
+color:var(--text2);
+
+}
+
+@keyframes LogoPulse{
+
+0%{
+
+transform:scale(1);
+
+}
+
+50%{
+
+transform:scale(1.05);
+
+}
+
+100%{
+
+transform:scale(1);
+
+}
+
+}
+
+/* ==========================================================
+FILE : css/index.css
+
+PART : 2
+
+Is Part me
+
+Login Tab
+Signup Tab
+Input Box
+Input Icon
+Eye Button
+
+ki Design hai.
+
+========================================================== */
+
+
+/* ==========================================
+LOGIN / SIGNUP TAB
+
+Upar wale 2 Button
+
+Active Tab ka Color
+yahi se change hoga.
+
+========================================== */
+
+.tab-container{
+
+display:flex;
+
+background:rgba(255,255,255,.03);
+
+padding:5px;
+
+border-radius:16px;
+
+margin-bottom:28px;
+
+}
+
+.tab{
+
+flex:1;
+
+height:48px;
+
+border:none;
+
+outline:none;
+
+cursor:pointer;
+
+background:transparent;
+
+color:#8d8d8d;
+
+font-size:14px;
+
+font-weight:700;
+
+border-radius:12px;
+
+transition:.35s;
+
+}
+
+.tab:hover{
+
+color:#ffffff;
+
+}
+
+.tab.active{
+
+background:linear-gradient(
+
+135deg,
+
+var(--red),
+
+var(--blue)
+
+);
+
+color:#ffffff;
+
+box-shadow:
+
+0 0 20px rgba(255,33,93,.25);
+
+}
+
+
+/* ==========================================
+FORM SHOW / HIDE
+
+JavaScript
+
+isi Class ko
+Show aur Hide karega.
+
+========================================== */
+
+.form{
+
+display:none;
+
+animation:FadeIn .35s ease;
+
+}
+
+.form.active{
+
+display:block;
+
+}
+
+@keyframes FadeIn{
+
+from{
+
+opacity:0;
+
+transform:translateY(18px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+
+/* ==========================================
+INPUT BOX
+
+Email
+
+Password
+
+Name
+
+Confirm Password
+
+Sab Input isi Design ko use karenge.
+
+========================================== */
+
+.input-box{
+
+position:relative;
+
+margin-bottom:18px;
+
+}
+
+.input-box input{
+
+width:100%;
+
+height:56px;
+
+border-radius:16px;
+
+border:1px solid rgba(255,255,255,.08);
+
+background:var(--glass);
+
+outline:none;
+
+color:#ffffff;
+
+font-size:15px;
+
+padding-left:50px;
+
+padding-right:58px;
+
+transition:.35s;
+
+}
+
+.input-box input::placeholder{
+
+color:#7d7d7d;
+
+}
+
+.input-box input:focus{
+
+border-color:var(--red);
+
+box-shadow:
+
+0 0 20px rgba(255,33,93,.15);
+
+}
+
+
+/* ==========================================
+INPUT ICON
+
+Email
+
+Password
+
+User
+
+Icons
+
+========================================== */
+
+.input-box i{
+
+position:absolute;
+
+left:18px;
+
+top:50%;
+
+transform:translateY(-50%);
+
+font-size:18px;
+
+color:#8d8d8d;
+
+pointer-events:none;
+
+transition:.35s;
+
+}
+
+.input-box input:focus+i{
+
+color:var(--red);
+
+}
+
+
+/* ==========================================
+PASSWORD EYE BUTTON
+
+Password Hide / Show
+
+Future me Eye Icon
+change karna ho
+
+to isi Section ko edit karna.
+
+========================================== */
+
+.eye-btn{
+
+position:absolute;
+
+right:12px;
+
+top:50%;
+
+transform:translateY(-50%);
+
+width:38px;
+
+height:38px;
+
+border:none;
+
+outline:none;
+
+background:transparent;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+cursor:pointer;
+
+border-radius:10px;
+
+transition:.30s;
+
+}
+
+.eye-btn i{
+
+position:static;
+
+transform:none;
+
+font-size:18px;
+
+color:#8d8d8d;
+
+pointer-events:none;
+
+}
+
+.eye-btn:hover{
+
+background:rgba(255,255,255,.05);
+
+}
+
+.eye-btn:hover i{
+
+color:#ffffff;
+
+}
+
+/* ==========================================================
+FILE : css/index.css
+
+PART : 3
+
+Is Part me
+
+Remember Me
+Forgot Password
+Login Button
+Google Button
+Divider
+Terms
+Signup Button
+
+ki Design hai.
+
+========================================================== */
+
+
+/* ==========================================
+LOGIN OPTIONS
+
+Remember Me
+Forgot Password
+
+========================================== */
+
+.option-row{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:22px;
+
+gap:12px;
+
+}
+
+.remember{
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
+font-size:13px;
+
+color:#b5b5b5;
+
+cursor:pointer;
+
+}
+
+.remember input{
+
+width:16px;
+
+height:16px;
+
+accent-color:var(--red);
+
+cursor:pointer;
+
+}
+
+.forgot{
+
+border:none;
+
+background:none;
+
+color:var(--red);
+
+font-size:13px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:.30s;
+
+}
+
+.forgot:hover{
+
+color:#ffffff;
+
+}
+
+
+/* ==========================================
+MAIN BUTTON
+
+Login
+Signup
+
+Dono isi Design ko use karenge.
+
+========================================== */
+
+.main-btn{
+
+width:100%;
+
+height:56px;
+
+border:none;
+
+outline:none;
+
+cursor:pointer;
+
+border-radius:16px;
+
+background:linear-gradient(
+135deg,
+var(--red),
+var(--blue)
+);
+
+color:#ffffff;
+
+font-size:15px;
+
+font-weight:700;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+gap:10px;
+
+transition:.35s;
+
+margin-bottom:22px;
+
+box-shadow:
+
+0 8px 25px rgba(255,33,93,.20);
+
+}
+
+.main-btn:hover{
+
+transform:translateY(-2px);
+
+box-shadow:
+
+0 12px 30px rgba(255,33,93,.35);
+
+}
+
+.main-btn:active{
+
+transform:scale(.98);
+
+}
+
+
+/* ==========================================
+DIVIDER
+
+Login aur Google Login
+ke bich wali Line.
+
+========================================== */
+
+.divider{
+
+display:flex;
+
+align-items:center;
+
+margin:20px 0;
+
+}
+
+.divider::before,
+
+.divider::after{
+
+content:"";
+
+flex:1;
+
+height:1px;
+
+background:rgba(255,255,255,.08);
+
+}
+
+.divider span{
+
+padding:0 14px;
+
+font-size:12px;
+
+font-weight:600;
+
+color:#888;
+
+}
+
+
+/* ==========================================
+GOOGLE LOGIN BUTTON
+
+Google Authentication
+
+========================================== */
+
+.social-row{
+
+display:flex;
+
+}
+
+.social{
+
+width:100%;
+
+height:56px;
+
+border:none;
+
+outline:none;
+
+cursor:pointer;
+
+border-radius:16px;
+
+background:rgba(255,255,255,.04);
+
+border:1px solid rgba(255,255,255,.08);
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+gap:12px;
+
+font-size:15px;
+
+font-weight:600;
+
+color:#ffffff;
+
+transition:.35s;
+
+}
+
+.social i{
+
+font-size:20px;
+
+color:#EA4335;
+
+}
+
+.social:hover{
+
+background:#ffffff;
+
+color:#000000;
+
+transform:translateY(-2px);
+
+}
+
+.social:hover i{
+
+color:#EA4335;
+
+}
+
+
+/* ==========================================
+TERMS & CONDITION
+
+Signup Checkbox
+
+========================================== */
+
+.terms{
+
+margin-bottom:18px;
+
+}
+
+.terms label{
+
+display:flex;
+
+align-items:flex-start;
+
+gap:10px;
+
+font-size:13px;
+
+color:#b5b5b5;
+
+cursor:pointer;
+
+line-height:20px;
+
+}
+
+.terms input{
+
+width:16px;
+
+height:16px;
+
+accent-color:var(--red);
+
+margin-top:2px;
+
+}
+
+
+/* ==========================================
+SMALL BUTTON ANIMATION
+
+Hover Effect
+
+========================================== */
+
+button{
+
+transition:.30s ease;
+
+}
+
+/* ==========================================================
+FILE : css/index.css
+
+PART : 4
+
+Is Part me
+
+Loading Screen
+Toast Message
+Responsive Design
+Scrollbar
+Animation
+
+ki CSS hai.
+
+========================================================== */
+
+
+/* ==========================================
+LOADING SCREEN
+
+Login
+Signup
+Google Login
+
+Jab Firebase Process chalega
+tab ye Screen Show hogi.
+
+========================================== */
+
+.loading-screen{
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:100%;
+
+background:rgba(5,5,7,.96);
+
+backdrop-filter:blur(10px);
+
+display:none;
+
+justify-content:center;
+
+align-items:center;
+
+flex-direction:column;
+
+z-index:99999;
+
+}
+
+.loading-screen.active{
+
+display:flex;
+
+}
+
+.loader{
+
+width:72px;
+
+height:72px;
+
+border-radius:50%;
+
+border:5px solid rgba(255,255,255,.08);
+
+border-top:5px solid var(--red);
+
+animation:LoaderSpin .9s linear infinite;
+
+}
+
+@keyframes LoaderSpin{
+
+100%{
+
+transform:rotate(360deg);
+
+}
+
+}
+
+.loading-screen h2{
+
+margin-top:22px;
+
+font-size:22px;
+
+font-weight:700;
+
+}
+
+.loading-screen p{
+
+margin-top:8px;
+
+font-size:13px;
+
+color:var(--text2);
+
+}
+
+
+/* ==========================================
+TOAST MESSAGE
+
+Success
+
+Error
+
+Warning
+
+========================================== */
+
+#toastBox{
+
+position:fixed;
+
+right:18px;
+
+bottom:20px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:12px;
+
+z-index:999999;
+
+}
+
+.toast{
+
+min-width:280px;
+
+padding:15px 18px;
+
+background:#15151c;
+
+border-left:5px solid var(--red);
+
+border-radius:14px;
+
+box-shadow:0 12px 30px rgba(0,0,0,.35);
+
+animation:ToastShow .35s;
+
+}
+
+.toast.success{
+
+border-left-color:#00d26a;
+
+}
+
+.toast.error{
+
+border-left-color:#ff3d5a;
+
+}
+
+.toast.warning{
+
+border-left-color:#ffb000;
+
+}
+
+@keyframes ToastShow{
+
+from{
+
+opacity:0;
+
+transform:translateX(120%);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateX(0);
+
+}
+
+}
+
+
+/* ==========================================
+SCROLLBAR
+
+Browser Scrollbar Design
+
+========================================== */
+
+::-webkit-scrollbar{
+
+width:6px;
+
+}
+
+::-webkit-scrollbar-track{
+
+background:#090909;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+background:linear-gradient(
+
+180deg,
+
+var(--red),
+
+var(--blue)
+
+);
+
+border-radius:20px;
+
+}
+
+
+/* ==========================================
+TEXT SELECT
+
+Mouse se Text Select
+karne ka Color.
+
+========================================== */
+
+::selection{
+
+background:var(--red);
+
+color:#fff;
+
+}
+
+
+/* ==========================================
+MOBILE RESPONSIVE
+
+Phone UI
+
+========================================== */
+
+@media(max-width:480px){
+
+body{
+
+padding:15px;
+
+}
+
+.login-card{
+
+padding:24px 18px;
+
+border-radius:24px;
+
+}
+
+.logo-circle{
+
+width:72px;
+
+height:72px;
+
+font-size:30px;
+
+}
+
+.logo-box h1{
+
+font-size:28px;
+
+}
+
+.option-row{
+
+flex-direction:row;
+
+justify-content:space-between;
+
+align-items:center;
+
+gap:10px;
+
+}
+
+.input-box input{
+
+height:54px;
+
+font-size:14px;
+
+}
+
+.main-btn,
+
+.social{
+
+height:54px;
+
+font-size:14px;
+
+}
+
+.social span{
+
+font-size:14px;
+
+}
+
+}
+
+
+/* ==========================================
+TABLET
+
+Tablet UI
+
+========================================== */
+
+@media(min-width:768px){
+
+.login-card{
+
+max-width:470px;
+
+}
+
+}
+
+
+/* ==========================================
+DESKTOP
+
+PC UI
+
+========================================== */
+
+@media(min-width:1200px){
+
+.login-card{
+
+max-width:500px;
+
+padding:38px;
+
+}
+
+.logo-circle{
+
+width:92px;
+
+height:92px;
+
+font-size:38px;
+
+}
+
+.logo-box h1{
+
+font-size:38px;
+
+}
+
+}

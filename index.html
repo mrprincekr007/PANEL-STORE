@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<!-- ==========================================
+PAGE INFO
+
+NEXUS CORE
+
+Premium Gaming Platform
+
+Connected Files
+
+css/index.css
+
+js/index.js
+
+========================================== -->
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no,
+viewport-fit=cover">
+
+<meta
+name="theme-color"
+content="#09090d">
+
+<title>
+
+NEXUS CORE
+
+</title>
+
+<!-- ==========================================
+GOOGLE FONT
+
+Website Font
+
+========================================== -->
+
+<link
+rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link
+rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link
+href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+rel="stylesheet">
+
+<!-- ==========================================
+FONT AWESOME
+
+All Icons
+
+========================================== -->
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<!-- ==========================================
+MAIN CSS
+
+Login Page Design
+
+========================================== -->
+
+<link
+rel="stylesheet"
+href="css/index.css">
+
+</head>
+
+<body>
+
+<!-- ==========================================
+BACKGROUND EFFECT
+
+Future
+
+Particles
+
+Glow
+
+Grid
+
+Animation
+
+========================================== -->
+
+<div id="particles"></div>
+
+<div class="bg-grid"></div>
+
+<div class="background-glow glow-left"></div>
+
+<div class="background-glow glow-right"></div>
+
+<!-- ==========================================
+MAIN CONTAINER
+
+Complete Login Page
+
+========================================== -->
+
+<div class="login-container">
+
+<div class="login-card">
+
+<!-- ==========================================
+LOGO AREA
+
+Logo
+
+Title
+
+Subtitle
+
+========================================== -->
+
+<div class="logo-box">
+
+<div class="logo-circle">
+
+<i class="fa-solid fa-shield-halved"></i>
+
+</div>
+
+<h1>
+
+NEXUS CORE
+
+</h1>
+
+<p>
+
+Premium Gaming Marketplace
+
+</p>
+
+</div>
+
+<!-- ==========================================
+LOGIN TAB
+
+Signup TAB
+
+========================================== -->
+
+<div class="tab-container">
+
+<button
+
+id="loginTab"
+
+class="tab active"
+
+type="button">
+
+LOGIN
+
+</button>
+
+<button
+
+id="signupTab"
+
+class="tab"
+
+type="button">
+
+SIGN UP
+
+</button>
+
+</div>
+
+<!-- ==========================================
+LOGIN FORM
+
+Email Login
+
+Password Login
+
+========================================== -->
+
+<form
+
+id="loginForm"
+
+class="form active"
+
+autocomplete="on">
+
+<!-- EMAIL -->
+
+<div class="input-box">
+
+<i class="fa-solid fa-envelope"></i>
+
+<input
+
+type="email"
+
+id="loginEmail"
+
+placeholder="Enter Email Address"
+
+autocomplete="email"
+
+required>
+
+</div>
+
+<!-- PASSWORD -->
+
+<div class="input-box">
+
+<i class="fa-solid fa-lock"></i>
+
+<input
+
+type="password"
+
+id="loginPassword"
+
+placeholder="Enter Password"
+
+autocomplete="current-password"
+
+required>
+
+<button
+
+type="button"
+
+id="loginEye"
+
+class="eye-btn">
+
+<i class="fa-solid fa-eye"></i>
+
+</button>
+
+</div>
+
+<!-- ==========================================
+LOGIN OPTIONS
+
+Remember Me
+
+Forgot Password
+
+Future me aur Option
+add karna ho
+to isi Section me karna.
+
+========================================== -->
+
+<div class="option-row">
+
+<label class="remember">
+
+<input
+type="checkbox"
+id="rememberMe">
+
+<span>
+
+Remember Me
+
+</span>
+
+</label>
+
+<button
+
+type="button"
+
+id="forgotPassword"
+
+class="forgot">
+
+Forgot Password?
+
+</button>
+
+</div>
+
+<!-- ==========================================
+LOGIN BUTTON
+
+Email Password Login
+
+Firebase Authentication
+
+========================================== -->
+
+<button
+
+type="submit"
+
+id="loginBtn"
+
+class="main-btn">
+
+<i class="fa-solid fa-right-to-bracket"></i>
+
+<span>
+
+LOGIN
+
+</span>
+
+</button>
+
+<!-- ==========================================
+GOOGLE LOGIN
+
+Google Authentication
+
+New User :
+
+Auto Signup
+
+Old User :
+
+Direct Login
+
+========================================== -->
+
+<div class="divider">
+
+<span>
+
+OR CONTINUE WITH
+
+</span>
+
+</div>
+
+<div class="social-row">
+
+<button
+
+type="button"
+
+id="googleLogin"
+
+class="social google">
+
+<i class="fa-brands fa-google"></i>
+
+<span>
+
+Continue with Google
+
+</span>
+
+</button>
+
+</div>
+
+</form>
+
+<!-- ==========================================
+SIGNUP FORM
+
+New User Registration
+
+Firebase Auth
+
+Realtime Database
+
+========================================== -->
+
+<form
+
+id="signupForm"
+
+class="form">
+
+<!-- FULL NAME -->
+
+<div class="input-box">
+
+<i class="fa-solid fa-user"></i>
+
+<input
+
+type="text"
+
+id="signupName"
+
+placeholder="Full Name"
+
+required>
+
+</div>
+
+<!-- EMAIL -->
+
+<div class="input-box">
+
+<i class="fa-solid fa-envelope"></i>
+
+<input
+
+type="email"
+
+id="signupEmail"
+
+placeholder="Email Address"
+
+required>
+
+</div>
+
+<!-- PASSWORD -->
+
+<div class="input-box">
+
+<i class="fa-solid fa-lock"></i>
+
+<input
+
+type="password"
+
+id="signupPassword"
+
+placeholder="Create Password"
+
+required>
+
+<button
+
+type="button"
+
+id="signupEye"
+
+class="eye-btn">
+
+<i class="fa-solid fa-eye"></i>
+
+</button>
+
+</div>
+
+<!-- ==========================================
+CONFIRM PASSWORD
+
+User ko Password dubara
+Enter karna hoga.
+
+========================================== -->
+
+<div class="input-box">
+
+<i class="fa-solid fa-lock"></i>
+
+<input
+
+type="password"
+
+id="signupConfirm"
+
+placeholder="Confirm Password"
+
+required>
+
+<button
+
+type="button"
+
+id="confirmEye"
+
+class="eye-btn">
+
+<i class="fa-solid fa-eye"></i>
+
+</button>
+
+</div>
+
+<!-- ==========================================
+TERMS & CONDITIONS
+
+Future me Privacy Policy
+Terms Page
+yahi se connect hogi.
+
+========================================== -->
+
+<div class="terms">
+
+<label>
+
+<input
+
+type="checkbox"
+
+id="agreeTerms"
+
+required>
+
+<span>
+
+I agree to the Terms & Conditions
+
+</span>
+
+</label>
+
+</div>
+
+<!-- ==========================================
+CREATE ACCOUNT
+
+Firebase Signup
+
+========================================== -->
+
+<button
+
+type="submit"
+
+id="signupBtn"
+
+class="main-btn">
+
+<i class="fa-solid fa-user-plus"></i>
+
+<span>
+
+CREATE ACCOUNT
+
+</span>
+
+</button>
+
+</form>
+
+<!-- ==========================================
+LOADING SCREEN
+
+Firebase Process
+
+Login
+
+Signup
+
+Google Login
+
+========================================== -->
+
+<div
+
+id="loadingScreen"
+
+class="loading-screen">
+
+<div class="loader"></div>
+
+<h2>
+
+Please Wait...
+
+</h2>
+
+<p>
+
+Secure Authentication
+
+</p>
+
+</div>
+
+<!-- ==========================================
+TOAST MESSAGE
+
+Success
+
+Error
+
+Warning
+
+========================================== -->
+
+<div id="toastBox"></div>
+
+<!-- ==========================================
+MAIN JAVASCRIPT
+
+Complete Login System
+
+========================================== -->
+
+<script
+
+type="module"
+
+src="js/index.js">
+
+</script>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

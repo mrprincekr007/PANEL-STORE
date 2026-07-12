@@ -1,9 +1,9 @@
-<nav id="nexusHeaderHome" class="nexus-header-container">
+<nav id="nexusHeaderStore" class="nexus-header-container">
     <div class="header-brand-box" onclick="window.location.href='/home.html'">
-        <div class="header-icon-glow"><i class="fas fa-biohazard"></i></div>
+        <div class="header-icon-glow"><i class="fas fa-layer-group"></i></div>
         <div class="header-titles">
-            <h1 class="header-main-title">FF<span class="text-rose-500">.PANEL</span></h1>
-            <span class="header-sub-title">Enterprise Mod</span>
+            <h1 class="header-main-title">NEXUS<span style="color: #f43f5e;">.STORE</span></h1>
+            <span class="header-sub-title">Live Inventory</span>
         </div>
     </div>
     <div class="header-actions-box">
@@ -27,19 +27,19 @@
 </nav>
 
 <style>
-    .nexus-header-container { padding: 12px 20px; position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; width: 100%; background: rgba(10, 12, 18, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-bottom: 1px solid rgba(225, 29, 72, 0.2); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(255,255,255,0.05); transition: all 0.3s ease; }
+    .nexus-header-container { padding: 12px 20px; position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; width: 100%; background: rgba(10, 12, 18, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-bottom: 1px solid rgba(244, 63, 94, 0.2); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(255,255,255,0.05); transition: all 0.3s ease; }
     .header-brand-box { display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.3s ease; }
     .header-brand-box:active { transform: scale(0.95); }
-    .header-icon-glow { font-size: 26px; color: #e11d48; filter: drop-shadow(0 0 12px rgba(225, 29, 72, 0.9)); animation: pulseGlow 2s infinite alternate; }
-    @keyframes pulseGlow { 0% { filter: drop-shadow(0 0 8px rgba(225, 29, 72, 0.6)); } 100% { filter: drop-shadow(0 0 16px rgba(225, 29, 72, 1)); } }
+    .header-icon-glow { font-size: 26px; color: #f43f5e; filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.9)); animation: pulseGlowStore 2s infinite alternate; }
+    @keyframes pulseGlowStore { 0% { filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.6)); } 100% { filter: drop-shadow(0 0 16px rgba(244, 63, 94, 1)); } }
     .header-main-title { font-size: 20px; font-weight: 900; color: white; letter-spacing: -0.5px; line-height: 1; }
     .header-sub-title { font-size: 8px; letter-spacing: 3px; color: #64748b; font-weight: 800; text-transform: uppercase; display: block; margin-top: 2px; }
     .header-actions-box { display: flex; align-items: center; gap: 15px; }
-    .header-wallet-btn { display: flex; align-items: center; background: linear-gradient(90deg, rgba(225, 29, 72, 0.15) 0%, rgba(159, 18, 57, 0.05) 100%); border: 1px solid rgba(225, 29, 72, 0.4); border-radius: 30px; padding: 4px 12px 4px 4px; cursor: pointer; box-shadow: 0 0 20px rgba(225, 29, 72, 0.2); transition: all 0.3s ease; }
-    .header-wallet-btn:hover { background: rgba(225, 29, 72, 0.25); box-shadow: 0 0 25px rgba(225, 29, 72, 0.4); transform: translateY(-1px); }
-    .wallet-icon-box { background: #e11d48; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 10px; margin-right: 8px; box-shadow: 0 0 10px rgba(225, 29, 72, 0.6); }
+    .header-wallet-btn { display: flex; align-items: center; background: linear-gradient(90deg, rgba(244, 63, 94, 0.15) 0%, rgba(159, 18, 57, 0.05) 100%); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 30px; padding: 4px 12px 4px 4px; cursor: pointer; box-shadow: 0 0 20px rgba(244, 63, 94, 0.2); transition: all 0.3s ease; }
+    .header-wallet-btn:hover { background: rgba(244, 63, 94, 0.25); box-shadow: 0 0 25px rgba(244, 63, 94, 0.4); transform: translateY(-1px); }
+    .wallet-icon-box { background: #f43f5e; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 10px; margin-right: 8px; box-shadow: 0 0 10px rgba(244, 63, 94, 0.6); }
     .wallet-amount-box { display: flex; align-items: baseline; }
-    .currency-symbol { font-size: 10px; color: #f43f5e; font-weight: 900; margin-right: 2px; }
+    .currency-symbol { font-size: 10px; color: #fb7185; font-weight: 900; margin-right: 2px; }
     .balance-digits { font-size: 13px; color: white; font-weight: 900; }
     .header-menu-btn { background: transparent; border: none; color: #cbd5e1; font-size: 24px; cursor: pointer; transition: all 0.3s ease; padding: 5px; }
     .header-menu-btn:hover { color: white; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
@@ -47,13 +47,13 @@
     .auth-ui-logged-in, .auth-ui-logged-out { display: flex; align-items: center; gap: 10px; }
     .header-login-btn, .header-register-btn { padding: 8px 14px; border-radius: 30px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s ease; border: none; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
     .header-login-btn { background: transparent; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); }
-    .header-login-btn:hover { background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(225,29,72,0.4); }
+    .header-login-btn:hover { background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(244,63,94,0.4); }
     .header-register-btn { background: linear-gradient(90deg, #e11d48, #be123c); color: #fff; box-shadow: 0 0 15px rgba(225,29,72,0.3); }
     .header-register-btn:hover { box-shadow: 0 0 25px rgba(225,29,72,0.6); transform: translateY(-1px); }
 </style>
 
 <script type="module">
-    import { auth, db, ref, onValue, onAuthStateChanged } from "/js/firebase-config.js";
+    import { auth, db, ref, onValue, onAuthStateChanged } from "./js/firebase-config.js";
     onAuthStateChanged(auth, (user) => {
         const li = document.querySelector('.auth-ui-logged-in');
         const lo = document.querySelector('.auth-ui-logged-out');

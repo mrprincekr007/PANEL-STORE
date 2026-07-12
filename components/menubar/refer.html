@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nexus Core | Refer & Earn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-emerald-600 selection:text-white  relative">
+    <div class="premium-bg-container">
+        <div class="bg-orb bg-orb-1" style="background:#059669;"></div>
+        <div class="bg-orb bg-orb-2" style="background:#10b981;"></div>
+        <div class="bg-grid-overlay"></div>
+    </div>
+    <div id="header-container"></div>
+    <main class="w-full max-w-3xl mx-auto px-4 md:px-8 py-6 space-y-6 relative z-10">
+        <div class="text-center md:text-left">
+            <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight">
+                <i class="fas fa-users text-emerald-400 mr-2 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]"></i>
+                Refer & <span class="text-emerald-400">Earn</span>
+            </h1>
+            <p class="text-xs text-gray-500 mt-1">Invite friends and earn rewards</p>
+        </div>
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div id="claimBox" class="relative z-10 mb-6 p-5 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-emerald-400 uppercase tracking-wider">Referral Bonus Available</p>
+                            <p class="text-lg font-black text-white">₹<span id="claimableAmount">0.00</span></p>
+                        </div>
+                    </div>
+                    <button id="claimBtn" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] hover:translate-y-[-1px] transition-all duration-300 flex items-center gap-2">
+                        <i class="fas fa-hand-holding-heart"></i> Claim
+                    </button>
+                </div>
+            </div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Your Referral Link</h2>
+                        <p class="text-[10px] text-gray-500">Share this with your friends</p>
+                    </div>
+                </div>
+                <div class="bg-black/50 border border-white/5 rounded-2xl p-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <code id="referralLink" class="flex-1 text-sm font-mono text-emerald-400 break-all">Loading...</code>
+                        <button onclick="copyReferralLink()" class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/20 transition shrink-0">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-4 text-center">
+                        <p class="text-2xl font-black text-white font-mono" id="totalReferrals">0</p>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">Total Referrals</p>
+                    </div>
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-4 text-center">
+                        <p class="text-2xl font-black text-emerald-400 font-mono">₹<span id="referralEarnings">0</span></p>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">Earnings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-5">
+                    <i class="fas fa-users-between-lines text-emerald-400 text-sm"></i>
+                    <h3 class="text-xs font-black text-white uppercase tracking-wider">Your Referrals</h3>
+                </div>
+                <div id="referralListContainer">
+                    <div class="flex flex-col items-center justify-center py-10 opacity-60">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-center text-emerald-500/30 text-xl mb-3">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <p class="text-[10px] font-mono tracking-widest text-gray-500">No referrals yet</p>
+                        <p class="text-[9px] text-gray-600 mt-1">Share your link to start earning</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-5">
+                    <i class="fas fa-circle-info text-emerald-400 text-sm"></i>
+                    <h3 class="text-xs font-black text-white uppercase tracking-wider">How It Works</h3>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs shrink-0 mt-0.5">1</div>
+                        <div>
+                            <p class="text-xs font-black text-white">Share Your Link</p>
+                            <p class="text-[10px] text-gray-500 mt-0.5">Copy your referral link above and share it with friends on WhatsApp, Telegram, or any platform.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs shrink-0 mt-0.5">2</div>
+                        <div>
+                            <p class="text-xs font-black text-white">Friend Registers</p>
+                            <p class="text-[10px] text-gray-500 mt-0.5">When someone clicks your link and creates an account, they are automatically tagged as your referral.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs shrink-0 mt-0.5">3</div>
+                        <div>
+                            <p class="text-xs font-black text-white">You Earn 5%</p>
+                            <p class="text-[10px] text-gray-500 mt-0.5">Your friend deposits money and you get <span class="text-emerald-400 font-black">5% commission</span> of their deposit amount — credited to your Referral Bonus.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs shrink-0 mt-0.5">4</div>
+                        <div>
+                            <p class="text-xs font-black text-white">Claim Your Bonus</p>
+                            <p class="text-[10px] text-gray-500 mt-0.5">Once the bonus accumulates, click <span class="text-emerald-400 font-black">Claim</span> above to transfer it directly to your wallet balance. No limits, no expiry!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="dropdown-container"></div>
+    <div id="navigation-container"></div>
+    <div id="toastContainer" class="fixed top-20 right-4 z-[99999] flex flex-col gap-2 pointer-events-none"></div>
+    <script>
+        function loadComponentAndRunScripts(url, containerId) {
+            fetch(url).then(res => { if(!res.ok) throw new Error('Failed to load '+url); return res.text(); }).then(html => {
+                document.getElementById(containerId).innerHTML = html;
+                const scripts = document.getElementById(containerId).getElementsByTagName('script');
+                for (let i = 0; i < scripts.length; i++) {
+                    const ns = document.createElement('script');
+                    if (scripts[i].type) ns.type = scripts[i].type;
+                    ns.text = scripts[i].innerText;
+                    document.body.appendChild(ns);
+                }
+            }).catch(err => console.error(err));
+        }
+        loadComponentAndRunScripts('../header/header_menubar.html', 'header-container');
+        loadComponentAndRunScripts('../menubar.html', 'dropdown-container');
+        loadComponentAndRunScripts('../navigation.html', 'navigation-container');
+    </script>
+    <style>
+        .premium-bg-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -100; background-color: #030305; overflow: hidden; }
+        .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: orbMove 18s infinite alternate ease-in-out; }
+        .bg-orb-1 { width: 50vw; height: 50vw; top: -15%; left: -15%; animation-duration: 22s; animation-name: orbMove, orbPulse1; }
+        .bg-orb-2 { width: 60vw; height: 60vw; bottom: -20%; right: -15%; animation-duration: 28s, 7s; animation-direction: alternate-reverse, normal; animation-name: orbMove, orbPulse2; }
+        .bg-grid-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; z-index: -99; animation: gridPan 30s linear infinite; }
+        @keyframes orbMove { 0% { transform: translate(0,0) scale(1); } 33% { transform: translate(15vw,15vh) scale(1.1); } 66% { transform: translate(-10vw,20vh) scale(0.9); } 100% { transform: translate(10vw,-10vh) scale(1.2); } }
+        @keyframes orbPulse1 { 0% { opacity: 0.1; transform: scale(0.8); } 50% { opacity: 0.45; transform: scale(1.3); } 100% { opacity: 0.1; transform: scale(0.8); } }
+        @keyframes orbPulse2 { 0% { opacity: 0.4; transform: scale(1.1); } 50% { opacity: 0.1; transform: scale(0.7); } 100% { opacity: 0.4; transform: scale(1.1); } }
+        @keyframes gridPan { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
+        .premium-glass-card { background: linear-gradient(145deg, rgba(15,18,25,0.6) 0%, rgba(5,7,10,0.85) 100%); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.05); transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+        .premium-glass-card:hover { border-color: rgba(16,185,129,0.3); box-shadow: 0 20px 45px rgba(0,0,0,0.9); }
+        .toast-msg { background: rgba(15,17,24,0.96); border: 1px solid rgba(255,255,255,0.08); padding: 12px 18px; border-radius: 12px; color: #fff; font-size: 12px; font-weight: 500; pointer-events: all; display: flex; align-items: center; gap: 10px; box-shadow: 0 15px 30px rgba(0,0,0,0.8); animation: toastIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275) forwards; transition: all 0.3s ease; }
+        .toast-msg.success i { color: #00ff66; } .toast-msg.error i { color: #ff2a5f; } .toast-msg.info i { color: #3b82f6; }
+        @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+    <script type="module">
+        import { auth, db, ref, get, onValue, update, runTransaction, onAuthStateChanged } from "./../../js/firebase-config.js";
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast-msg ' + type;
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            t.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> <span>${msg}</span>`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(30px)'; setTimeout(() => t.remove(), 300); }, 2500);
+        }
+        window.copyReferralLink = function() {
+            const el = document.getElementById('referralLink');
+            if (!el || !el.innerText || el.innerText === 'Loading...') return;
+            navigator.clipboard.writeText(el.innerText).then(() => showToast('Referral link copied!')).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = el.innerText; ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+                showToast('Referral link copied!');
+            });
+        };
+        let currentUid = null;
+
+        document.getElementById('claimBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('claimBtn');
+            if (!currentUid) return;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            try {
+                const snap = await get(ref(db, `users/${currentUid}/referralClaimable`));
+                const claimable = parseFloat(snap.exists() ? snap.val() : 0);
+                if (claimable <= 0) { showToast('Nothing to claim', 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Claim'; return; }
+                await runTransaction(ref(db, `users/${currentUid}/balance`), (bal) => (bal || 0) + claimable);
+                await update(ref(db, `users/${currentUid}`), { referralClaimable: 0 });
+                document.getElementById('claimableAmount').innerText = '0.00';
+                showToast(`₹${claimable.toFixed(2)} claimed to wallet!`);
+            } catch (e) { showToast('Claim failed', 'error'); }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Claim';
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) return;
+            const uid = user.uid;
+            currentUid = uid;
+            try {
+                const userSnap = await get(ref(db, 'users/' + uid));
+                const userData = userSnap.exists() ? userSnap.val() : {};
+                const username = userData.username || uid.substring(0, 8);
+                const baseUrl = window.location.origin;
+                const link = baseUrl + '/index.html?ref=' + encodeURIComponent(username);
+                document.getElementById('referralLink').innerText = link;
+
+                const claimable = parseFloat(userData.referralClaimable || 0);
+                document.getElementById('claimableAmount').innerText = claimable.toFixed(2);
+
+                const refSnap = await get(ref(db, 'referrals/' + uid));
+                if (refSnap.exists()) {
+                    const refData = refSnap.val();
+                    const referrals = Object.values(refData).reverse();
+                    document.getElementById('totalReferrals').innerText = referrals.length;
+                    let totalEarned = 0;
+                    if (referrals.length > 0) {
+                        let html = '<div class="space-y-2">';
+                        referrals.slice(0, 20).forEach((r) => {
+                            totalEarned += parseFloat(r.commission || 0);
+                            const date = r.date ? new Date(r.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
+                            const deposited = r.deposited ? '₹' + parseFloat(r.deposited).toFixed(2) : '₹0.00';
+                            const earned = r.commission ? '₹' + parseFloat(r.commission).toFixed(2) : '₹0.00';
+                            html += '<div class="flex items-center justify-between bg-black/30 border border-white/5 rounded-xl px-4 py-3">'
+                                + '<div class="flex items-center gap-3">'
+                                + '<div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xs"><i class="fas fa-user"></i></div>'
+                                + '<div>'
+                                + '<p class="text-xs font-mono text-gray-300">' + (r.email || 'User') + '</p>'
+                                + '<p class="text-[9px] text-gray-500">Deposited: ' + deposited + ' • Earned: <span class="text-emerald-400">' + earned + '</span></p>'
+                                + '<p class="text-[8px] text-gray-600">' + date + '</p>'
+                                + '</div></div></div>';
+                        });
+                        html += '</div>';
+                        document.getElementById('referralListContainer').innerHTML = html;
+                    }
+                    document.getElementById('referralEarnings').innerText = totalEarned.toFixed(2);
+                } else {
+                    document.getElementById('referralEarnings').innerText = '0.00';
+                }
+            } catch (e) { console.error(e); }
+        });
+    </script>
+</body>
+</html>

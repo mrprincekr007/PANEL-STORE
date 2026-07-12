@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nexus Core | My Keys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-purple-600 selection:text-white  relative">
+    <div class="premium-bg-container">
+        <div class="bg-orb bg-orb-1" style="background:#7c3aed;"></div>
+        <div class="bg-orb bg-orb-2" style="background:#2563eb;"></div>
+        <div class="bg-grid-overlay"></div>
+    </div>
+    <div id="header-container"></div>
+    <main class="w-full max-w-3xl mx-auto px-4 md:px-8 py-6 space-y-6 relative z-10">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight">
+                    <i class="fas fa-key text-purple-400 mr-2 drop-shadow-[0_0_8px_rgba(124,58,237,0.6)]"></i>
+                    My <span class="text-purple-400">Keys</span>
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">All your purchased license keys</p>
+            </div>
+            <span id="keyCount" class="bg-purple-600/10 text-purple-400 border border-purple-500/30 px-4 py-2 rounded-lg text-xs font-black"></span>
+        </div>
+        <div id="keysContainer" class="space-y-4">
+            <div class="flex flex-col items-center justify-center py-16 opacity-60">
+                <i class="fas fa-circle-notch animate-spin text-4xl text-purple-500 mb-4"></i>
+                <p class="text-[10px] font-mono uppercase tracking-widest text-gray-400">Loading your keys...</p>
+            </div>
+        </div>
+    </main>
+    <div id="dropdown-container"></div>
+    <div id="navigation-container"></div>
+    <div id="toastContainer" class="fixed top-20 right-4 z-[99999] flex flex-col gap-2 pointer-events-none"></div>
+    <script>
+        function loadComponentAndRunScripts(url, containerId) {
+            fetch(url).then(res => { if(!res.ok) throw new Error('Failed to load '+url); return res.text(); }).then(html => {
+                document.getElementById(containerId).innerHTML = html;
+                const scripts = document.getElementById(containerId).getElementsByTagName('script');
+                for (let i = 0; i < scripts.length; i++) {
+                    const ns = document.createElement('script');
+                    if (scripts[i].type) ns.type = scripts[i].type;
+                    ns.text = scripts[i].innerText;
+                    document.body.appendChild(ns);
+                }
+            }).catch(err => console.error(err));
+        }
+        loadComponentAndRunScripts('../header/header_menubar.html', 'header-container');
+        loadComponentAndRunScripts('../menubar.html', 'dropdown-container');
+        loadComponentAndRunScripts('../navigation.html', 'navigation-container');
+    </script>
+    <style>
+        .premium-bg-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -100; background-color: #030305; overflow: hidden; }
+        .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: orbMove 18s infinite alternate ease-in-out; }
+        .bg-orb-1 { width: 50vw; height: 50vw; top: -15%; left: -15%; animation-duration: 22s; animation-name: orbMove, orbPulse1; }
+        .bg-orb-2 { width: 60vw; height: 60vw; bottom: -20%; right: -15%; animation-duration: 28s, 7s; animation-direction: alternate-reverse, normal; animation-name: orbMove, orbPulse2; }
+        .bg-grid-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; z-index: -99; animation: gridPan 30s linear infinite; }
+        @keyframes orbMove { 0% { transform: translate(0,0) scale(1); } 33% { transform: translate(15vw,15vh) scale(1.1); } 66% { transform: translate(-10vw,20vh) scale(0.9); } 100% { transform: translate(10vw,-10vh) scale(1.2); } }
+        @keyframes orbPulse1 { 0% { opacity: 0.1; transform: scale(0.8); } 50% { opacity: 0.45; transform: scale(1.3); } 100% { opacity: 0.1; transform: scale(0.8); } }
+        @keyframes orbPulse2 { 0% { opacity: 0.4; transform: scale(1.1); } 50% { opacity: 0.1; transform: scale(0.7); } 100% { opacity: 0.4; transform: scale(1.1); } }
+        @keyframes gridPan { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
+        .key-card { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid #7c3aed; border-radius: 16px; padding: 20px; transition: all 0.4s ease; animation: fadeUp 0.5s ease forwards; }
+        .key-card:hover { background: rgba(255,255,255,0.03); border-color: rgba(124,58,237,0.4); }
+        .key-display { background: #000; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px; flex: 1; display: flex; justify-content: space-between; align-items: center; }
+        .key-display .key-text { font-family: monospace; font-weight: 700; letter-spacing: 0.2em; font-size: 13px; filter: blur(6px); transition: filter 0.4s ease; user-select: none; color: #64748b; }
+        .key-display:hover .key-text { filter: blur(0); color: #34d399; text-shadow: 0 0 8px rgba(16,185,129,0.5); user-select: all; }
+        .btn-download { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+        .btn-download:hover { background: linear-gradient(90deg, #9333ea, #7e22ce); border-color: #a855f7; box-shadow: 0 0 20px rgba(147,51,234,0.5); transform: translateY(-2px); }
+        .btn-copy { background: none; border: none; color: #64748b; cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.3s ease; }
+        .btn-copy:hover { color: #34d399; background: rgba(16,185,129,0.1); }
+        .toast-msg { background: rgba(15,17,24,0.96); border: 1px solid rgba(255,255,255,0.08); padding: 12px 18px; border-radius: 12px; color: #fff; font-size: 12px; font-weight: 500; pointer-events: all; display: flex; align-items: center; gap: 10px; box-shadow: 0 15px 30px rgba(0,0,0,0.8); animation: toastIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
+        .toast-msg.success i { color: #00ff66; } .toast-msg.error i { color: #ff2a5f; }
+        @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <script type="module">
+        import { auth, db, ref, onValue, onAuthStateChanged } from "./../../js/firebase-config.js";
+
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast-msg ' + type;
+            t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> <span>${msg}</span>`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(30px)'; setTimeout(() => t.remove(), 300); }, 2500);
+        }
+
+        window.copyKey = function(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => showToast('Key copied!')).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+                showToast('Key copied!');
+            });
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) return;
+            const container = document.getElementById('keysContainer');
+            const countEl = document.getElementById('keyCount');
+
+            onValue(ref(db, `purchases/${user.uid}`), (snap) => {
+                if (!snap.exists()) {
+                    container.innerHTML = `
+                        <div class="premium-glass-card p-8 text-center">
+                            <i class="fas fa-inbox text-gray-600 text-4xl mb-4"></i>
+                            <p class="text-xs font-mono tracking-widest text-gray-500">No keys purchased yet</p>
+                            <a href="/store.html" class="inline-block mt-4 bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition shadow-[0_0_15px_rgba(147,51,234,0.4)]">Browse Store</a>
+                        </div>`;
+                    countEl.innerText = '';
+                    return;
+                }
+
+                const data = snap.val();
+                const keys = Object.keys(data).map(id => ({ id, ...data[id] }));
+                keys.sort((a, b) => new Date(b.date) - new Date(a.date));
+                countEl.innerText = keys.length + ' key' + (keys.length > 1 ? 's' : '');
+
+                let html = '';
+                keys.forEach((item, i) => {
+                    const d = new Date(item.date);
+                    const dateStr = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+                    const planName = item.label || item.plan || 'Premium';
+                    const licenseKey = item.key || 'N/A';
+                    const link = item.link || '#';
+
+                    html += `
+                        <div class="key-card" style="animation-delay:${i * 0.08}s">
+                            <div class="flex items-start justify-between gap-4 mb-4">
+                                <div class="min-w-0 flex-1">
+                                    <h4 class="text-sm font-black text-white uppercase tracking-wide truncate">${item.panelName || 'Nexus Module'}</h4>
+                                    <p class="text-[10px] text-gray-400 font-mono mt-1">
+                                        <i class="fas fa-tag text-purple-500 mr-1"></i> ${planName}
+                                        <span class="text-gray-700 mx-1.5">|</span>
+                                        <i class="far fa-calendar text-gray-600 mr-1"></i> ${dateStr}
+                                    </p>
+                                </div>
+                                <span class="shrink-0 bg-purple-600/10 text-purple-400 border border-purple-500/30 px-3 py-1.5 rounded-lg text-[10px] font-black">₹${parseFloat(item.price || 0).toFixed(2)}</span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                <div class="key-display group">
+                                    <div class="flex items-center gap-3 overflow-hidden">
+                                        <i class="fas fa-lock text-gray-600 group-hover:text-emerald-500 transition-colors text-sm shrink-0"></i>
+                                        <span class="key-text truncate" id="key-${item.id}">${licenseKey}</span>
+                                    </div>
+                                    <button onclick="copyKey('key-${item.id}')" class="btn-copy shrink-0" title="Copy Key">
+                                        <i class="fas fa-copy text-lg"></i>
+                                    </button>
+                                </div>
+                                <button onclick="window.open('${link}', '_blank')" class="btn-download">
+                                    <i class="fas fa-cloud-arrow-down mr-2"></i> Download
+                                </button>
+                            </div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            });
+        });
+    </script>
+</body>
+</html>

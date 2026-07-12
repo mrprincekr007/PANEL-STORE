@@ -1,954 +1,487 @@
-// ==========================================================
-//
-// FILE : js/index.js
-//
-// PART : 1
-//
-// Firebase Import
-// DOM Elements
-// Common Functions
-//
-// ==========================================================
-
-import{
-
-auth,
-db,
-googleProvider,
-
-signInWithEmailAndPassword,
-createUserWithEmailAndPassword,
-signInWithPopup,
-sendPasswordResetEmail,
-onAuthStateChanged,
-
-ref,
-set,
-get
-
-}from"./firebase-config.js";
-
-
+/* ==========================================================================
+   NEXUS CORE - GATEWAY (LOGIN & SIGNUP ENGINE)
+   Path: js/index.js
+   Description: Handles Email Auth, Google Auth, Password Resets, 
+                and User Profile Generation in Firebase Realtime DB.
+========================================================================== */
 
 // ==========================================================
-// LOGIN TAB
+// 1. FIREBASE IMPORTS
 // ==========================================================
+// Yahan hum apna universal config import kar rahe hain. 
+// Kyunki index.js aur firebase-config.js dono 'js' folder me hain, path './' hoga.
+import {
+    auth,
+    db,
+    googleProvider,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signInWithPopup,
+    sendPasswordResetEmail,
+    onAuthStateChanged,
+    ref,
+    set,
+    get,
+    serverTimestamp
+} from "./firebase-config.js";
 
-const loginTab=document.getElementById("loginTab");
-const signupTab=document.getElementById("signupTab");
-
-const loginForm=document.getElementById("loginForm");
-const signupForm=document.getElementById("signupForm");
-
-
-
-// ==========================================================
-// LOGIN INPUT
-// ==========================================================
-
-const loginEmail=document.getElementById("loginEmail");
-const loginPassword=document.getElementById("loginPassword");
-const loginBtn=document.getElementById("loginBtn");
-
-
-
-// ==========================================================
-// SIGNUP INPUT
-// ==========================================================
-
-const signupName=document.getElementById("signupName");
-const signupEmail=document.getElementById("signupEmail");
-const signupPassword=document.getElementById("signupPassword");
-const signupConfirm=document.getElementById("signupConfirm");
-const signupBtn=document.getElementById("signupBtn");
-
-
+console.log("[SYSTEM] Nexus Core Auth Engine Initialized.");
 
 // ==========================================================
-// EXTRA BUTTON
+// 2. DOM ELEMENTS SELECTION
 // ==========================================================
 
-const googleLogin=document.getElementById("googleLogin");
+// Tabs
+const loginTab = document.getElementById("loginTab");
+const signupTab = document.getElementById("signupTab");
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
 
-const forgotPassword=document.getElementById("forgotPassword");
+// Login Inputs
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const loginBtn = document.getElementById("loginBtn");
 
-const rememberMe=document.getElementById("rememberMe");
+// Signup Inputs
+const signupName = document.getElementById("signupName");
+const signupUsername = document.getElementById("signupUsername");
+const signupEmail = document.getElementById("signupEmail");
+const signupPassword = document.getElementById("signupPassword");
+const signupConfirm = document.getElementById("signupConfirm");
+const signupBtn = document.getElementById("signupBtn");
 
+// Extra Buttons & Options
+const googleLogin = document.getElementById("googleLogin");
+const forgotPassword = document.getElementById("forgotPassword");
+const rememberMe = document.getElementById("rememberMe");
+
+// Password Eye Toggles
+const loginEye = document.getElementById("loginEye");
+const signupEye = document.getElementById("signupEye");
+const confirmEye = document.getElementById("confirmEye");
+
+// UI State Elements
+const loadingScreen = document.getElementById("loadingScreen");
+const toastBox = document.getElementById("toastBox");
+
+// Global State Variables
+let loginRunning = false;
+let signupRunning = false;
+let currentUser = null;
 
 
 // ==========================================================
-// PASSWORD BUTTON
+// 3. UI UTILITY FUNCTIONS (Loaders & Toasts)
 // ==========================================================
 
-const loginEye=document.getElementById("loginEye");
+function showLoading() {
+    if(loadingScreen) loadingScreen.classList.add("active");
+}
 
-const signupEye=document.getElementById("signupEye");
+function hideLoading() {
+    if(loadingScreen) loadingScreen.classList.remove("active");
+}
 
-const confirmEye=document.getElementById("confirmEye");
+function showToast(message, type = "success") {
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    
+    // Add specific icon based on type
+    let icon = "fa-circle-check";
+    if (type === "error") icon = "fa-circle-xmark";
+    if (type === "warning") icon = "fa-triangle-exclamation";
+    
+    toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${message}`;
+    toastBox.appendChild(toast);
+    
+    // Auto remove toast after 3 seconds
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
 
-
-
-// ==========================================================
-// LOADING
-// ==========================================================
-
-const loadingScreen=document.getElementById("loadingScreen");
-
-const toastBox=document.getElementById("toastBox");
-
-
-
-// ==========================================================
-// COMMON VARIABLE
-// ==========================================================
-
-let loginRunning=false;
-
-let signupRunning=false;
-
-let currentUser=null;
-
-
-
-// ==========================================================
-// SHOW LOADING
-// ==========================================================
-
-function showLoading(){
-
-loadingScreen.classList.add("active");
-
+// Button loading state manager
+function buttonLoading(button, state, text = "Please Wait...") {
+    if (state) {
+        button.disabled = true;
+        button.dataset.html = button.innerHTML; // Save original HTML
+        button.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>${text}</span>`;
+    } else {
+        button.disabled = false;
+        if (button.dataset.html) {
+            button.innerHTML = button.dataset.html; // Restore original HTML
+        }
+    }
 }
 
 
-
 // ==========================================================
-// HIDE LOADING
+// 4. VALIDATION FUNCTIONS
 // ==========================================================
 
-function hideLoading(){
+function isEmpty(value) {
+    return value.trim() === "";
+}
 
-loadingScreen.classList.remove("active");
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
+function isValidPassword(password) {
+    return password.length >= 6;
 }
 
 
+// ==========================================================
+// 4.5. REFERRAL PARAMETER
+// ==========================================================
+const refParam = new URLSearchParams(window.location.search).get('ref') || null;
+console.log("[REF] Referral param:", refParam);
 
 // ==========================================================
-// TOAST
+// 5. TAB SWITCHING LOGIC (Login <-> Signup)
 // ==========================================================
 
-function showToast(message,type="success"){
+if(loginTab && signupTab) {
+    loginTab.onclick = () => {
+        loginTab.classList.add("active");
+        signupTab.classList.remove("active");
+        loginForm.classList.add("active");
+        signupForm.classList.remove("active");
+    };
 
-const toast=document.createElement("div");
+    signupTab.onclick = () => {
+        signupTab.classList.add("active");
+        loginTab.classList.remove("active");
+        signupForm.classList.add("active");
+        loginForm.classList.remove("active");
+    };
 
-toast.className=`toast ${type}`;
-
-toast.innerHTML=message;
-
-toastBox.appendChild(toast);
-
-setTimeout(()=>{
-
-toast.remove();
-
-},3000);
-
+    // Check URL param for ?tab=register
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'register') {
+        signupTab.click();
+    }
 }
 
 
-
 // ==========================================================
-// MESSAGE
+// 6. PASSWORD VISIBILITY TOGGLE (Eye Icon)
 // ==========================================================
 
-function showMessage(msg,type="success"){
-
-let icon="fa-circle-check";
-
-if(type==="error"){
-
-icon="fa-circle-xmark";
-
+function setupPasswordToggle(button, inputField) {
+    if(!button || !inputField) return;
+    
+    button.onclick = () => {
+        if (inputField.type === "password") {
+            inputField.type = "text";
+            button.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+        } else {
+            inputField.type = "password";
+            button.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        }
+    };
 }
 
-if(type==="warning"){
+setupPasswordToggle(loginEye, loginPassword);
+setupPasswordToggle(signupEye, signupPassword);
+setupPasswordToggle(confirmEye, signupConfirm);
 
-icon="fa-triangle-exclamation";
 
+// ==========================================================
+// 7. REMEMBER ME (Local Storage)
+// ==========================================================
+
+const savedEmail = localStorage.getItem("nexusRememberEmail");
+if (savedEmail && loginEmail && rememberMe) {
+    loginEmail.value = savedEmail;
+    rememberMe.checked = true;
 }
 
-showToast(
-
-`<i class="fa-solid ${icon}"></i> ${msg}`,
-
-type
-
-);
-
-}
-
-
-
-// ==========================================================
-// VALIDATION
-// ==========================================================
-
-function empty(v){
-
-return v.trim()=="";
-
-}
-
-function validEmail(v){
-
-return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-
-}
-
-function validPassword(v){
-
-return v.length>=6;
-
-}
-
-// ==========================================================
-//
-// FILE : js/index.js
-//
-// PART : 2
-//
-// Login UI
-// Signup UI
-// Password Eye
-//
-// ==========================================================
-
-
-
-// ==========================================================
-// LOGIN TAB
-// ==========================================================
-
-loginTab.onclick=()=>{
-
-loginTab.classList.add("active");
-
-signupTab.classList.remove("active");
-
-loginForm.classList.add("active");
-
-signupForm.classList.remove("active");
-
-};
-
-
-
-// ==========================================================
-// SIGNUP TAB
-// ==========================================================
-
-signupTab.onclick=()=>{
-
-signupTab.classList.add("active");
-
-loginTab.classList.remove("active");
-
-signupForm.classList.add("active");
-
-loginForm.classList.remove("active");
-
-};
-
-
-
-// ==========================================================
-// PASSWORD SHOW HIDE
-// ==========================================================
-
-function passwordToggle(button,input){
-
-button.onclick=()=>{
-
-if(input.type==="password"){
-
-input.type="text";
-
-button.innerHTML='<i class="fa-solid fa-eye-slash"></i>';
-
-}else{
-
-input.type="password";
-
-button.innerHTML='<i class="fa-solid fa-eye"></i>';
-
-}
-
-};
-
+function handleRememberMe() {
+    if (rememberMe && rememberMe.checked) {
+        localStorage.setItem("nexusRememberEmail", loginEmail.value.trim());
+    } else {
+        localStorage.removeItem("nexusRememberEmail");
+    }
 }
 
 
-
-passwordToggle(loginEye,loginPassword);
-
-passwordToggle(signupEye,signupPassword);
-
-passwordToggle(confirmEye,signupConfirm);
-
-
-
 // ==========================================================
-// BUTTON LOADING
+// 8. AUTO-LOGIN CHECK (Bina Login Home Page Prevent)
 // ==========================================================
-
-function buttonLoading(button,state,text="Please Wait..."){
-
-if(state){
-
-button.disabled=true;
-
-button.dataset.html=button.innerHTML;
-
-button.innerHTML=`<i class="fa-solid fa-spinner fa-spin"></i> ${text}`;
-
-}else{
-
-button.disabled=false;
-
-if(button.dataset.html){
-
-button.innerHTML=button.dataset.html;
-
-}
-
-}
-
-}
-
-
-
-// ==========================================================
-// START LOADING
-// ==========================================================
-
-function startLoading(button,text){
-
-showLoading();
-
-buttonLoading(button,true,text);
-
-}
-
-
-
-// ==========================================================
-// STOP LOADING
-// ==========================================================
-
-function stopLoading(button){
-
-hideLoading();
-
-buttonLoading(button,false);
-
-}
-
-
-
-// ==========================================================
-// REMEMBER EMAIL
-// ==========================================================
-
-const rememberEmail=
-
-localStorage.getItem("rememberEmail");
-
-if(rememberEmail){
-
-loginEmail.value=rememberEmail;
-
-rememberMe.checked=true;
-
-}
-
-
-
-// ==========================================================
-// SAVE EMAIL
-// ==========================================================
-
-function saveRemember(){
-
-if(rememberMe.checked){
-
-localStorage.setItem(
-
-"rememberEmail",
-
-loginEmail.value.trim()
-
-);
-
-}else{
-
-localStorage.removeItem(
-
-"rememberEmail"
-
-);
-
-}
-
-}
-
-
-
-// ==========================================================
-// PAGE READY
-// ==========================================================
-
-window.onload=()=>{
-
-hideLoading();
-
-console.log("NEXUS CORE READY");
-
-};
-
-// ==========================================================
-//
-// FILE : js/index.js
-//
-// PART : 3
-//
-// Firebase Login
-//
-// ==========================================================
-
-
-
-// ==========================================================
-// EMAIL LOGIN
-// ==========================================================
-
-loginForm.addEventListener("submit",async(e)=>{
-
-e.preventDefault();
-
-if(loginRunning)return;
-
-
-
-if(empty(loginEmail.value)){
-
-showMessage(
-
-"Enter Email",
-
-"warning"
-
-);
-
-return;
-
-}
-
-
-
-if(!validEmail(loginEmail.value)){
-
-showMessage(
-
-"Invalid Email",
-
-"warning"
-
-);
-
-return;
-
-}
-
-
-
-if(empty(loginPassword.value)){
-
-showMessage(
-
-"Enter Password",
-
-"warning"
-
-);
-
-return;
-
-}
-
-
-
-try{
-
-loginRunning=true;
-
-startLoading(
-
-loginBtn,
-
-"Signing In..."
-
-);
-
-
-
-const result=
-
-await signInWithEmailAndPassword(
-
-auth,
-
-loginEmail.value.trim(),
-
-loginPassword.value
-
-);
-
-
-
-currentUser=result.user;
-
-
-
-saveRemember();
-
-
-
-showMessage(
-
-"Login Success",
-
-"success"
-
-);
-
-
-
-setTimeout(()=>{
-
-window.location.href="home.html";
-
-},1000);
-
-
-
-}catch(error){
-
-showMessage(
-
-error.message,
-
-"error"
-
-);
-
-}
-
-finally{
-
-loginRunning=false;
-
-stopLoading(loginBtn);
-
-}
-
+// Agar user pehle se logged in hai, toh turant home.html par bhej do
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+        console.log("[AUTH] Active session found. Redirecting to Dashboard...");
+        window.location.href = "home.html";
+    } else {
+        // Agar user nahi hai, tabhi loading screen hatao taaki wo login form dekh sake
+        hideLoading();
+    }
 });
 
 
-
 // ==========================================================
-// AUTO LOGIN
+// 9. STANDARD EMAIL LOGIN
 // ==========================================================
 
-onAuthStateChanged(
+if(loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (loginRunning) return;
 
-auth,
+        let emailVal = loginEmail.value.trim();
+        const passVal = loginPassword.value;
 
-(user)=>{
+        if (isEmpty(emailVal)) return showToast("Enter Email or Username", "warning");
+        if (isEmpty(passVal)) return showToast("Enter Password", "warning");
 
-if(user){
+        // Check if input is a username (not email)
+        if (!emailVal.includes('@')) {
+            try {
+                const usersSnap = await get(ref(db, 'users'));
+                let foundEmail = null;
+                if (usersSnap.exists()) {
+                    usersSnap.forEach(child => {
+                        const data = child.val();
+                        if (data.username && data.username.toLowerCase() === emailVal.toLowerCase()) {
+                            foundEmail = data.email;
+                        }
+                    });
+                }
+                if (!foundEmail) return showToast("Username not found", "error");
+                emailVal = foundEmail;
+            } catch (e) {
+                return showToast("Login error. Try again.", "error");
+            }
+        }
 
-currentUser=user;
+        try {
+            loginRunning = true;
+            showLoading();
+            buttonLoading(loginBtn, true, "Signing In...");
 
+            // Firebase Login
+            const result = await signInWithEmailAndPassword(auth, emailVal, passVal);
+            currentUser = result.user;
+            
+            handleRememberMe();
+            showToast("Secure Login Successful!", "success");
+
+            // Redirect to home
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 1000);
+
+        } catch (error) {
+            console.error("Login Error:", error);
+            showToast(error.message.replace("Firebase: ", ""), "error");
+            hideLoading();
+        } finally {
+            loginRunning = false;
+            buttonLoading(loginBtn, false);
+        }
+    });
 }
-
-}
-
-);
-
-
-
-// ==========================================================
-// FORGOT PASSWORD
-// ==========================================================
-
-forgotPassword.onclick=async()=>{
-
-const email=
-
-loginEmail.value.trim();
-
-
-
-if(empty(email)){
-
-showMessage(
-
-"Enter Email First",
-
-"warning"
-
-);
-
-return;
-
-}
-
-
-
-try{
-
-showLoading();
-
-
-
-await sendPasswordResetEmail(
-
-auth,
-
-email
-
-);
-
-
-
-showMessage(
-
-"Reset Email Sent",
-
-"success"
-
-);
-
-}catch(error){
-
-showMessage(
-
-error.message,
-
-"error"
-
-);
-
-}
-
-finally{
-
-hideLoading();
-
-}
-
-};
-
-// ==========================================================
-//
-// FILE : js/index.js
-//
-// PART : 4
-//
-// Firebase Signup
-// Google Login
-//
-// ==========================================================
-
 
 
 // ==========================================================
-// SIGNUP
+// 10. NEW ACCOUNT REGISTRATION (SIGNUP)
 // ==========================================================
 
-signupForm.addEventListener("submit",async(e)=>{
+    if(signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (signupRunning) return;
 
-e.preventDefault();
+        const nameVal = signupName.value.trim();
+        const usernameVal = signupUsername ? signupUsername.value.trim() : '';
+        const emailVal = signupEmail.value.trim();
+        const passVal = signupPassword.value;
+        const confirmVal = signupConfirm.value;
+        const termsCheck = document.getElementById("agreeTerms");
 
-if(signupRunning)return;
+        if (isEmpty(nameVal)) return showToast("Enter Full Name", "warning");
+        if (!usernameVal || usernameVal.length < 3) return showToast("Username must be at least 3 characters", "warning");
+        if (!/^[a-zA-Z0-9_-]+$/.test(usernameVal)) return showToast("Username: letters, numbers, - and _ only", "warning");
+        if (!isValidEmail(emailVal)) return showToast("Invalid Email Format", "warning");
+        if (!isValidPassword(passVal)) return showToast("Password minimum 6 characters", "warning");
+        if (passVal !== confirmVal) return showToast("Passwords do not match", "warning");
+        if (!termsCheck.checked) return showToast("Accept Terms & Conditions to proceed", "warning");
 
+        try {
+            // Check if username already taken (case-insensitive)
+            const usersSnap = await get(ref(db, 'users'));
+            if (usersSnap.exists()) {
+                let taken = false;
+                const usernameLower = usernameVal.toLowerCase();
+                usersSnap.forEach(child => {
+                    if (child.val().username && child.val().username.toLowerCase() === usernameLower) taken = true;
+                });
+                if (taken) return showToast("Username already taken", "warning");
+            }
 
+            signupRunning = true;
+            showLoading();
+            buttonLoading(signupBtn, true, "Creating...");
 
-if(empty(signupName.value)){
+            // Create user in Firebase Auth
+            const result = await createUserWithEmailAndPassword(auth, emailVal, passVal);
+            const user = result.user;
 
-showMessage("Enter Name","warning");
+            // Save User Profile to Realtime Database (Matches Admin Panel Path)
+            const userData = {
+                uid: user.uid,
+                name: nameVal,
+                username: usernameVal,
+                email: emailVal,
+                photo: "",
+                balance: 0,
+                role: "user",
+                status: "active",
+                createdAt: serverTimestamp()
+            };
 
-return;
+            // Check referral
+            if (refParam) {
+                try {
+                    const usersSnap = await get(ref(db, 'users'));
+                    if (usersSnap.exists()) {
+                        let referrerUid = null;
+                        usersSnap.forEach(child => {
+                            const data = child.val();
+                            if (data.username && data.username.toLowerCase() === refParam.toLowerCase() && child.key !== user.uid) {
+                                referrerUid = child.key;
+                            }
+                        });
+                        if (referrerUid) {
+                            userData.referredBy = referrerUid;
+                            await set(ref(db, `referrals/${referrerUid}/${user.uid}`), {
+                                email: emailVal,
+                                date: Date.now(),
+                                deposited: 0,
+                                commission: 0
+                            });
+                        }
+                    }
+                } catch (e) { console.error("[REF] Error processing referral:", e); }
+            }
 
+            await set(ref(db, "users/" + user.uid), userData);
+
+            showToast("Account Created Successfully!", "success");
+
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 1000);
+
+        } catch (error) {
+            console.error("Signup Error:", error);
+            showToast(error.message.replace("Firebase: ", ""), "error");
+            hideLoading();
+        } finally {
+            signupRunning = false;
+            buttonLoading(signupBtn, false);
+        }
+    });
 }
-
-
-
-if(!validEmail(signupEmail.value)){
-
-showMessage("Invalid Email","warning");
-
-return;
-
-}
-
-
-
-if(!validPassword(signupPassword.value)){
-
-showMessage("Password Minimum 6 Characters","warning");
-
-return;
-
-}
-
-
-
-if(signupPassword.value!==signupConfirm.value){
-
-showMessage("Password Not Match","warning");
-
-return;
-
-}
-
-
-
-const terms=document.getElementById("agreeTerms");
-
-if(!terms.checked){
-
-showMessage("Accept Terms First","warning");
-
-return;
-
-}
-
-
-
-try{
-
-signupRunning=true;
-
-startLoading(signupBtn,"Creating...");
-
-
-
-const result=
-
-await createUserWithEmailAndPassword(
-
-auth,
-
-signupEmail.value.trim(),
-
-signupPassword.value
-
-);
-
-
-
-const user=result.user;
-
-
-
-await set(
-
-ref(db,"Users/"+user.uid),
-
-{
-
-uid:user.uid,
-
-name:signupName.value.trim(),
-
-email:signupEmail.value.trim(),
-
-photo:"",
-
-wallet:0,
-
-coins:0,
-
-role:"user",
-
-status:"active",
-
-createdAt:Date.now()
-
-}
-
-);
-
-
-
-showMessage(
-
-"Account Created",
-
-"success"
-
-);
-
-
-
-setTimeout(()=>{
-
-window.location.href="home.html";
-
-},1000);
-
-
-
-}catch(error){
-
-showMessage(error.message,"error");
-
-}
-
-finally{
-
-signupRunning=false;
-
-stopLoading(signupBtn);
-
-}
-
-});
-
 
 
 // ==========================================================
-// GOOGLE LOGIN
+// 11. GOOGLE AUTHENTICATION (Login / Signup Combo)
 // ==========================================================
 
-googleLogin.onclick=async()=>{
+if(googleLogin) {
+    googleLogin.onclick = async () => {
+        try {
+            showLoading();
+            buttonLoading(googleLogin, true, "Connecting...");
 
-try{
+            // Trigger Google Popup
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            const userRef = ref(db, "users/" + user.uid);
 
-startLoading(
+            // Check if user already exists in Database
+            const snap = await get(userRef);
 
-googleLogin,
+            if (!snap.exists()) {
+                // Agar naya user hai, toh database me uski profile banao
+                const googleUserData = {
+                    uid: user.uid,
+                    name: user.displayName || "Google User",
+                    email: user.email,
+                    photo: user.photoURL || "",
+                    balance: 0,
+                    role: "user",
+                    status: "active",
+                    createdAt: serverTimestamp()
+                };
+                if (refParam) {
+                    try {
+                        const usersSnap = await get(ref(db, 'users'));
+                        if (usersSnap.exists()) {
+                            usersSnap.forEach(child => {
+                                const data = child.val();
+                                if (data.username && data.username.toLowerCase() === refParam.toLowerCase() && child.key !== user.uid) {
+                                    googleUserData.referredBy = child.key;
+                                }
+                            });
+                            if (googleUserData.referredBy) {
+                                await set(ref(db, `referrals/${googleUserData.referredBy}/${user.uid}`), {
+                                    email: user.email,
+                                    date: Date.now(),
+                                    deposited: 0,
+                                    commission: 0
+                                });
+                            }
+                        }
+                    } catch (e) { console.error("[REF] Google referral error:", e); }
+                }
+                await set(userRef, googleUserData);
+                showToast("Google Account Registered!", "success");
+            } else {
+                // Agar purana user hai
+                showToast("Google Login Successful!", "success");
+            }
 
-"Connecting..."
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 1000);
 
-);
-
-
-
-const result=
-
-await signInWithPopup(
-
-auth,
-
-googleProvider
-
-);
-
-
-
-const user=result.user;
-
-
-
-const userRef=
-
-ref(
-
-db,
-
-"Users/"+user.uid
-
-);
-
-
-
-const snap=
-
-await get(userRef);
-
-
-
-if(!snap.exists()){
-
-await set(
-
-userRef,
-
-{
-
-uid:user.uid,
-
-name:user.displayName||"User",
-
-email:user.email,
-
-photo:user.photoURL||"",
-
-wallet:0,
-
-coins:0,
-
-role:"user",
-
-status:"active",
-
-createdAt:Date.now()
-
-}
-
-);
-
+        } catch (error) {
+            console.error("Google Auth Error:", error);
+            showToast(error.message.replace("Firebase: ", ""), "error");
+            hideLoading();
+            buttonLoading(googleLogin, false);
+        }
+    };
 }
 
 
+// ==========================================================
+// 12. FORGOT PASSWORD (Reset Link)
+// ==========================================================
 
-showMessage(
+if(forgotPassword) {
+    forgotPassword.onclick = async () => {
+        const emailVal = loginEmail.value.trim();
 
-"Google Login Success",
+        if (isEmpty(emailVal)) {
+            return showToast("Enter your email address above first.", "warning");
+        }
 
-"success"
-
-);
-
-
-
-setTimeout(()=>{
-
-window.location.href="home.html";
-
-},1000);
-
-
-
-}catch(error){
-
-showMessage(
-
-error.message,
-
-"error"
-
-);
-
+        try {
+            showLoading();
+            await sendPasswordResetEmail(auth, emailVal);
+            showToast("Password Reset Link sent to your email!", "success");
+        } catch (error) {
+            console.error("Reset Error:", error);
+            showToast(error.message.replace("Firebase: ", ""), "error");
+        } finally {
+            hideLoading();
+        }
+    };
 }
-
-finally{
-
-stopLoading(googleLogin);
-
-}
-
-};

@@ -1,0 +1,334 @@
+<nav id="bottomNav" class="bottom-nav">
+    
+    <a href="/home.html" class="nav-item" id="navHome">
+        <i class="fa-solid fa-house nav-icon"></i>
+        <span class="nav-text">Home</span>
+    </a>
+
+    <a href="/store.html" class="nav-item" id="navStore">
+        <i class="fa-solid fa-layer-group nav-icon"></i>
+        <span class="nav-text">Store</span>
+    </a>
+
+    <a href="/store.html" class="nav-center" id="navCenter">
+        <div class="center-circle">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cartBadge" class="cart-badge">0</span>
+        </div>
+    </a>
+
+    <a href="/wallet.html" class="nav-item" id="navWallet">
+        <i class="fa-solid fa-wallet nav-icon"></i>
+        <span class="nav-text">Wallet</span>
+    </a>
+
+    <a href="/profile.html" class="nav-item" id="navProfile">
+        <i class="fa-solid fa-user-astronaut nav-icon"></i>
+        <span class="nav-text">Profile</span>
+    </a>
+
+</nav>
+
+<style>
+    /* * CSS Variables for easy color management and glowing effects 
+     */
+    :root {
+        --nav-bg-color: rgba(10, 12, 18, 0.85); /* Deep dark background */
+        --nav-border-color: rgba(255, 255, 255, 0.05); /* Very light border */
+        --nav-inactive-color: #64748b; /* Grayish blue for inactive tabs */
+        --nav-active-color: #f43f5e; /* Neon Rose/Red for active tabs */
+        --nav-glow-color: rgba(244, 63, 94, 0.7); /* Glow shadow color */
+    }
+
+    /* * Main Navigation Container Styling 
+     */
+    .bottom-nav {
+        position: relative; /* Scrolls with page */
+        left: auto;
+        bottom: auto;
+        transform: none;
+        margin: 20px auto 0;
+        width: min(94%, 500px); /* Responsive width, max 500px for PC */
+        height: 75px; /* Height of the navigation bar */
+        background: var(--nav-bg-color); /* Apply dark background */
+        backdrop-filter: blur(25px); /* Heavy blur effect for glassmorphism */
+        -webkit-backdrop-filter: blur(25px); /* Safari support for blur */
+        border: 1px solid var(--nav-border-color); /* Light transparent border */
+        border-radius: 40px; /* High border radius for pill shape */
+        display: flex; /* Flexbox for aligning items */
+        justify-content: space-between; /* Space out the 5 buttons evenly */
+        align-items: center; /* Center items vertically */
+        padding: 0 10px; /* Inner spacing */
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), /* Outer dark shadow */
+                    inset 0 1px 1px rgba(255, 255, 255, 0.1); /* Inner top highlight */
+        z-index: 99999; /* Stay on top of ALL other elements */
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth hide/show animation */
+    }
+
+    /* * Standard Navigation Item (Home, Store, Wallet, Profile)
+     */
+    .nav-item {
+        display: flex;
+        flex-direction: column; /* Stack icon above text */
+        align-items: center; /* Center horizontally */
+        justify-content: center; /* Center vertically */
+        width: 20%; /* Each takes 20% width */
+        height: 100%;
+        color: var(--nav-inactive-color); /* Default inactive color */
+        text-decoration: none; /* Remove underline */
+        position: relative; /* Needed for ripple effect absolute positioning */
+        overflow: hidden; /* Hide ripple outside the button */
+        border-radius: 30px; /* Round corners for ripple */
+        transition: all 0.4s ease; /* Smooth color transition */
+        -webkit-tap-highlight-color: transparent; /* Remove blue tap highlight on mobile */
+    }
+
+    /* * Navigation Icon Styling 
+     */
+    .nav-icon {
+        font-size: 22px; /* Large readable icon */
+        margin-bottom: 3px; /* Space between icon and text */
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy transition */
+    }
+
+    /* * Navigation Text Styling 
+     */
+    .nav-text {
+        font-size: 9px;
+        font-weight: 900; /* Extra bold */
+        text-transform: uppercase; /* ALL CAPS */
+        letter-spacing: 0.8px;
+        opacity: 0; /* Hidden by default in inactive state */
+        transform: translateY(15px); /* Pushed down by default */
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy transition */
+    }
+
+    /* * ACTIVE STATE STYLING (When user is on this page)
+     * Here is where the heavy glow and animations happen!
+     */
+    .nav-item.active {
+        color: var(--nav-active-color); /* Change color to Neon Rose */
+    }
+    
+    .nav-item.active .nav-icon {
+        transform: translateY(-4px); /* Push icon up */
+        text-shadow: 0 0 15px var(--nav-glow-color), /* Primary heavy glow */
+                     0 0 30px var(--nav-glow-color); /* Secondary spread glow */
+    }
+    
+    .nav-item.active .nav-text {
+        opacity: 1; /* Show text */
+        transform: translateY(0); /* Bring text back to normal position */
+        text-shadow: 0 0 10px var(--nav-glow-color); /* Subtle text glow */
+    }
+
+    /* * Center Floating Cart Button Layout 
+     */
+    .nav-center {
+        width: 20%;
+        display: flex;
+        justify-content: center;
+        position: relative;
+        top: -30px; /* Push it outside the navbar boundary */
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+        z-index: 2; /* Keep above the bar */
+    }
+
+    /* * The actual floating circle for Cart
+     */
+    .center-circle {
+        width: 65px;
+        height: 65px;
+        background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); /* Premium gradient */
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 26px;
+        border: 6px solid #050508; /* Thick border matching the app background */
+        box-shadow: 0 10px 25px rgba(244, 63, 94, 0.6), /* Bottom shadow */
+                    inset 0 2px 4px rgba(255, 255, 255, 0.4); /* Inner top light highlight */
+        position: relative;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    box-shadow 0.4s ease;
+    }
+
+    /* Hover effect for Center Button */
+    .nav-center:hover .center-circle {
+        transform: scale(1.1) translateY(-5px); /* Enlarge and move up slightly */
+        box-shadow: 0 15px 35px rgba(244, 63, 94, 0.8), /* Stronger glow on hover */
+                    inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    }
+
+    /* * Dynamic Cart Badge Notification Dot
+     */
+    .cart-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #ffffff;
+        color: #e11d48;
+        font-size: 11px;
+        font-weight: 900;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 2px solid #050508;
+        box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        display: none; /* Default hidden, controlled by JS */
+        animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Animation for when cart badge updates */
+    @keyframes badgePop {
+        0% { transform: scale(0); }
+        80% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    /* * Heavy Android-style Ripple Animation 
+     */
+    .ripple-effect {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.25); /* White transparent ripple */
+        border-radius: 50%;
+        transform: scale(0); /* Start tiny */
+        animation: rippleAnimation 0.6s linear; /* 0.6 seconds animation */
+        pointer-events: none; /* Ignore clicks on the ripple itself */
+    }
+
+    /* Keyframes for the Ripple expanding and fading out */
+    @keyframes rippleAnimation {
+        to { 
+            transform: scale(3.5); /* Expand massively */
+            opacity: 0; /* Fade to nothing */
+        }
+    }
+</style>
+
+<script>
+(function() {
+    console.log("[SYSTEM] Advanced Navigation Matrix Initialized.");
+
+    // ==============================================================
+    // LOGIC 1: DYNAMIC ACTIVE PAGE DETECTION & GLOW ASSIGNMENT
+    // ==============================================================
+    // Yeh check karega ki browser me abhi kaunsa page khula hai
+    const currentPath = window.location.pathname;
+    
+    // Sabhi navigation links ko select karo
+    const allNavLinks = document.querySelectorAll('.nav-item');
+    
+    allNavLinks.forEach(link => {
+        // Step A: Pehle sabme se 'active' class hatao (Clear state)
+        link.classList.remove('active');
+        
+        // Step B: Link ka href attribute nikalo
+        const linkHref = link.getAttribute('href');
+        
+        // Step C: Agar current page URL aur link ka href match hota hai
+        // (linkHref starts with /, currentPath also starts with /)
+        if (currentPath === linkHref || currentPath.endsWith(linkHref)) {
+            link.classList.add('active');
+            console.log(`[SYSTEM] Active state applied to: ${linkHref}`);
+        }
+    });
+
+    // ==============================================================
+    // LOGIC 2: HARDCORE RIPPLE EFFECT & HAPTIC VIBRATION
+    // ==============================================================
+    // Select all buttons (both regular items and center button)
+    const touchableButtons = document.querySelectorAll(".nav-item, .nav-center");
+    
+    touchableButtons.forEach(button => {
+        button.addEventListener("click", function(event) {
+            
+            // Step A: Create a span element for the ripple
+            let rippleElement = document.createElement("span");
+            rippleElement.classList.add("ripple-effect");
+            
+            // Step B: Calculate coordinates based on user click position
+            let boundingRectangle = this.getBoundingClientRect();
+            let elementSize = Math.max(boundingRectangle.width, boundingRectangle.height);
+            
+            // Make the ripple a perfect square (it gets rounded via CSS)
+            rippleElement.style.width = rippleElement.style.height = elementSize + "px";
+            
+            // Position the ripple exactly where the mouse/finger touched
+            rippleElement.style.left = (event.clientX - boundingRectangle.left - elementSize / 2) + "px";
+            rippleElement.style.top = (event.clientY - boundingRectangle.top - elementSize / 2) + "px";
+            
+            // Add ripple to the button DOM
+            this.appendChild(rippleElement);
+            
+            // Step C: Remove the ripple from DOM after animation completes (600ms)
+            setTimeout(() => {
+                rippleElement.remove();
+            }, 600);
+
+            // Step D: Trigger hardware vibration (Haptic Feedback) for premium feel
+            // Only works on mobile devices that support the Vibration API
+            if (navigator.vibrate) {
+                navigator.vibrate(20); // Vibrate for 20 milliseconds
+            }
+        });
+    });
+
+    // ==============================================================
+    // LOGIC 3: SMART HIDE-ON-SCROLL FUNCTIONALITY
+    // ==============================================================
+    let previousScrollPosition = 0; // Tracking variable
+    const bottomNavigationBar = document.getElementById("bottomNav");
+    
+    // Listen to scroll events on the whole window
+    window.addEventListener("scroll", () => {
+        const currentScrollPosition = window.pageYOffset;
+        
+        // Condition: If scrolling DOWN AND we have scrolled past 80px from top
+        if (currentScrollPosition > previousScrollPosition && currentScrollPosition > 80) {
+            // Hide navbar by translating it downwards on the Y-axis
+            bottomNavigationBar.style.transform = "translateX(-50%) translateY(150px)";
+        } 
+        // Condition: If scrolling UP
+        else {
+            // Show navbar by bringing it back to Y = 0
+            bottomNavigationBar.style.transform = "translateX(-50%) translateY(0)";
+        }
+        
+        // Update tracker for next scroll event
+        previousScrollPosition = currentScrollPosition;
+    });
+
+    // ==============================================================
+    // LOGIC 4: GLOBAL CART BADGE UPDATER (API ENDPOINT)
+    // ==============================================================
+    // Yeh function globally available hai (window.updateCartBadge). 
+    // Isko aap kisi bhi dusre page (e.g., store.js) se call kar sakte ho cart update karne ke liye.
+    window.updateCartBadge = function(numberOfItems) {
+        const badgeElement = document.getElementById("cartBadge");
+        
+        if (badgeElement) {
+            badgeElement.textContent = numberOfItems;
+            
+            if (numberOfItems > 0) {
+                badgeElement.style.display = "flex";
+                // Force replay the pop animation by resetting animation property
+                badgeElement.style.animation = 'none';
+                badgeElement.offsetHeight; /* Trigger reflow */
+                badgeElement.style.animation = null; 
+            } else {
+                badgeElement.style.display = "none";
+            }
+        }
+    };
+    
+    // Testing the badge locally (You can remove this later when linking to Realtime DB)
+    // updateCartBadge(3); 
+
+})();
+</script>

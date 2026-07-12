@@ -1,1 +1,126 @@
+<div class="glass-dropdown-box" id="nexusDropdownMenu">
+    
+    <div class="dropdown-header">
+        <div class="dd-avatar-box">
+            <span id="ddAvatar">U</span>
+        </div>
+        <div class="dd-user-info">
+            <h4 id="ddName">Client Node</h4>
+            <p id="ddEmail">Loading data...</p>
+        </div>
+    </div>
 
+    <div class="dropdown-body">
+        <a href="/components/menubar/hwid.htm" class="dd-item group">
+            <i class="fas fa-microchip icon-purple group-hover:drop-shadow-[0_0_8px_rgba(188,19,254,0.8)]"></i>
+            <span>HWID Reset</span>
+        </a>
+        <a href="/components/menubar/mykeys.html" class="dd-item group">
+            <i class="fas fa-key icon-blue group-hover:drop-shadow-[0_0_8px_rgba(0,115,255,0.8)]"></i>
+            <span>My Keys</span>
+        </a>
+        <a href="/components/menubar/refer.html" class="dd-item group">
+            <i class="fas fa-users icon-emerald group-hover:drop-shadow-[0_0_8px_rgba(0,255,102,0.8)]"></i>
+            <span>Refer & Earn</span>
+        </a>
+        <a href="/components/menubar/support.html" class="dd-item group">
+            <i class="fas fa-headset icon-yellow group-hover:drop-shadow-[0_0_8px_rgba(243,186,47,0.8)]"></i>
+            <span>Helpdesk</span>
+        </a>
+        <a href="/components/menubar/settings.html" class="dd-item group">
+            <i class="fas fa-cog icon-gray group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"></i>
+            <span>App Settings</span>
+        </a>
+    </div>
+
+    <div class="dropdown-footer">
+        <button id="ddLogoutBtn" class="dd-logout-btn">
+            <i class="fas fa-sign-out-alt mr-2"></i> Secure Logout
+        </button>
+    </div>
+</div>
+
+<style>
+    /* FLOATING DROPDOWN CONTAINER */
+    .glass-dropdown-box { position: fixed; top: 75px; right: 15px; width: 250px; background: rgba(12, 14, 20, 0.95); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), inset 0 1px 2px rgba(255,255,255,0.05); z-index: 99999; transform-origin: top right; transform: scale(0.9) translateY(-15px); opacity: 0; visibility: hidden; transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .glass-dropdown-box.active { transform: scale(1) translateY(0); opacity: 1; visibility: visible; }
+    
+    /* HEADER: USER INFO */
+    .dropdown-header { padding: 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; gap: 15px; background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%); border-radius: 20px 20px 0 0; }
+    .dd-avatar-box { width: 45px; height: 45px; background: linear-gradient(135deg, #0ea5e9, #9333ea); border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: 900; color: white; box-shadow: 0 8px 15px rgba(147, 51, 234, 0.4); border: 1px solid rgba(255,255,255,0.1); }
+    .dd-user-info h4 { color: white; font-size: 13px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .dd-user-info p { color: #94a3b8; font-size: 10px; font-family: monospace; letter-spacing: 0.5px; width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    /* MENU ITEMS */
+    .dropdown-body { padding: 10px; display: flex; flex-direction: column; gap: 2px; }
+    .dd-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; text-decoration: none; transition: all 0.3s ease; border-left: 3px solid transparent; }
+    .dd-item:hover { background: rgba(255, 255, 255, 0.03); padding-left: 15px; border-left-color: #0ea5e9; }
+    .menu-icon-bg { width: 35px; height: 35px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 14px; transition: all 0.3s ease; }
+    .dd-item h5 { color: #e2e8f0; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 1px; }
+    .dd-item span { color: #64748b; font-size: 9px; font-weight: 500; }
+    
+    /* Icon Colors */
+    .icon-purple { color: #bc13fe; } .icon-blue { color: #0073ff; } .icon-emerald { color: #00ff66; } .icon-yellow { color: #F3BA2F; } .icon-gray { color: #a0a5b5; }
+    
+    /* LOGOUT BUTTON */
+    .dropdown-footer { padding: 15px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+    .dd-logout-btn { width: 100%; background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.3); color: #f43f5e; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s ease; }
+    .dd-logout-btn:hover { background: #e11d48; color: white; box-shadow: 0 5px 15px rgba(225, 29, 72, 0.4); }
+</style>
+
+<script>
+    window.toggleNexusMenu = function() {
+        const menu = document.getElementById('nexusDropdownMenu');
+        if(menu) {
+            menu.classList.toggle('active');
+            if(navigator.vibrate) navigator.vibrate(15);
+        }
+    };
+
+    window.addEventListener('click', function(e) {
+        const menu = document.getElementById('nexusDropdownMenu');
+        const toggleBtn = document.getElementById('headerMenuToggleBtn'); 
+        
+        if (menu && menu.classList.contains('active')) {
+            if (!menu.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+                menu.classList.remove('active');
+            }
+        }
+    });
+</script>
+
+<script type="module">
+    import { auth, db, ref, get, signOut, onAuthStateChanged } from "/js/firebase-config.js";
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const alias = user.email.split('@')[0];
+            document.getElementById('ddEmail').innerText = user.email;
+            document.getElementById('ddName').innerText = alias;
+            document.getElementById('ddAvatar').innerText = alias.charAt(0).toUpperCase();
+            try {
+                const snap = await get(ref(db, `users/${user.uid}`));
+                if (snap.exists()) {
+                    const data = snap.val();
+                    const uname = data.username || data.name || alias;
+                    document.getElementById('ddName').innerText = uname;
+                    document.getElementById('ddAvatar').innerText = uname.charAt(0).toUpperCase();
+                }
+            } catch(e) {}
+        }
+    });
+
+    document.getElementById('ddLogoutBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('ddLogoutBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Terminating...';
+        btn.style.pointerEvents = 'none';
+        try {
+            await signOut(auth);
+            window.location.href = 'index.html'; 
+        } catch (error) {
+            console.error("Logout Error:", error);
+            btn.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> Error';
+            btn.style.pointerEvents = 'auto';
+        }
+    });
+</script>

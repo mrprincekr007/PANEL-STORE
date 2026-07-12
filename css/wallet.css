@@ -1,0 +1,185 @@
+/* ==========================================================================
+   NEXUS CORE - WALLET PAGE PREMIUM STYLESHEET
+   Theme: Emerald / Green (Finance & Security)
+   Description: Animated Background, Glassmorphism, Tab Transitions
+========================================================================== */
+
+/* --- 1. PREMIUM ANIMATED BACKGROUND (Emerald Theme) --- */
+.premium-bg-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: -100;
+    background-color: #030305;
+    overflow: hidden;
+}
+
+/* Floating Glowing Orbs */
+.bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.25;
+    animation: orbMoveWallet 15s infinite alternate ease-in-out;
+}
+
+/* Orb 1: Emerald Green */
+.bg-orb-1 {
+    width: 55vw; height: 55vw;
+    background: #10b981; 
+    top: -10%; left: -10%;
+    animation-duration: 25s;
+    animation-name: orbMoveWallet, orbPulse1;
+}
+
+/* Orb 2: Teal / Cyan */
+.bg-orb-2 {
+    width: 60vw; height: 60vw;
+    background: #0ea5e9; 
+    bottom: -20%; right: -10%;
+    animation-duration: 30s, 7s;
+    animation-direction: alternate-reverse, normal;
+    animation-name: orbMoveWallet, orbPulse2;
+}
+
+/* Hacker Cyber Grid Overlay */
+.bg-grid-overlay {
+    position: absolute;
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: -99;
+    animation: gridPan 30s linear infinite;
+}
+
+@keyframes orbMoveWallet {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(10vw, 15vh) scale(1.2); }
+}
+@keyframes orbPulse1 { 0% { opacity: 0.1; transform: scale(0.8); } 50% { opacity: 0.45; transform: scale(1.3); } 100% { opacity: 0.1; transform: scale(0.8); } }
+@keyframes orbPulse2 { 0% { opacity: 0.4; transform: scale(1.1); } 50% { opacity: 0.1; transform: scale(0.7); } 100% { opacity: 0.4; transform: scale(1.1); } }
+@keyframes gridPan { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
+
+/* --- 2. WALLET STATS GRID --- */
+.wallet-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0; animation: fadeInUp 0.6s ease both; }
+.stat-card { background: linear-gradient(145deg, rgba(10,12,18,0.9), rgba(15,17,24,0.95)); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: 0.4s; animation: statPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both; }
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.15s; }
+.stat-card:nth-child(3) { animation-delay: 0.25s; }
+.stat-card:nth-child(4) { animation-delay: 0.35s; }
+.stat-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.12); }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 20px 0 0 20px; }
+.stat-card.bal-card::before { background: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.4); }
+.stat-card.today-card::before { background: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.4); }
+.stat-card.total-card::before { background: #8b5cf6; box-shadow: 0 0 15px rgba(139,92,246,0.4); }
+.stat-card.pending-card::before { background: #eab308; box-shadow: 0 0 15px rgba(234,179,8,0.4); }
+.stat-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 20px; flex-shrink: 0; }
+.stat-info h4 { color: #6b7280; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: 700; }
+.stat-info h2 { color: #fff; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+
+@keyframes statPop { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- 3. UTILITIES --- */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+/* --- 3. WALLET MASTER BALANCE CARD --- */
+.balance-card {
+    background: linear-gradient(145deg, rgba(6, 78, 59, 0.4) 0%, rgba(5, 7, 10, 0.9) 100%);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(16, 185, 129, 0.2);
+    transition: transform 0.4s ease;
+}
+.balance-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 1px 5px rgba(16, 185, 129, 0.3);
+}
+
+
+/* --- 4. PAYMENT TABS STYLING --- */
+/* Base Tab Style */
+.payment-tab {
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+/* Active Tab Style (Highlight) */
+.payment-tab.active-tab {
+    background: rgba(16, 185, 129, 0.15); /* Emerald tint */
+    color: #fff;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+}
+
+/* Tab Content Visibility & Animation */
+.tab-content {
+    display: none;
+    opacity: 0;
+    transform: translateY(15px);
+}
+.tab-content.active-content {
+    display: block;
+    animation: slideUpFade 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slideUpFade {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* --- 5. INPUT FIELDS (Manual Deposit) --- */
+input[type="number"], input[type="text"] {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+input[type="number"]:focus, input[type="text"]:focus {
+    border-color: #10b981; /* Emerald border on focus */
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+}
+
+
+/* --- 6. TRANSACTION HISTORY ITEMS --- */
+/* Feed item smooth slide up */
+.tx-item-anim {
+    animation: fadeUp 0.5s ease forwards;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Scrollbar for Ledger (if needed in future) */
+.ledger-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+.ledger-scroll::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+}
+.ledger-scroll::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.5);
+    border-radius: 10px;
+}
+
+.loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99998; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+.loader-overlay.hidden { display: none; }
+.spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #10b981; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+#toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+#toast-container .toast { background: rgba(15,17,24,0.96); border: 1px solid rgba(255,255,255,0.08); padding: 14px 20px; border-radius: 12px; color: #fff; font-size: 13px; font-weight: 500; pointer-events: all; display: flex; align-items: center; gap: 12px; box-shadow: 0 15px 30px rgba(0,0,0,0.8); animation: slideInRight 0.3s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
+#toast-container .toast.success i { color: #00ff66; }
+#toast-container .toast.error i { color: #ff2a5f; }
+#toast-container .toast.warning i { color: #ffb800; }
+#toast-container .toast.info i { color: #0ea5e9; }
+
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }

@@ -1,0 +1,568 @@
+/* =======================================================
+   FILE : css/navigation.css
+   PART : 1
+   Bottom Navigation Base
+======================================================= */
+
+
+
+/* Navigation */
+
+.bottom-nav{
+
+position:fixed;
+
+left:0;
+
+bottom:0;
+
+width:100%;
+
+height:88px;
+
+display:flex;
+
+justify-content:space-around;
+
+align-items:center;
+
+background:rgba(10,10,15,.92);
+
+backdrop-filter:blur(20px);
+
+-webkit-backdrop-filter:blur(20px);
+
+border-top:1px solid rgba(255,255,255,.08);
+
+box-shadow:0 -8px 40px rgba(255,0,90,.18);
+
+z-index:9999;
+
+padding:0 12px;
+
+}
+
+
+
+/* Navigation Button */
+
+.nav-item{
+
+flex:1;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+align-items:center;
+
+text-decoration:none;
+
+color:#8c8c96;
+
+transition:.35s;
+
+user-select:none;
+
+}
+
+
+
+/* Navigation Icon */
+
+.nav-item i{
+
+font-size:28px;
+
+margin-bottom:8px;
+
+transition:.35s;
+
+}
+
+
+
+/* Navigation Text */
+
+.nav-item span{
+
+font-size:12px;
+
+font-weight:700;
+
+letter-spacing:1px;
+
+}
+
+
+
+/* Active Button */
+
+.nav-item.active{
+
+color:#ff2f73;
+
+}
+
+
+
+.nav-item.active i{
+
+transform:translateY(-3px);
+
+text-shadow:0 0 18px rgba(255,0,90,.8);
+
+}
+
+
+
+/* Hover Animation */
+
+.nav-item:hover{
+
+color:#ffffff;
+
+transform:translateY(-3px);
+
+}
+
+
+
+/* Mobile */
+
+@media(max-width:768px){
+
+.bottom-nav{
+
+height:84px;
+
+padding-bottom:env(safe-area-inset-bottom);
+
+}
+
+}
+
+
+
+/* Desktop */
+
+@media(min-width:1000px){
+
+.bottom-nav{
+
+max-width:760px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+border-radius:25px 25px 0 0;
+
+}
+
+}
+
+/* =======================================================
+   FILE : css/navigation.css
+   PART : 2
+   Floating Center Button
+======================================================= */
+
+
+
+/* Center Button */
+
+.nav-center{
+
+position:relative;
+
+width:90px;
+
+height:90px;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+text-decoration:none;
+
+margin-top:-55px;
+
+z-index:10000;
+
+}
+
+
+
+/* Pink Circle */
+
+.center-circle{
+
+position:relative;
+
+width:88px;
+
+height:88px;
+
+border-radius:50%;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+background:linear-gradient(135deg,#ff2d6f,#7b4dff);
+
+border:8px solid #09090d;
+
+box-shadow:
+
+0 0 20px rgba(255,0,110,.45),
+
+0 0 45px rgba(255,0,110,.25);
+
+transition:.35s;
+
+}
+
+
+
+/* Cart Icon */
+
+.center-circle i{
+
+font-size:34px;
+
+color:#ffffff;
+
+transition:.35s;
+
+}
+
+
+
+/* Hover */
+
+.nav-center:hover .center-circle{
+
+transform:translateY(-8px) scale(1.06);
+
+box-shadow:
+
+0 0 30px rgba(255,0,110,.75),
+
+0 0 60px rgba(123,77,255,.45);
+
+}
+
+
+
+/* Click */
+
+.nav-center:active .center-circle{
+
+transform:scale(.92);
+
+}
+
+
+
+/* Cart Badge */
+
+.cart-badge{
+
+position:absolute;
+
+top:4px;
+
+right:4px;
+
+min-width:26px;
+
+height:26px;
+
+padding:0 7px;
+
+border-radius:20px;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+background:#ffffff;
+
+color:#ff2d6f;
+
+font-size:12px;
+
+font-weight:800;
+
+border:2px solid #ff2d6f;
+
+box-shadow:0 0 12px rgba(255,255,255,.35);
+
+}
+
+
+
+/* Floating Animation */
+
+@keyframes floatingGlow{
+
+0%{
+
+transform:translateY(0);
+
+}
+
+50%{
+
+transform:translateY(-6px);
+
+}
+
+100%{
+
+transform:translateY(0);
+
+}
+
+}
+
+
+
+.center-circle{
+
+animation:floatingGlow 2.8s ease-in-out infinite;
+
+}
+
+/* =======================================================
+   FILE : css/navigation.css
+   PART : 3
+   Premium Animation
+======================================================= */
+
+
+
+/* ==========================================
+BOTTOM NAV SHOW ANIMATION
+
+Login ke baad
+Bottom se Slide Up hoga.
+
+========================================== */
+
+.bottom-nav{
+
+animation:NavShow .7s ease;
+
+}
+
+@keyframes NavShow{
+
+0%{
+
+opacity:0;
+
+transform:translateY(120px);
+
+}
+
+100%{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+
+
+/* ==========================================
+ACTIVE ICON
+
+Glow Animation
+
+========================================== */
+
+.nav-item.active i{
+
+animation:ActiveGlow 2s infinite;
+
+}
+
+@keyframes ActiveGlow{
+
+0%{
+
+transform:translateY(-3px) scale(1);
+
+}
+
+50%{
+
+transform:translateY(-7px) scale(1.12);
+
+}
+
+100%{
+
+transform:translateY(-3px) scale(1);
+
+}
+
+}
+
+
+
+/* ==========================================
+ACTIVE TEXT
+
+========================================== */
+
+.nav-item.active span{
+
+color:#ffffff;
+
+}
+
+
+
+/* ==========================================
+RIPPLE EFFECT
+
+Future JavaScript
+isi Class ko Add karega.
+
+========================================== */
+
+.nav-item{
+
+overflow:hidden;
+
+position:relative;
+
+}
+
+.nav-item::after{
+
+content:"";
+
+position:absolute;
+
+width:0;
+
+height:0;
+
+left:50%;
+
+top:50%;
+
+border-radius:50%;
+
+background:rgba(255,255,255,.15);
+
+transform:translate(-50%,-50%);
+
+transition:.45s;
+
+}
+
+.nav-item:active::after{
+
+width:90px;
+
+height:90px;
+
+opacity:0;
+
+}
+
+
+
+/* ==========================================
+CENTER BUTTON GLOW
+
+========================================== */
+
+.center-circle::before{
+
+content:"";
+
+position:absolute;
+
+width:100%;
+
+height:100%;
+
+border-radius:50%;
+
+background:inherit;
+
+filter:blur(22px);
+
+opacity:.45;
+
+z-index:-1;
+
+}
+
+
+
+/* ==========================================
+SMOOTH ICON
+
+========================================== */
+
+.nav-item i,
+
+.nav-item span,
+
+.center-circle{
+
+transition:.35s ease;
+
+}
+
+
+
+/* ==========================================
+SAFE AREA
+
+iPhone
+Android Gesture Navigation
+
+========================================== */
+
+.bottom-nav{
+
+padding-bottom:max(8px,env(safe-area-inset-bottom));
+
+}
+
+
+
+/* ==========================================
+DESKTOP EFFECT
+
+========================================== */
+
+@media(min-width:1000px){
+
+.bottom-nav{
+
+bottom:18px;
+
+}
+
+}

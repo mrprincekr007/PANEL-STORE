@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nexus Core | Security Profile</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-purple-600 selection:text-white  relative">
+
+    <div class="premium-bg-container">
+        <div class="bg-orb bg-orb-1" style="background: #9333ea;"></div>
+        <div class="bg-orb bg-orb-2" style="background: #4f46e5;"></div>
+        <div class="bg-grid-overlay"></div>
+    </div>
+
+    <div id="header-container"></div>
+
+    <main class="w-full max-w-5xl mx-auto px-4 md:px-8 py-6 space-y-6 relative z-10">
+        
+        <div class="profile-master-card p-6 rounded-3xl relative overflow-hidden flex flex-col md:flex-row items-center gap-6 shadow-2xl border border-purple-500/30">
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-600/20 blur-[80px] rounded-full pointer-events-none"></div>
+            <i class="fas fa-fingerprint absolute -bottom-10 -right-10 text-9xl text-white opacity-[0.03] rotate-12 pointer-events-none"></i>
+            
+            <div class="relative z-10">
+                <div class="w-24 h-24 bg-gradient-to-tr from-purple-600 to-indigo-600 rounded-2xl p-1 shadow-[0_0_25px_rgba(147,51,234,0.5)] transform rotate-3 hover:rotate-0 transition duration-400 cursor-default">
+                    <div class="w-full h-full bg-[#0a0c12] rounded-xl flex items-center justify-center text-4xl font-black text-white" id="mainAvatar">U</div>
+                </div>
+            </div>
+
+            <div class="text-center md:text-left relative z-10 flex-1">
+                <div class="inline-block bg-purple-500/20 border border-purple-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-purple-400 mb-3 shadow-[0_0_10px_rgba(147,51,234,0.2)]">
+                    <i class="fas fa-certificate mr-1"></i> Authorized Client
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight mb-1 drop-shadow-md" id="profileName">Loading Identity...</h2>
+                <p class="text-xs text-gray-400 font-mono tracking-widest mb-4" id="profileEmail">Fetching data...</p>
+                
+                <div class="flex flex-wrap justify-center md:justify-start gap-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-black/40 p-3 rounded-xl border border-white/5 inline-flex">
+                    <p><i class="fas fa-at text-purple-400 mr-1.5"></i> UID: <span id="profileUid" class="text-white select-all normal-case">----------</span></p>
+                    <div class="w-px h-4 bg-white/10 hidden md:block"></div>
+                    <p><i class="fas fa-calendar-check text-blue-400 mr-1.5"></i> Joined: <span id="profileJoined" class="text-white">--/--/----</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+            <div class="premium-stat-card">
+                <i class="fas fa-box-open text-gray-500 text-2xl mb-2"></i>
+                <h3 class="text-2xl font-black text-white" id="statOrders">0</h3>
+                <span class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">Total Keys</span>
+            </div>
+            <div class="premium-stat-card">
+                <i class="fas fa-chart-line text-purple-500 text-2xl mb-2 drop-shadow-[0_0_8px_rgba(147,51,234,0.6)]"></i>
+                <h3 class="text-2xl font-black text-purple-400">₹<span id="statSpent">0.00</span></h3>
+                <span class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">Total Spent</span>
+            </div>
+            <div class="premium-stat-card">
+                <i class="fas fa-wallet text-emerald-500 text-2xl mb-2 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]"></i>
+                <h3 class="text-2xl font-black text-emerald-400">₹<span id="statBalance">0.00</span></h3>
+                <span class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">Available Bal</span>
+            </div>
+            <div class="premium-stat-card cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/10 group transition" onclick="window.location.href='components/menubar/hwid.htm'">
+                <i class="fas fa-rotate text-blue-500 text-2xl mb-2 group-hover:animate-spin-slow"></i>
+                <h3 class="text-xl font-black text-white mt-1">Reset</h3>
+                <span class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">HWID Engine</span>
+            </div>
+
+        </div>
+
+        <section class="bg-[#0a0c12]/90 backdrop-blur-xl border border-gray-800/80 rounded-3xl p-5 md:p-7 shadow-2xl relative z-10">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-800/50 pb-4">
+                <h3 class="text-sm md:text-base font-black text-white uppercase tracking-wider flex items-center">
+                    <i class="fas fa-vault text-purple-500 mr-2 drop-shadow-[0_0_8px_rgba(147,51,234,0.8)]"></i> My Access Vault
+                </h3>
+                <span class="text-[8px] md:text-[9px] font-bold text-gray-500 uppercase tracking-widest bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                    <i class="fas fa-lock mr-1"></i> End-to-End Encrypted
+                </span>
+            </div>
+            
+            <div id="keysContainer" class="space-y-4">
+                <div class="flex flex-col items-center justify-center py-16 opacity-60">
+                    <i class="fas fa-circle-notch animate-spin text-4xl text-purple-500 mb-4 drop-shadow-[0_0_10px_rgba(147,51,234,0.8)]"></i>
+                    <p class="text-[10px] font-mono uppercase tracking-widest text-gray-400">Decrypting License Vault...</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="dropdown-container"></div>
+    <div id="navigation-container"></div>
+    <div id="toastContainer" class="fixed top-20 right-4 z-[99999] flex flex-col gap-2 pointer-events-none"></div>
+    
+    <script>
+        console.log("[CORE] Building Profile Jamin...");
+
+        function loadComponentAndRunScripts(url, containerId) {
+            fetch(url).then(res => {
+                if(!res.ok) throw new Error(`Failed to load ${url}`);
+                return res.text();
+            }).then(html => {
+                document.getElementById(containerId).innerHTML = html;
+                const scripts = document.getElementById(containerId).getElementsByTagName('script');
+                for (let i = 0; i < scripts.length; i++) {
+                    const newScript = document.createElement('script');
+                    if (scripts[i].type) newScript.type = scripts[i].type;
+                    newScript.text = scripts[i].innerText;
+                    document.body.appendChild(newScript);
+                }
+            }).catch(err => console.error(err));
+        }
+
+        // LOAD HEADER PROFILE
+        loadComponentAndRunScripts('./components/header/header_profile.html', 'header-container');
+        // LOAD MENUBAR & NAV
+        loadComponentAndRunScripts('./components/menubar.html', 'dropdown-container');
+        loadComponentAndRunScripts('./components/navigation.html', 'navigation-container');
+    </script>
+
+    <script type="module" src="js/profile.js"></script>
+</body>
+</html>

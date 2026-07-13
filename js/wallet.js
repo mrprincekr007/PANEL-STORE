@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const userRef = ref(db, `users/${user.uid}`);
             onValue(userRef, (snap) => {
                 if (snap.exists()) {
-                    const bal = parseFloat(snap.val().balance || 0).toFixed(2);
+                    const bal = parseFloat(snap.val().balance || 0);
                     const mainBal = document.getElementById('mainBalance');
-                    if (mainBal) mainBal.innerText = bal;
+                    if (mainBal) { mainBal.innerText = window.formatPriceShort ? window.formatPriceShort(bal) : '₹' + bal.toFixed(2); mainBal.setAttribute('data-inr', bal); }
                     const statBal = document.getElementById('statBalance');
-                    if (statBal) statBal.innerText = bal;
+                    if (statBal) { statBal.innerText = window.formatPriceShort ? window.formatPriceShort(bal) : '₹' + bal.toFixed(2); statBal.setAttribute('data-inr', bal); }
                 }
             });
 
@@ -220,6 +220,14 @@ document.addEventListener('DOMContentLoaded', () => {
             await runTransaction(ref(db, `users/${currentUserUid}/balance`), (bal) => (bal || 0) + amount);
             await update(ref(db, `gateway_payments/${orderId}`), { status: "approved", txn_id: gatewayData.txn_id, utr: gatewayData.utr });
             await processReferralCommission(currentUserUid, amount);
+            await push(ref(db, `notifications/${currentUserUid}`), {
+                type: 'deposit',
+                title: 'Deposit Successful',
+                message: `₹${amount} has been added to your wallet`,
+                link: 'wallet.html',
+                read: false,
+                createdAt: serverTimestamp()
+            });
             showToast(`₹${amount} added to wallet!`, "success");
         }
     }
@@ -300,7 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!cfg.auto && data.zap_key) cfg.auto = true;
                 cfg.crypto = !!(data.binance_pay_id) || !!(data.usdt_address);
                 window.ZAP_KEY = data.zap_key || window.ZAP_KEY || "";
-                document.getElementById('cryptoRate').innerText = data.crypto_rate || "88.00";
+                const rate = data.crypto_rate || "88.00";
+                document.getElementById('cryptoRate').innerText = rate;
+                if (window.setUsdtRate) window.setUsdtRate(rate);
                 document.getElementById('cryptoPayID').innerText = data.binance_pay_id || "Not Set";
                 document.getElementById('cryptoAddress').innerText = data.usdt_address || "Not Set";
                 const cryptoQr = document.getElementById('cryptoQRImage');
@@ -331,9 +341,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
-            document.getElementById('statToday').innerText = todayTotal.toFixed(2);
-            document.getElementById('statTotal').innerText = totalDeposit.toFixed(2);
-            document.getElementById('statPending').innerText = pendingTotal.toFixed(2);
+            ['statToday','statTotal','statPending'].forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) { const v = [todayTotal, totalDeposit, pendingTotal][i]; el.setAttribute('data-inr', v); el.textContent = window.formatPriceShort ? window.formatPriceShort(v) : '₹' + v.toFixed(2); }
+            });
         });
     }
 
@@ -345,8 +356,8 @@ document.addEventListener('DOMContentLoaded', () => {
             txList.innerHTML = '';
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                const txArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                txArray.sort((a, b) => (b.date || 0) - (a.date || 0));
+                let txArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                txArray.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
                 txArray.forEach(tx => {
                     let iconClass, iconHtml, sign, amountColor, statusColor;
                     const d = new Date(tx.date);

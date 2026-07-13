@@ -19,9 +19,13 @@ import {
     signInWithPopup,
     sendPasswordResetEmail,
     onAuthStateChanged,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence,
     ref,
     set,
     get,
+    push,
     serverTimestamp
 } from "./firebase-config.js";
 
@@ -263,6 +267,10 @@ if(loginForm) {
             showLoading();
             buttonLoading(loginBtn, true, "Signing In...");
 
+            // Apply Auto Login persistence
+            const autoLogin = localStorage.getItem('nexus_autoLogin');
+            await setPersistence(auth, autoLogin === 'true' ? browserLocalPersistence : browserSessionPersistence);
+
             // Firebase Login
             const result = await signInWithEmailAndPassword(auth, emailVal, passVal);
             currentUser = result.user;
@@ -370,6 +378,9 @@ if(loginForm) {
             }
 
             await set(ref(db, "users/" + user.uid), userData);
+
+            // Welcome notification (localStorage, no Firebase write)
+            try { localStorage.setItem('nexus_welcome_' + user.uid, '1'); } catch (_) {}
 
             showToast("Account Created Successfully!", "success");
 

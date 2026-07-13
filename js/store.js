@@ -1,329 +1,430 @@
-import { auth, db, ref, onValue, get, set, push, update, runTransaction, onAuthStateChanged, serverTimestamp } from "./firebase-config.js";
+import { auth, db, ref, onValue, get, set, push, runTransaction, onAuthStateChanged } from "./firebase-config.js";
+
+let allPanels = [];
+let currentFilter = 'All';
+let currentUser = null;
+let userBalance = 0;
+let currentCheckout = null;
+let appliedCoupon = null;
+
+const productsGrid = document.getElementById('storeProductsGrid');
+const chipsContainer = document.getElementById('categoryChipsContainer');
+const searchInput = document.getElementById('searchInput');
+const loader = document.getElementById('storeLoader');
+
 
 document.addEventListener('DOMContentLoaded', () => {
-    let currentUser = null;
-    let userBalance = 0;
-    let allPanels = [];
-    let currentFilter = 'All';
-    let currentCheckout = {};
-    let appliedCoupon = null;
+    initParticles();
+    authCheck();
+});
 
-    const productsGrid = document.getElementById('storeProductsGrid');
-    const loader = document.getElementById('storeLoader');
-    const productCounter = document.getElementById('productCounter');
-    const searchInput = document.getElementById('searchInput');
-    const chipsContainer = document.getElementById('categoryChipsContainer');
-
-    onAuthStateChanged(auth, (user) => {
-        currentUser = user;
+function authCheck() {
+    const unsubscribe = onAuthStateChanged(auth, user => {
         if (user) {
-            onValue(ref(db, `users/${user.uid}`), (snap) => {
-                if (snap.exists()) userBalance = parseFloat(snap.val().balance || 0);
-            });
+            currentUser = user;
+            onValue(ref(db, `users/${user.uid}/balance`), snap => { userBalance = snap.val() || 0; });
+            loadPanels();
+        } else {
+            currentUser = null;
+            userBalance = 0;
+            loadPanels();
         }
-        initPanels();
-        updateHeaderBalance();
     });
+    if (auth.currentUser) {
+        currentUser = auth.currentUser;
+        onValue(ref(db, `users/${auth.currentUser.uid}/balance`), snap => { userBalance = snap.val() || 0; });
+        loadPanels();
+        unsubscribe();
+    }
+}
 
-    function updateHeaderBalance() {
-        const hdr = document.getElementById('header-container');
-        if (hdr) {
-            const obs = new MutationObserver(() => {
-                const el = document.getElementById('nav-balance');
-                if (el) { obs.disconnect(); onValue(ref(db, `users/${currentUser.uid}`), (s) => { if (s.exists()) el.innerText = parseFloat(s.val().balance || 0).toFixed(2); }); }
+function loadPanels() {
+    if (!productsGrid) return;
+    onValue(ref(db, 'panels'), (snap) => {
+        allPanels = [];
+        if (snap.exists()) {
+            snap.forEach(child => {
+                const p = { id: child.key, ...child.val() };
+                if (p.status === 'active' || p.status === true || p.status === "active") allPanels.push(p);
             });
-            obs.observe(hdr, { childList: true, subtree: true });
         }
-    }
-
-    function initPanels() {
-        onValue(ref(db, 'panels'), (snap) => {
-            allPanels = [];
-            if (snap.exists()) {
-                snap.forEach(child => {
-                    const p = { id: child.key, ...child.val() };
-                    if (p.status === 'active' || p.status === true || p.status === "active") allPanels.push(p);
-                });
-            }
-            if (loader) loader.style.display = 'none';
-            buildCategoryChips();
-            renderPanels();
-        });
-    }
-
-    function buildCategoryChips() {
-        if (!chipsContainer) return;
-        const cats = new Set();
-        allPanels.forEach(p => { if (p.category) cats.add(p.category); });
-        let html = `<button class="category-chip active" onclick="filterStore('All')"><i class="fas fa-layer-group mr-1.5"></i> All Items</button>`;
-        cats.forEach(c => {
-            html += `<button class="category-chip" onclick="filterStore('${c.replace(/'/g, "\\'")}')"><i class="fas fa-tag mr-1.5"></i> ${c}</button>`;
-        });
-        chipsContainer.innerHTML = html;
-    }
-
-    window.filterStore = function(categoryName) {
-        currentFilter = categoryName;
-        document.querySelectorAll('.category-chip').forEach(btn => {
-            btn.classList.remove('active');
-            const txt = btn.innerText.replace(/\([^)]*\)/g, '').trim();
-            if (categoryName === 'All' && txt.includes('All')) btn.classList.add('active');
-            else if (txt === categoryName) btn.classList.add('active');
-        });
+        if (loader) loader.style.display = 'none';
+        buildCategoryChips();
         renderPanels();
-        if (navigator.vibrate) navigator.vibrate(10);
-    };
-
-    if (searchInput) {
-        searchInput.addEventListener('input', () => renderPanels());
-    }
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.plan-popup') && !e.target.closest('.store-btn-buy')) {
-            document.querySelectorAll('.plan-popup.show').forEach(el => el.classList.remove('show'));
-        }
     });
+}
 
-    function renderPanels() {
-        if (!productsGrid) return;
-        productsGrid.innerHTML = '';
-        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        let count = 0;
+function buildCategoryChips() {
+    if (!chipsContainer) return;
+    const catMap = {};
+    allPanels.forEach(p => { if (p.category) catMap[p.category] = (catMap[p.category] || 0) + 1; });
+    const total = allPanels.length;
+    let html = `<button class="category-chip active" onclick="filterStore('All')"><i class="fas fa-layer-group"></i> All<span class="chip-count">${total}</span></button>`;
+    Object.keys(catMap).sort().forEach((c, i) => {
+        html += `<button class="category-chip" style="animation-delay:${(i * 0.04).toFixed(2)}s" onclick="filterStore('${c.replace(/'/g, "\\'")}')"><i class="fas fa-tag"></i> ${c}<span class="chip-count">${catMap[c]}</span></button>`;
+    });
+    chipsContainer.innerHTML = html;
+}
 
-        allPanels.forEach((p, idx) => {
-            const matchCat = currentFilter === 'All' || (p.category && p.category.toLowerCase() === currentFilter.toLowerCase());
-            const matchSearch = !query || (p.name || '').toLowerCase().includes(query) || (p.description || '').toLowerCase().includes(query);
-            if (!matchCat || !matchSearch) return;
-            count++;
+window.filterStore = function(categoryName) {
+    currentFilter = categoryName;
+    document.querySelectorAll('.category-chip').forEach(btn => {
+        btn.classList.remove('active');
+        const txt = btn.innerText.replace(/\([^)]*\)/g, '').trim();
+        if (categoryName === 'All' && txt.includes('All')) btn.classList.add('active');
+        else if (txt === categoryName) btn.classList.add('active');
+    });
+    renderPanels();
+    if (navigator.vibrate) navigator.vibrate(10);
+};
 
-            const ytId = extractYTId(p.youtube);
-            const descHtml = (p.description || 'Premium tool').split('\n').filter(f => f.trim()).map(f => `<div class="feature-chip"><i class="fas fa-bolt"></i> ${f.trim()}</div>`).join('');
+if (searchInput) {
+    searchInput.addEventListener('input', () => renderPanels());
+}
 
-            const hasPlans = p.plans && Object.keys(p.plans).length > 0;
-            const sortedPlans = hasPlans ? Object.entries(p.plans).sort((a, b) => a[1].price - b[1].price) : [];
-
-            let popupItems = '';
-            if (hasPlans) {
-                sortedPlans.forEach(([key, plan]) => {
-                    const planEncoded = encodeURIComponent(JSON.stringify({key, label: plan.label, price: plan.price}));
-                    popupItems += `<div class="popup-item" onclick="selectPlan('${p.id}', '${planEncoded}', '${(p.name || '').replace(/'/g, "\\'")}', '${(p.link || '').replace(/'/g, "\\'")}')">
-                        <span class="popup-label">${plan.label}</span>
-                        <span class="popup-price">₹${plan.price}</span>
-                    </div>`;
-                });
-            } else {
-                popupItems = `<div class="popup-item disabled"><span>No plans available</span></div>`;
-            }
-
-            const videoHtml = ytId
-                ? `<div class="card-video"><iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&mute=1" allowfullscreen loading="lazy"></iframe></div>`
-                : `<div class="card-video"><div class="card-video-placeholder"><i class="fas fa-video-slash"></i><span>No Video</span></div></div>`;
-
-            const animDelay = (idx * 0.08) + 's';
-
-            const card = document.createElement('div');
-            card.className = 'premium-product-card';
-            card.style.animationDelay = animDelay;
-            card.innerHTML = `
-                ${videoHtml}
-                <div class="card-body">
-                    <div class="card-title-row">
-                        <h3>${p.name || 'Panel'}</h3>
-                        <span class="card-status-badge">${p.category || 'General'}</span>
-                    </div>
-                    <div class="features-list">${descHtml}</div>
-                    <div class="trust-badges">
-                        <span><i class="fas fa-shield-alt"></i> Safe</span>
-                        <span><i class="fas fa-medal"></i> Verified</span>
-                    </div>
-                    <div class="btn-grid">
-                        <button class="store-btn-sm" onclick="window.open('${p.link || '#'}', '_blank')"><i class="fas fa-download"></i> UPDATE</button>
-                        ${p.feedback ? `<button class="store-btn-sm fb-btn" onclick="window.open('${p.feedback}', '_blank')"><i class="fas fa-star"></i> FEEDBACK</button>` : ''}
-                    </div>
-                    <button class="store-btn-buy" onclick="togglePlanPopup('${p.id}')">
-                        <i class="fas fa-shopping-cart"></i> PURCHASE KEY
-                    </button>
-                    <div class="plan-popup" id="popup-${p.id}">${popupItems}</div>
-                </div>
-            `;
-            productsGrid.appendChild(card);
-        });
-
-        if (productCounter) productCounter.innerText = count;
-
-        if (count === 0) {
-            productsGrid.innerHTML = `
-                <div class="col-span-full flex flex-col items-center justify-center py-20 opacity-60">
-                    <i class="fas fa-ghost text-5xl text-gray-700 mb-5"></i>
-                    <h3 class="text-white font-black uppercase tracking-widest text-sm">No Panels Found</h3>
-                    <p class="text-[10px] font-mono text-gray-500 mt-2">Try a different search or category.</p>
-                </div>`;
-        }
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.plan-popup') && !e.target.closest('.btn-buy')) {
+        document.querySelectorAll('.plan-popup.show').forEach(el => el.classList.remove('show'));
     }
+});
 
-    window.togglePlanPopup = (panelId) => {
-        if (!currentUser) {
-            showLoginPrompt();
-            return;
+function renderPanels() {
+    if (!productsGrid) return;
+    productsGrid.innerHTML = '';
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    let count = 0;
+
+    allPanels.forEach((p, idx) => {
+        const matchCat = currentFilter === 'All' || (p.category && p.category.toLowerCase() === currentFilter.toLowerCase());
+        const matchSearch = !query || (p.name || '').toLowerCase().includes(query) || (p.description || '').toLowerCase().includes(query);
+        if (!matchCat || !matchSearch) return;
+        count++;
+
+        const ytId = extractYTId(p.youtube);
+        const descHtml = (p.description || 'Premium tool').split('\n').filter(f => f.trim()).map(f =>
+            `<div class="card-feature"><i class="fas fa-bolt"></i> ${f.trim()}</div>`
+        ).join('');
+
+        const hasPlans = p.plans && Object.keys(p.plans).length > 0;
+        const sortedPlans = hasPlans ? Object.entries(p.plans).sort((a, b) => a[1].price - b[1].price) : [];
+
+        let popupItems = '';
+        if (hasPlans) {
+            sortedPlans.forEach(([key, plan]) => {
+                const planEncoded = encodeURIComponent(JSON.stringify({key, label: plan.label, price: plan.price}));
+                popupItems += `<div class="popup-item" onclick="selectPlan('${p.id}', '${planEncoded}', '${(p.name || '').replace(/'/g, "\\'")}', '${(p.link || '').replace(/'/g, "\\'")}')">
+                    <span class="popup-label"><i class="fas fa-crown"></i> ${plan.label}</span>
+                    <span class="popup-price">₹${plan.price}</span>
+                </div>`;
+            });
+        } else {
+            popupItems = `<div class="popup-item disabled"><span>No plans available</span></div>`;
         }
-        const popup = document.getElementById(`popup-${panelId}`);
-        if (!popup) return;
-        const wasOpen = popup.classList.contains('show');
-        document.querySelectorAll('.plan-popup.show').forEach(el => el.classList.remove('show'));
-        if (!wasOpen) popup.classList.add('show');
-    };
 
-    window.selectPlan = (panelId, encodedPlanData, panelName, link) => {
-        if (!currentUser) { showLoginPrompt(); return; }
-        const planData = JSON.parse(decodeURIComponent(encodedPlanData));
-        currentCheckout = {
-            panelId, panelName, link,
-            planKey: planData.key, label: planData.label,
-            originalPrice: parseFloat(planData.price),
-            finalPrice: parseFloat(planData.price)
-        };
-        appliedCoupon = null;
-        document.getElementById('chkPanelName').innerText = panelName;
-        document.getElementById('chkPlanLabel').innerText = planData.label;
-        document.getElementById('chkPrice').innerText = planData.price;
-        document.getElementById('chkFinalPrice').innerText = planData.price;
-        document.getElementById('couponInput').value = '';
-        document.getElementById('chkStrike').classList.add('hidden');
-        document.getElementById('chkBadge').classList.add('hidden');
-        document.querySelectorAll('.plan-popup.show').forEach(el => el.classList.remove('show'));
-        document.getElementById('modalCheckout').classList.remove('hidden');
-    };
+        const videoHtml = ytId
+            ? `<div class="card-media"><iframe src="https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1&iv_load_policy=3&mute=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
+            : `<div class="card-media"><div class="card-media-fallback"><i class="fas fa-video-slash"></i><span>No Preview</span></div></div>`;
 
-    function showLoginPrompt() {
-        const overlay = document.createElement('div');
-        overlay.className = 'store-modal-overlay';
-        overlay.style.zIndex = '10000';
-        overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-        overlay.innerHTML = `
-            <div class="store-modal" style="text-align:center;max-width:360px;">
-                <i class="fas fa-lock" style="font-size:40px;color:#e11d48;margin-bottom:15px;filter:drop-shadow(0 0 15px rgba(225,29,72,0.5));"></i>
-                <h3 style="color:#fff;font-weight:800;margin-bottom:8px;text-transform:uppercase;font-size:16px;">Login Required</h3>
-                <p style="color:#888;font-size:12px;margin-bottom:20px;">Please login to purchase panels and access your keys.</p>
-                <div style="display:flex;gap:10px;justify-content:center;">
-                    <button class="store-btn store-btn-primary" onclick="window.location.href='index.html?tab=login'" style="padding:10px 24px;font-size:10px;">LOGIN NOW</button>
-                    <button class="store-btn store-btn-outline" onclick="this.closest('.store-modal-overlay').remove()" style="padding:10px 24px;font-size:10px;">BROWSE</button>
+        productsGrid.innerHTML += `
+            <div class="product-card" style="animation-delay:${(idx * 0.06).toFixed(2)}s" data-tilt>
+                <div class="product-card-inner">
+                    ${videoHtml}
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">${p.name || 'Panel'}</h3>
+                            <span class="card-badge">${p.category || 'General'}</span>
+                        </div>
+                        <div class="card-features">${descHtml}</div>
+                        <div class="card-trust">
+                            <span><i class="fas fa-shield-alt"></i> Safe</span>
+                            <span><i class="fas fa-medal"></i> Verified</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-sm" onclick="window.open('${p.link || '#'}', '_blank')"><i class="fas fa-download"></i> UPDATE</button>
+                            ${p.feedback ? `<button class="btn-sm btn-sm-fb" onclick="window.open('${p.feedback}', '_blank')"><i class="fas fa-star"></i> FEEDBACK</button>` : ''}
+                        </div>
+                        <button class="btn-buy" onclick="togglePlanPopup('${p.id}')">
+                            <i class="fas fa-shopping-cart"></i> PURCHASE KEY
+                        </button>
+                        <div class="plan-popup" id="popup-${p.id}">${popupItems}</div>
+                    </div>
                 </div>
             </div>`;
-        document.body.appendChild(overlay);
-    }
-
-    function extractYTId(url) {
-        if (!url) return null;
-        url = String(url).trim();
-        if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
-        const m = url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        return (m && m[2].length === 11) ? m[2] : null;
-    }
-
-    window.closeCheckoutModal = () => document.getElementById('modalCheckout').classList.add('hidden');
-    window.closeModalSuccess = () => document.getElementById('modalSuccess').classList.add('hidden');
-
-    document.getElementById('btnApplyCoupon').addEventListener('click', async () => {
-        const code = document.getElementById('couponInput').value.trim().toUpperCase();
-        if (!code) return showToast("Enter a coupon code", "warning");
-        const btn = document.getElementById('btnApplyCoupon');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
-        try {
-            const snap = await get(ref(db, 'coupons'));
-            let couponObj = null;
-            if (snap.exists()) {
-                snap.forEach(child => {
-                    if (child.val().code === code) couponObj = { id: child.key, ...child.val() };
-                });
-            }
-            if (!couponObj || couponObj.status !== true) {
-                showToast("Invalid or expired coupon", "error");
-            } else if (couponObj.maxUse && couponObj.used >= couponObj.maxUse) {
-                showToast("Coupon limit reached", "error");
-            } else {
-                const price = currentCheckout.originalPrice;
-                const discount = (price * couponObj.discount) / 100;
-                const final = Math.max(0, price - discount);
-                appliedCoupon = couponObj;
-                currentCheckout.finalPrice = final;
-                document.getElementById('chkFinalPrice').innerText = final.toFixed(2);
-                document.getElementById('chkStrike').innerText = '₹' + price.toFixed(2);
-                document.getElementById('chkStrike').classList.remove('hidden');
-                document.getElementById('chkBadge').innerText = couponObj.discount + '% OFF';
-                document.getElementById('chkBadge').classList.remove('hidden');
-                showToast(`Coupon applied! ${couponObj.discount}% OFF`, "success");
-            }
-        } catch (e) { showToast("Error validating coupon", "error"); }
-        finally { btn.innerHTML = 'APPLY'; btn.disabled = false; }
     });
 
-    window.executePurchase = async () => {
-        if (!currentUser) { showLoginPrompt(); return; }
-        const checkout = currentCheckout;
-        const priceToPay = checkout.finalPrice;
-        const btn = document.getElementById('btnConfirmPay');
-        if (userBalance < priceToPay) return showToast(`Insufficient balance. Need ₹${priceToPay.toFixed(2)}`, "error");
-        showLoader();
-        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        try {
-            const result = await runTransaction(ref(db, `users/${currentUser.uid}/balance`), (bal) => {
-                if (bal === null) return 0;
-                if (bal >= priceToPay) return bal - priceToPay;
-                return undefined;
-            });
-            if (result.committed) {
-                const newKey = generateKey(8);
-                const txId = "PUR" + Date.now();
-                const pushRef = push(ref(db, `purchases/${currentUser.uid}`));
-                await set(pushRef, {
-                    panelId: checkout.panelId, panelName: checkout.panelName,
-                    plan: checkout.planKey, label: checkout.label,
-                    price: priceToPay, key: newKey, link: checkout.link,
-                    date: new Date().toISOString()
+    if (count === 0) {
+        productsGrid.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-ghost"></i>
+                <h3>No Panels Found</h3>
+                <p>Try adjusting your search or filters.</p>
+            </div>`;
+    }
+
+    // activate tilt after render
+    requestAnimationFrame(() => requestAnimationFrame(initTilt));
+}
+
+/* ── 3D TILT ── */
+function initTilt() {
+    document.querySelectorAll('[data-tilt]').forEach(card => {
+        const inner = card.querySelector('.product-card-inner');
+        if (!inner) return;
+        let ticking = false;
+        card.addEventListener('mousemove', (e) => {
+            if (!ticking) {
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width;
+                    const y = (e.clientY - rect.top) / rect.height;
+                    inner.style.transform = `perspective(800px) rotateX(${(y - 0.5) * -12}deg) rotateY(${(x - 0.5) * 12}deg) translateZ(10px)`;
+                    inner.style.setProperty('--mx', `${x * 100}%`);
+                    inner.style.setProperty('--my', `${y * 100}%`);
+                    ticking = false;
                 });
-                await set(ref(db, `transactions/${currentUser.uid}/${txId}`), {
-                    id: txId, type: "purchase", amount: priceToPay, status: "success",
-                    desc: `Purchased ${checkout.panelName}`, date: new Date().toISOString()
-                });
-                if (appliedCoupon && appliedCoupon.id) {
-                    await runTransaction(ref(db, `coupons/${appliedCoupon.id}/used`), (c) => (c || 0) + 1);
-                }
-                closeCheckoutModal();
-                document.getElementById('successKey').innerText = newKey;
-                document.getElementById('btnAccessTool').onclick = () => window.open(checkout.link || "https://t.me/", '_blank');
-                document.getElementById('modalSuccess').classList.remove('hidden');
-            } else {
-                showToast("Transaction failed. Insufficient funds.", "error");
             }
-        } catch (e) { showToast("System Error. Try again.", "error"); }
-        finally { hideLoader(); btn.disabled = false; btn.innerHTML = 'CONFIRM PAY'; }
+        });
+        card.addEventListener('mouseleave', () => {
+            inner.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+            inner.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+            inner.style.removeProperty('--mx');
+            inner.style.removeProperty('--my');
+            setTimeout(() => { inner.style.transition = ''; }, 500);
+        });
+    });
+}
+
+/* ── PARTICLE BACKGROUND ── */
+function initParticles() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'particleCanvas';
+    document.querySelector('.premium-bg-container').after(canvas);
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let w, h;
+
+    function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    class Particle {
+        constructor() { this.reset(); }
+        reset() {
+            this.x = Math.random() * w;
+            this.y = Math.random() * h;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = (Math.random() - 0.5) * 0.3;
+            this.speedY = (Math.random() - 0.5) * 0.3;
+            this.opacity = Math.random() * 0.5 + 0.1;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => { p.update(); p.draw(); });
+
+        // draw connections
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 120) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(225,29,72,${0.06 * (1 - dist / 120)})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+window.togglePlanPopup = (panelId) => {
+    if (!currentUser) { showLoginPrompt(); return; }
+    const popup = document.getElementById(`popup-${panelId}`);
+    if (!popup) return;
+    const wasOpen = popup.classList.contains('show');
+    document.querySelectorAll('.plan-popup.show').forEach(el => el.classList.remove('show'));
+    if (!wasOpen) popup.classList.add('show');
+};
+
+window.selectPlan = (panelId, encodedPlanData, panelName, link) => {
+    if (!currentUser) { showLoginPrompt(); return; }
+    const planData = JSON.parse(decodeURIComponent(encodedPlanData));
+    currentCheckout = {
+        panelId, panelName, link,
+        planKey: planData.key, label: planData.label,
+        originalPrice: parseFloat(planData.price),
+        finalPrice: parseFloat(planData.price)
     };
+    appliedCoupon = null;
+    document.getElementById('chkPanelName').innerText = panelName;
+    document.getElementById('chkPlanLabel').innerText = planData.label;
+    document.getElementById('chkPrice').innerText = planData.price;
+    document.getElementById('chkFinalPrice').innerText = planData.price;
+    document.getElementById('couponInput').value = '';
+    document.getElementById('chkStrike').classList.add('hidden');
+    document.getElementById('chkBadge').classList.add('hidden');
+    document.querySelectorAll('.plan-popup.show').forEach(el => el.classList.remove('show'));
+    document.getElementById('modalCheckout').classList.remove('hidden');
+};
 
-    function generateKey(len = 12) {
-        const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let r = '';
-        for (let i = 0; i < len; i++) r += c.charAt(Math.floor(Math.random() * c.length));
-        return r;
-    }
+function showLoginPrompt() {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+    overlay.innerHTML = `
+        <div class="modal" style="text-align:center;max-width:360px;">
+            <i class="fas fa-lock" style="font-size:40px;color:#e11d48;margin-bottom:15px;filter:drop-shadow(0 0 15px rgba(225,29,72,0.5));"></i>
+            <h3 style="color:#fff;font-weight:800;margin-bottom:8px;text-transform:uppercase;font-size:16px;letter-spacing:0.5px;">Login Required</h3>
+            <p style="color:rgba(255,255,255,0.3);font-size:12px;margin-bottom:20px;">Please login to purchase panels and access your keys.</p>
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button class="btn btn-primary" onclick="window.location.href='index.html?tab=login'" style="padding:10px 24px;font-size:10px;flex:0;">LOGIN NOW</button>
+                <button class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()" style="padding:10px 24px;font-size:10px;flex:0;">BROWSE</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+}
 
-    function showToast(msg, type = "success") {
-        const c = document.getElementById('toast-container');
-        if (!c) return;
-        const t = document.createElement('div');
-        t.className = `toast ${type}`;
-        const icon = type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-exclamation-triangle";
-        t.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
-        c.appendChild(t);
-        setTimeout(() => { t.style.animation = 'slideOutRight 0.3s forwards'; setTimeout(() => t.remove(), 300); }, 3000);
-    }
+function extractYTId(url) {
+    if (!url) return null;
+    url = String(url).trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+    const m = url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+    return (m && m[2].length === 11) ? m[2] : null;
+}
 
-    function showLoader() { const l = document.getElementById('storeLoaderOverlay'); if (l) l.classList.remove('hidden'); }
-    function hideLoader() { const l = document.getElementById('storeLoaderOverlay'); if (l) l.classList.add('hidden'); }
+window.closeCheckoutModal = () => document.getElementById('modalCheckout').classList.add('hidden');
+window.closeModalSuccess = () => document.getElementById('modalSuccess').classList.add('hidden');
 
-    // CSS animations for toasts
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-    `;
-    document.head.appendChild(style);
+document.getElementById('btnApplyCoupon').addEventListener('click', async () => {
+    const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    if (!code) return showToast("Enter a coupon code", "warning");
+    const btn = document.getElementById('btnApplyCoupon');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+    try {
+        const snap = await get(ref(db, 'coupons'));
+        let couponObj = null;
+        if (snap.exists()) {
+            snap.forEach(child => {
+                if (child.val().code === code) couponObj = { id: child.key, ...child.val() };
+            });
+        }
+        if (!couponObj || couponObj.status !== true) {
+            showToast("Invalid or expired coupon", "error");
+        } else if (couponObj.maxUse && couponObj.used >= couponObj.maxUse) {
+            showToast("Coupon limit reached", "error");
+        } else {
+            const price = currentCheckout.originalPrice;
+            const discount = (price * couponObj.discount) / 100;
+            const final = Math.max(0, price - discount);
+            appliedCoupon = couponObj;
+            currentCheckout.finalPrice = final;
+            document.getElementById('chkFinalPrice').innerText = window.formatPrice ? window.formatPrice(final) : '₹' + final.toFixed(2);
+            document.getElementById('chkStrike').innerText = window.formatPrice ? window.formatPrice(price) : '₹' + price.toFixed(2);
+            document.getElementById('chkStrike').classList.remove('hidden');
+            document.getElementById('chkBadge').innerText = couponObj.discount + '% OFF';
+            document.getElementById('chkBadge').classList.remove('hidden');
+            showToast(`Coupon applied! ${couponObj.discount}% OFF`, "success");
+        }
+    } catch (e) { showToast("Error validating coupon", "error"); }
+    finally { btn.innerHTML = 'APPLY'; btn.disabled = false; }
 });
+
+window.executePurchase = async () => {
+    if (!currentUser) { showLoginPrompt(); return; }
+    const checkout = currentCheckout;
+    const priceToPay = checkout.finalPrice;
+    const btn = document.getElementById('btnConfirmPay');
+    if (userBalance < priceToPay) return showToast(`Insufficient balance. Need ₹${priceToPay.toFixed(2)}`, "error");
+    showLoader();
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    try {
+        const result = await runTransaction(ref(db, `users/${currentUser.uid}/balance`), (bal) => {
+            if (bal === null) return 0;
+            if (bal >= priceToPay) return bal - priceToPay;
+            return undefined;
+        });
+        if (result.committed) {
+            const newKey = generateKey(8);
+            const txId = "PUR" + Date.now();
+            const pushRef = push(ref(db, `purchases/${currentUser.uid}`));
+            await set(pushRef, {
+                panelId: checkout.panelId, panelName: checkout.panelName,
+                plan: checkout.planKey, label: checkout.label,
+                price: priceToPay, key: newKey, link: checkout.link,
+                date: new Date().toISOString()
+            });
+            await set(ref(db, `transactions/${currentUser.uid}/${txId}`), {
+                id: txId, type: "purchase", amount: priceToPay, status: "success",
+                desc: `Purchased ${checkout.panelName}`, date: new Date().toISOString()
+            });
+            if (appliedCoupon && appliedCoupon.id) {
+                await runTransaction(ref(db, `coupons/${appliedCoupon.id}/used`), (c) => (c || 0) + 1);
+            }
+            closeCheckoutModal();
+            document.getElementById('successKey').innerText = newKey;
+            document.getElementById('btnAccessTool').onclick = () => window.open(checkout.link || "https://t.me/", '_blank');
+            document.getElementById('modalSuccess').classList.remove('hidden');
+        } else {
+            showToast("Transaction failed. Insufficient funds.", "error");
+        }
+    } catch (e) { showToast("System Error. Try again.", "error"); }
+    finally { hideLoader(); btn.disabled = false; btn.innerHTML = 'CONFIRM PAY'; }
+};
+
+function generateKey(len = 12) {
+    const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let r = '';
+    for (let i = 0; i < len; i++) r += c.charAt(Math.floor(Math.random() * c.length));
+    return r;
+}
+
+function showToast(msg, type = "success") {
+    const c = document.getElementById('toast-container');
+    if (!c) return;
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const icon = type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-exclamation-triangle";
+    t.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 3000);
+}
+
+window.copySuccessKey = () => {
+    const el = document.getElementById('successKey');
+    if (!el) return;
+    const text = el.innerText;
+    navigator.clipboard.writeText(text).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    });
+    const box = el.closest('.key-box');
+    if (box) { box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash'); }
+};
+
+function showLoader() { const l = document.getElementById('storeLoaderOverlay'); if (l) l.classList.remove('hidden'); }
+function hideLoader() { const l = document.getElementById('storeLoaderOverlay'); if (l) l.classList.add('hidden'); }

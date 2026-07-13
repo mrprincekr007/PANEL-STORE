@@ -14,12 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const emailEl = document.getElementById('homeUserEmail');
             const avatarEl = document.getElementById('homeAvatar');
             const email = user.email || 'client@nexus.io';
-            const displayName = userData.username || userData.name || email.split('@')[0].toUpperCase();
+            const displayName = userData.name || userData.username || email.split('@')[0].toUpperCase();
             if (nameEl) nameEl.innerText = displayName;
             if (emailEl) emailEl.innerText = email;
             if (avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
 
-            animateCounter('homeBalance', balance, 0, 800);
+            animateCounter('homeBalance', balance, 0, 800, true);
 
             const memberEl = document.getElementById('statMemberSince');
             if (memberEl) {
@@ -39,14 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const uniquePanels = new Set(purchaseList.map(p => p.panelId)).size;
 
             animateCounter('statPurchases', totalPurchases, 0, 600);
-            animateCounter('statSpent', totalSpent, 0, 800);
+            animateCounter('statSpent', totalSpent, 0, 800, true);
             animateCounter('statKeys', uniquePanels, 0, 600);
             renderRecentPurchases(purchaseList);
         } else {
             document.getElementById('homeUserName').innerText = 'Guest';
             document.getElementById('homeUserEmail').innerText = 'Login to access your dashboard';
             document.getElementById('homeAvatar').innerText = 'G';
-            document.getElementById('homeBalance').innerText = '0.00';
+            document.getElementById('homeBalance').innerText = window.formatPriceShort ? window.formatPriceShort(0) : '0.00';
             document.getElementById('statPurchases').innerText = '-';
             document.getElementById('statSpent').innerText = '-';
             document.getElementById('statKeys').innerText = '-';
@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         loadFeaturedPanels();
+        loadAnnouncement();
         loadPromotions();
         initScrollAnimations();
     });
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // ANIMATED COUNTER
     // ==========================================
-    function animateCounter(id, target, start = 0, duration = 600) {
+    function animateCounter(id, target, start = 0, duration = 600, isCurrency = false) {
         const el = document.getElementById(id);
         if (!el) return;
         const isFloat = target % 1 !== 0;
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const progress = Math.min(elapsed / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
             const current = start + (target - start) * eased;
-            el.innerText = isFloat ? current.toFixed(2) : Math.floor(current).toString();
+            el.innerText = isCurrency && window.formatPriceShort ? window.formatPriceShort(current) : (isFloat ? current.toFixed(2) : Math.floor(current).toString());
             if (progress < 1) requestAnimationFrame(update);
         }
         requestAnimationFrame(update);
@@ -97,18 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = `
                 <div class="premium-glass-card p-8 flex flex-col items-center justify-center opacity-60">
                     <div class="w-14 h-14 rounded-2xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-center text-rose-500/30 text-2xl mb-3">
-                        <i class="fas fa-box-open"></i>
+                        <i class="fas fa-store"></i>
                     </div>
                     <p class="text-[10px] font-mono tracking-widest text-gray-500">No purchases yet</p>
-                    <a href="store.html" class="text-[10px] font-black text-rose-400 mt-2 hover:text-rose-300 transition cursor-pointer">Browse Store →</a>
+                    <a href="store.html" class="mt-4 px-6 py-3 bg-gradient-to-r from-rose-600 to-purple-600 rounded-xl text-[10px] font-black text-white uppercase tracking-wider shadow-[0_0_20px_rgba(225,29,72,0.4)] hover:shadow-[0_0_30px_rgba(225,29,72,0.6)] transition-all duration-300 cursor-pointer inline-flex items-center gap-2">BUY NOW <i class="fas fa-arrow-right"></i></a>
                 </div>`;
             return;
         }
 
-        const recent = list.slice(0, 5);
+        const recent = list.slice(0, 1);
         let html = '<div class="flex flex-col gap-3">';
         recent.forEach((p, idx) => {
             const dateStr = p.date ? new Date(p.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'N/A';
+            const keyId = 'purchaseKey_' + idx;
             html += `
                 <div class="purchase-row" style="animation-delay:${idx * 0.1}s">
                     <div class="purchase-left">
@@ -116,18 +118,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="purchase-info">
                             <p class="purchase-name">${p.panelName || 'Panel'}</p>
                             <p class="purchase-meta">${p.label || 'Plan'} <span class="mx-1.5 text-gray-700">|</span> ${dateStr}</p>
+                            <div class="purchase-key-row">
+                                <span class="key-blurred" id="${keyId}" onclick="revealKey('${keyId}')">${(p.key || 'N/A').replace(/'/g, "\\'")}</span>
+                                <button class="key-copy-btn" onclick="copyKey('${(p.key || '').replace(/'/g, "\\'")}')" title="Copy Key"><i class="fas fa-copy"></i></button>
+                                ${p.link ? `<button class="key-access-btn" onclick="window.open('${p.link.replace(/'/g, "\\'")}','_blank')" title="Access"><i class="fas fa-external-link-alt"></i></button>` : ''}
+                            </div>
                         </div>
                     </div>
                     <div class="purchase-right">
                         <span class="purchase-price">₹${parseFloat(p.price || 0).toFixed(2)}</span>
-                        <button class="key-copy-btn" onclick="copyKey('${(p.key || '').replace(/'/g, "\\'")}')" title="Copy Key"><i class="fas fa-copy"></i></button>
-                        ${p.link ? `<button class="key-access-btn" onclick="window.open('${p.link.replace(/'/g, "\\'")}','_blank')" title="Access"><i class="fas fa-external-link-alt"></i></button>` : ''}
                     </div>
                 </div>`;
         });
         html += '</div>';
         container.innerHTML = html;
     }
+
+    window.revealKey = (id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('key-revealed');
+    };
 
     window.copyKey = (key) => {
         if (!key) return;
@@ -216,6 +226,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
+    // ANNOUNCEMENT BANNER
+    // ==========================================
+    function loadAnnouncement() {
+        const container = document.getElementById('announcementContainer');
+        if (!container) return;
+        get(ref(db, 'settings/branding')).then(snap => {
+            const data = snap.val() || {};
+            if (data.announcement) {
+                container.style.display = '';
+                container.querySelector('#announcementText').textContent = data.announcement;
+            }
+        }).catch(() => {});
+    }
+
+    // ==========================================
     // PROMOTIONS
     // ==========================================
     function loadPromotions() {
@@ -223,44 +248,64 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container) return;
 
         onValue(ref(db, 'promotions'), (snap) => {
-            let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
-            let hasActive = false;
-
+            container.innerHTML = '';
+            let promos = [];
             if (snap.exists()) {
                 snap.forEach(child => {
-                    const promo = child.val();
-                    if (promo.status === true || promo.status === 'true') {
-                        hasActive = true;
-                        const title = promo.title || 'Promotion';
-                        const desc = promo.description || '';
-                        const discount = promo.discount || promo.discountPercent || 0;
-                        const image = promo.image || '';
-                        const link = promo.link || '#';
-                        const imgBg = image ? `background-image:url('${image}');background-size:cover;background-position:center;` : '';
-
-                        html += `
-                            <div class="promo-card-v2 ${image ? '' : 'no-img'}" onclick="window.open('${link}','_blank')" style="${imgBg}animation-delay:${Math.random() * 0.3}s">
-                                ${!image ? '<div class="promo-v2-icon"><i class="fas fa-tags"></i></div>' : '<div class="promo-v2-overlay"></div>'}
-                                <div class="promo-v2-content">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="promo-v2-badge">${discount > 0 ? discount + '% OFF' : 'LIVE'}</span>
-                                    </div>
-                                    <h4 class="promo-v2-title">${title}</h4>
-                                    ${desc ? `<p class="promo-v2-desc">${desc}</p>` : ''}
-                                </div>
-                            </div>`;
-                    }
+                    const p = { id: child.key, ...child.val() };
+                    if (p.status === true || p.status === 'true') promos.push(p);
                 });
             }
-
+            if (promos.length === 0) {
+                container.innerHTML = `
+                    <div class="flex items-center justify-center h-36 bg-gradient-to-br from-[#0a0c12] to-[#05070a] border border-white/5 rounded-2xl">
+                        <div class="flex flex-col items-center opacity-60">
+                            <i class="fas fa-tags text-2xl text-gray-600 mb-2"></i>
+                            <p class="text-[9px] font-mono tracking-widest text-gray-500">No promotions active</p>
+                        </div>
+                    </div>`;
+                return;
+            }
+            promos = promos.slice(0, 8);
+            let html = '<div class="flex overflow-x-auto gap-4 pb-3 no-scrollbar snap-x snap-mandatory" id="promoScrollContainer">';
+            promos.forEach((p, idx) => {
+                const image = p.image || '';
+                const discount = p.discount || 0;
+                const link = p.link || '#';
+                const imgStyle = image ? `background-image:url('${image}');background-size:cover;background-position:center;` : '';
+                html += `
+                    <div class="snap-center shrink-0 w-[75%] md:w-[30%] promo-carousel-card" onclick="window.open('${link}','_blank')" style="animation-delay:${idx * 0.08}s">
+                        <div class="promo-carousel-bg ${image ? 'has-img' : 'no-img'}" style="${imgStyle}">
+                            ${!image ? '<div class="promo-carousel-icon"><i class="fas fa-tags"></i></div>' : ''}
+                            ${image ? '<div class="promo-carousel-overlay"></div>' : ''}
+                        </div>
+                        <div class="promo-carousel-content">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="promo-carousel-badge">${discount > 0 ? discount + '% OFF' : 'LIVE'}</span>
+                            </div>
+                            <h4 class="promo-carousel-title">${p.title || 'Promotion'}</h4>
+                            ${p.description ? `<p class="promo-carousel-desc">${p.description}</p>` : ''}
+                        </div>
+                    </div>`;
+            });
             html += '</div>';
-            container.innerHTML = hasActive ? html : `
-                <div class="premium-glass-card p-8 flex flex-col items-center justify-center opacity-60">
-                    <div class="w-14 h-14 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex items-center justify-center text-amber-500/30 text-2xl mb-3">
-                        <i class="fas fa-tags"></i>
-                    </div>
-                    <p class="text-[10px] font-mono tracking-widest text-gray-500">No promotions active</p>
-                </div>`;
+            container.innerHTML = html;
+
+            setTimeout(() => {
+                const scrollContainer = document.getElementById('promoScrollContainer');
+                if (!scrollContainer) return;
+                let si = setInterval(() => {
+                    if (!scrollContainer.isConnected) { clearInterval(si); return; }
+                    if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
+                        if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 10) {
+                            scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+                        } else {
+                            const cw = scrollContainer.querySelector('.promo-carousel-card')?.offsetWidth || 200;
+                            scrollContainer.scrollBy({ left: cw + 16, behavior: 'smooth' });
+                        }
+                    }
+                }, 4000);
+            }, 500);
         });
     }
 

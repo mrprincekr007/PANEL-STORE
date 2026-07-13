@@ -16,7 +16,10 @@ import {
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword,
     sendPasswordResetEmail,
-    signInWithPopup
+    signInWithPopup,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 // 3. FIREBASE REALTIME DATABASE IMPORTS
@@ -67,6 +70,9 @@ export {
     sendPasswordResetEmail,
     signOut,
     onAuthStateChanged,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence,
     
     // Database Exports
     ref,

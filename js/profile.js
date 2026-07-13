@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mainAvatar').innerText = alias.charAt(0).toUpperCase();
             document.getElementById('profileName').innerText = alias;
             document.getElementById('profileEmail').innerText = user.email;
-            document.getElementById('profileUid').innerText = user.email.split('@')[0];
+            document.getElementById('profileUid').innerText = user.uid.substring(0, 8);
             
             // Format Creation Date
             const joinDate = new Date(user.metadata.creationTime);
@@ -44,10 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
             onValue(ref(db, `users/${user.uid}`), (snap) => {
                 if(snap.exists()) {
                     const data = snap.val();
-                    document.getElementById('statBalance').innerText = parseFloat(data.balance || 0).toFixed(2);
+                    document.getElementById('statBalance').innerText = window.formatPriceShort ? window.formatPriceShort(parseFloat(data.balance || 0)) : '₹' + parseFloat(data.balance || 0).toFixed(2);
                     const uname = data.username || data.name || alias;
                     document.getElementById('profileName').innerText = uname;
-                    document.getElementById('profileUid').innerText = uname;
+            document.getElementById('profileUid').innerText = user.uid.substring(0, 8);
                     document.getElementById('mainAvatar').innerText = uname.charAt(0).toUpperCase();
                 }
             });
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update Statistics
             document.getElementById('statOrders').innerText = totalOrders;
-            document.getElementById('statSpent').innerText = totalSpent.toFixed(2);
+            document.getElementById('statSpent').innerText = window.formatPriceShort ? window.formatPriceShort(totalSpent) : '₹' + totalSpent.toFixed(2);
         });
     }
 

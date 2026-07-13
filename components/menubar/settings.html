@@ -6,8 +6,9 @@
     <title>Nexus Core | Settings</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../../js/i18n.js"></script>
 </head>
-<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-rose-600 selection:text-white  relative">
+<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-rose-600 selection:text-white relative">
     <div class="premium-bg-container">
         <div class="bg-orb bg-orb-1" style="background:#6b7280;"></div>
         <div class="bg-orb bg-orb-2" style="background:#4b5563;"></div>
@@ -18,48 +19,97 @@
         <div class="text-center md:text-left">
             <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight">
                 <i class="fas fa-cog text-gray-400 mr-2 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"></i>
-                App <span class="text-gray-300">Settings</span>
+                <span data-i18n="settingsPanel">Settings Panel</span>
             </h1>
-            <p class="text-xs text-gray-500 mt-1">Manage your preferences</p>
+            <p class="text-xs text-gray-500 mt-1" data-i18n="customize">Customize your experience</p>
         </div>
+
         <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
-            <div class="absolute -top-20 -right-20 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
             <div class="relative z-10">
                 <div class="flex items-center gap-4 mb-6">
                     <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-lg">
                         <i class="fas fa-user-pen"></i>
                     </div>
                     <div>
-                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Profile</h2>
-                        <p class="text-[10px] text-gray-500">Update your display name</p>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="profile">Profile</h2>
+                        <p class="text-[10px] text-gray-500" data-i18n="profileDesc">Update your display name & avatar</p>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="displayNameInput" class="flex-1 bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-rose-500 focus:shadow-[0_0_15px_rgba(225,29,72,0.2)] transition-all placeholder-gray-600" placeholder="Enter display name...">
+                <div class="flex flex-col sm:flex-row gap-3 mb-3">
+                    <input type="text" id="displayNameInput" class="flex-1 bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-rose-500 focus:shadow-[0_0_15px_rgba(225,29,72,0.2)] transition-all placeholder-gray-600" data-i18n="enterName" data-i18n-type="placeholder" placeholder="Enter display name...">
                     <button onclick="updateDisplayName()" id="nameSaveBtn" class="px-6 py-3.5 bg-gradient-to-r from-rose-600 to-rose-500 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_20px_rgba(225,29,72,0.4)] hover:shadow-[0_0_35px_rgba(225,29,72,0.7)] hover:translate-y-[-2px] transition-all duration-300 flex items-center gap-2 whitespace-nowrap">
-                        <i class="fas fa-floppy-disk"></i> Save
+                        <i class="fas fa-floppy-disk"></i> <span data-i18n="save">Save</span>
                     </button>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex-1 bg-black/30 border border-white/5 rounded-2xl px-5 py-3 text-xs text-gray-400 flex items-center gap-3">
+                        <i class="fas fa-envelope text-gray-600"></i>
+                        <span id="settingsEmail" class="text-white font-mono">Loading...</span>
+                    </div>
+                    <div class="bg-black/30 border border-white/5 rounded-2xl px-5 py-3 text-xs text-gray-400 flex items-center gap-3">
+                        <i class="fas fa-calendar text-gray-600"></i>
+                        <span id="settingsJoined" class="text-white font-mono">--</span>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
             <div class="relative z-10">
                 <div class="flex items-center gap-4 mb-6">
-                    <div class="w-12 h-12 rounded-2xl bg-gray-500/10 border border-gray-500/20 flex items-center justify-center text-gray-400 text-lg">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-lg">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="appearance">Appearance</h2>
+                        <p class="text-[10px] text-gray-500" data-i18n="appearanceDesc">Theme, language & currency</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-4">
+                        <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-2" data-i18n="theme">Theme</p>
+                        <div class="flex gap-2">
+                            <button onclick="setPref('theme','dark')" id="themeDark" class="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition setting-chip active-chip"><i class="fas fa-moon mr-1"></i> <span data-i18n="dark">Dark</span></button>
+                            <button onclick="setPref('theme','light')" id="themeLight" class="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition setting-chip"><i class="fas fa-sun mr-1"></i> <span data-i18n="light">Light</span></button>
+                        </div>
+                    </div>
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-4">
+                        <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-2" data-i18n="language">Language</p>
+                        <div class="flex gap-2">
+                            <button onclick="setPref('lang','en')" id="langEN" class="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition setting-chip active-chip">EN</button>
+                            <button onclick="setPref('lang','hi')" id="langHI" class="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition setting-chip">HI</button>
+                        </div>
+                    </div>
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-4">
+                        <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-2" data-i18n="currency">Currency</p>
+                        <div class="flex gap-2">
+                            <button onclick="setPref('currency','INR')" id="curINR" class="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition setting-chip active-chip">₹ INR</button>
+                            <button onclick="setPref('currency','USD')" id="curUSD" class="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition setting-chip">$ USD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
                         <i class="fas fa-bell"></i>
                     </div>
                     <div>
-                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Notifications</h2>
-                        <p class="text-[10px] text-gray-500">Manage your alert preferences</p>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="notifications">Notifications</h2>
+                        <p class="text-[10px] text-gray-500" data-i18n="notifDesc">Alerts & delivery channels</p>
                     </div>
                 </div>
-                <div class="space-y-3">
+                <div class="space-y-2">
                     <label class="setting-toggle">
                         <div class="setting-toggle-left">
                             <i class="fas fa-shopping-bag text-emerald-400 text-sm"></i>
                             <div>
-                                <p class="text-xs font-bold text-white">Purchase Alerts</p>
-                                <p class="text-[9px] text-gray-500">Get notified on successful purchases</p>
+                                <p class="text-xs font-bold text-white"><span data-i18n="purchaseAlerts">Purchase Alerts</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="purchaseAlertsDesc">When a purchase succeeds or fails</p>
                             </div>
                         </div>
                         <div class="toggle-track" data-key="notifPurchases" onclick="toggleSwitch(this)">
@@ -70,8 +120,8 @@
                         <div class="setting-toggle-left">
                             <i class="fas fa-wallet text-blue-400 text-sm"></i>
                             <div>
-                                <p class="text-xs font-bold text-white">Deposit Confirmations</p>
-                                <p class="text-[9px] text-gray-500">Get notified when deposits are credited</p>
+                                <p class="text-xs font-bold text-white"><span data-i18n="depositConfirm">Deposit Confirmations</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="depositConfirmDesc">When funds are credited</p>
                             </div>
                         </div>
                         <div class="toggle-track" data-key="notifDeposits" onclick="toggleSwitch(this)">
@@ -82,43 +132,177 @@
                         <div class="setting-toggle-left">
                             <i class="fas fa-tags text-amber-400 text-sm"></i>
                             <div>
-                                <p class="text-xs font-bold text-white">Promotions</p>
-                                <p class="text-[9px] text-gray-500">Receive offers and discount alerts</p>
+                                <p class="text-xs font-bold text-white"><span data-i18n="promotions">Promotions & Offers</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="promotionsDesc">Discounts, sales & bonus alerts</p>
                             </div>
                         </div>
                         <div class="toggle-track" data-key="notifPromotions" onclick="toggleSwitch(this)">
                             <div class="toggle-thumb"></div>
                         </div>
                     </label>
+                    <label class="setting-toggle">
+                        <div class="setting-toggle-left">
+                            <i class="fas fa-envelope text-rose-400 text-sm"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white"><span data-i18n="emailNotif">Email Notifications</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="emailNotifDesc">Receive updates via email</p>
+                            </div>
+                        </div>
+                        <div class="toggle-track" data-key="notifEmail" onclick="toggleSwitch(this)">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </label>
+
                 </div>
             </div>
         </div>
+
         <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
             <div class="relative z-10">
                 <div class="flex items-center gap-4 mb-6">
-                    <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-lg">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg">
+                        <i class="fas fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="preferences">Preferences</h2>
+                        <p class="text-[10px] text-gray-500" data-i18n="prefsDesc">Auto actions & default choices</p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="setting-toggle">
+                        <div class="setting-toggle-left">
+                            <i class="fas fa-key text-cyan-400 text-sm"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white"><span data-i18n="autoLogin">Auto Login</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="autoLoginDesc">Stay logged in across sessions</p>
+                            </div>
+                        </div>
+                        <div class="toggle-track" data-key="autoLogin" onclick="toggleSwitch(this)">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </label>
+                    <label class="setting-toggle">
+                        <div class="setting-toggle-left">
+                            <i class="fas fa-credit-card text-emerald-400 text-sm"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white"><span data-i18n="defaultPay">Default Payment</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="defaultPayDesc">Preferred payment method</p>
+                            </div>
+                        </div>
+                        <select id="defaultPayment" onchange="saveDefaultPayment(this.value)" class="bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-[10px] text-white font-mono focus:outline-none focus:border-emerald-500 transition">
+                            <option value="auto">UPI (Auto)</option>
+                            <option value="manual">Manual QR</option>
+                            <option value="crypto">Crypto</option>
+                        </select>
+                    </label>
+                    <label class="setting-toggle">
+                        <div class="setting-toggle-left">
+                            <i class="fas fa-bell-slash text-amber-400 text-sm"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white"><span data-i18n="minDeposit">Min Deposit Alert</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="minDepositDesc">Minimum ₹ amount to notify</p>
+                            </div>
+                        </div>
+                        <input type="number" id="minDepositAlert" onchange="saveMinDeposit(this.value)" class="w-20 bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-[10px] text-white font-mono text-center focus:outline-none focus:border-amber-500 transition" placeholder="0" min="0" step="10">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg">
                         <i class="fas fa-shield-halved"></i>
                     </div>
                     <div>
-                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Account</h2>
-                        <p class="text-[10px] text-gray-500">Danger zone</p>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="security">Security</h2>
+                        <p class="text-[10px] text-gray-500" data-i18n="securityDesc">Account protection & sessions</p>
                     </div>
                 </div>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between bg-black/30 border border-white/5 rounded-2xl px-5 py-4">
-                        <div>
-                            <p class="text-xs font-bold text-white">Reset Password</p>
-                            <p class="text-[9px] text-gray-500">Send a password reset email</p>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-key text-amber-400"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white"><span data-i18n="password">Password</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="passwordDesc">Send reset link to your email</p>
+                            </div>
                         </div>
-                        <button onclick="resetPassword()" class="px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[9px] font-black text-amber-400 hover:bg-amber-500/20 transition uppercase tracking-wider">Reset</button>
+                        <button onclick="resetPassword()" class="px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[9px] font-black text-amber-400 hover:bg-amber-500/20 transition uppercase tracking-wider"><span data-i18n="reset">Reset</span></button>
                     </div>
                     <div class="flex items-center justify-between bg-black/30 border border-white/5 rounded-2xl px-5 py-4">
-                        <div>
-                            <p class="text-xs font-bold text-white">Delete Account</p>
-                            <p class="text-[9px] text-gray-500">Permanently remove your account</p>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-clock-rotate text-blue-400"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white"><span data-i18n="lastLogin">Last Login</span></p>
+                                <p class="text-[9px] text-gray-500" id="lastLoginText" data-i18n="loading">Loading...</p>
+                            </div>
                         </div>
-                        <button onclick="confirmDeleteAccount()" class="px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-xl text-[9px] font-black text-red-400 hover:bg-red-500/20 transition uppercase tracking-wider">Delete</button>
+                        <span id="lastLoginBadge" class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-[9px] font-black text-emerald-400" data-i18n="active">Active</span>
                     </div>
+                    <div class="flex items-center justify-between bg-black/30 border border-white/5 rounded-2xl px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-qrcode text-purple-400"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white"><span data-i18n="twoFactor">Two-Factor Auth</span></p>
+                                <p class="text-[9px] text-gray-500" data-i18n="twoFactorDesc">Add extra layer of security</p>
+                            </div>
+                        </div>
+                        <button onclick="showToast('2FA coming soon!', 'info')" class="px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded-xl text-[9px] font-black text-purple-400 hover:bg-purple-500/20 transition uppercase tracking-wider"><span data-i18n="enable">Enable</span></button>
+                    </div>
+                    <div class="flex items-center justify-between bg-black/30 border border-white/5 rounded-2xl px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-right-from-bracket text-rose-400"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white"><span data-i18n="sessions">Active Sessions</span></p>
+                                <p class="text-[9px] text-gray-500" id="activeSessionText" data-i18n="sessionsDesc">Currently logged in browsers</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-[9px] font-black text-emerald-400">1 Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 text-lg">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="referral">Referral</h2>
+                        <p class="text-[10px] text-gray-500" data-i18n="referralDesc">Share & earn rewards</p>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="referralLinkDisplay" class="flex-1 bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white font-mono focus:outline-none select-all" readonly placeholder="Loading referral link...">
+                    <button onclick="copyReferralLink()" class="px-6 py-3.5 bg-gradient-to-r from-cyan-600 to-cyan-500 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.7)] hover:translate-y-[-2px] transition-all duration-300 flex items-center gap-2 whitespace-nowrap">
+                        <i class="fas fa-copy"></i> <span data-i18n="copy">Copy</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-gray-500/10 border border-gray-500/20 flex items-center justify-center text-gray-400 text-lg">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="data">Data</h2>
+                        <p class="text-[10px] text-gray-500" data-i18n="dataDesc">Export or manage your data</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="exportAccountData()" class="flex-1 min-w-[140px] px-5 py-3.5 bg-blue-500/10 border border-blue-500/30 rounded-2xl text-[10px] font-black text-blue-400 hover:bg-blue-500/20 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-download"></i> <span data-i18n="exportData">Export Data</span>
+                    </button>
+                    <button onclick="showToast('Data cleared from local cache', 'success')" class="flex-1 min-w-[140px] px-5 py-3.5 bg-orange-500/10 border border-orange-500/30 rounded-2xl text-[10px] font-black text-orange-400 hover:bg-orange-500/20 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-broom"></i> <span data-i18n="clearCache">Clear Cache</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -142,6 +326,9 @@
         loadComponentAndRunScripts('../header/header_menubar.html', 'header-container');
         loadComponentAndRunScripts('../menubar.html', 'dropdown-container');
         loadComponentAndRunScripts('../navigation.html', 'navigation-container');
+
+        window.currentLang = window.currentLang || localStorage.getItem('nexus_lang') || 'en';
+
         window.toggleSwitch = function(track) {
             const isOn = track.classList.toggle('active');
             const key = track.dataset.key;
@@ -149,7 +336,14 @@
             if (isOn) { track.style.background = '#e11d48'; thumb.style.transform = 'translateX(18px)'; }
             else { track.style.background = 'rgba(255,255,255,0.1)'; thumb.style.transform = 'translateX(0)'; }
             saveSetting(key, isOn);
+            if (key === 'autoLogin') {
+                try { localStorage.setItem('nexus_autoLogin', isOn ? 'true' : 'false'); } catch(e) {}
+                import('./../../js/firebase-config.js').then(m => {
+                    m.setPersistence(m.auth, isOn ? m.browserLocalPersistence : m.browserSessionPersistence);
+                });
+            }
         };
+
         async function saveSetting(key, value) {
             try {
                 const { auth, db, ref, update } = await import('./../../js/firebase-config.js');
@@ -157,6 +351,83 @@
                 if (user) await update(ref(db, 'users/' + user.uid + '/settings'), { [key]: value });
             } catch (e) {}
         }
+
+        window.applyTheme = function(theme) {
+            let style = document.getElementById('nexus-light-theme');
+            if (theme === 'light') {
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'nexus-light-theme';
+                    style.textContent = `
+                        html.light-mode, html.light-mode body { background: #f0f2f5 !important; color: #1a1a2e !important; }
+                        html.light-mode .bottom-nav { background: rgba(255,255,255,0.92) !important; border-color: rgba(0,0,0,0.08) !important; }
+                        html.light-mode .nav-item { color: #6b7280 !important; }
+                        html.light-mode .nav-item.active { color: #e11d48 !important; }
+                        html.light-mode .premium-glass-card { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.08) !important; }
+                        html.light-mode .nexus-header-container { background: rgba(255,255,255,0.92) !important; border-bottom-color: rgba(0,0,0,0.08) !important; }
+                        html.light-mode .header-main-title, html.light-mode h1, html.light-mode h2, html.light-mode h3 { color: #1a1a2e !important; }
+                        html.light-mode .text-white { color: #1a1a2e !important; }
+                        html.light-mode .text-gray-300 { color: #374151 !important; }
+                        html.light-mode .text-gray-400, html.light-mode .text-gray-500 { color: #6b7280 !important; }
+                        html.light-mode .text-gray-600 { color: #9ca3af !important; }
+                        html.light-mode input, html.light-mode select { background: #fff !important; color: #1a1a2e !important; border-color: #d1d5db !important; }
+                        html.light-mode .bg-orbit { opacity: 0.05 !important; }
+                        html.light-mode .bg-grid-overlay { opacity: 0.03 !important; }
+                        html.light-mode .bg-\\[\\#0a0c12\\] { background: rgba(255,255,255,0.9) !important; }
+                        html.light-mode .bg-black\\/60 { background: rgba(255,255,255,0.9) !important; }
+                        html.light-mode .bg-black\\/40 { background: rgba(255,255,255,0.8) !important; }
+                        html.light-mode .bg-black\\/30 { background: rgba(255,255,255,0.7) !important; }
+                        html.light-mode .border-white\\/5 { border-color: rgba(0,0,0,0.06) !important; }
+                        html.light-mode .border-white\\/10 { border-color: rgba(0,0,0,0.1) !important; }
+                        html.light-mode .border-gray-800\\/80 { border-color: rgba(0,0,0,0.12) !important; }
+                        html.light-mode .premium-bg-container { background: #f0f2f5 !important; }
+                        html.light-mode .setting-toggle { background: rgba(255,255,255,0.8) !important; }
+                        html.light-mode .wallet-icon-box { background: #e11d48 !important; }
+                        html.light-mode .header-wallet-btn { background: rgba(225,29,72,0.08) !important; border-color: rgba(225,29,72,0.2) !important; }
+                        html.light-mode .bg-\\[\\#0a0c12\\]\\/90 { background: rgba(255,255,255,0.85) !important; }
+                        html.light-mode .profile-master-card { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.08) !important; }
+                        html.light-mode .premium-stat-card { background: rgba(255,255,255,0.8) !important; }
+                        html.light-mode .balance-card { background: rgba(16,185,129,0.08) !important; }
+                    `;
+                    document.head.appendChild(style);
+                }
+                document.documentElement.classList.add('light-mode');
+            } else {
+                if (style) style.remove();
+                document.documentElement.classList.remove('light-mode');
+            }
+        };
+
+        window.setPref = async function(key, value) {
+            document.querySelectorAll(`[onclick*="setPref('${key}'"]`).forEach(b => b.classList.remove('active-chip'));
+            const btn = document.getElementById(key === 'theme' ? 'theme' + value.charAt(0).toUpperCase() + value.slice(1) : key === 'lang' ? 'lang' + value.toUpperCase() : 'cur' + value.toUpperCase());
+            if (btn) btn.classList.add('active-chip');
+            await saveSetting(key, value);
+            if (key === 'theme') {
+                try { localStorage.setItem('nexus_theme', value); } catch(e) {}
+                window.applyTheme(value);
+                showToast(value === 'light' ? (window.i18n?.[window.currentLang]?.lightMode || 'Light mode enabled') : (window.i18n?.[window.currentLang]?.darkMode || 'Dark mode enabled'));
+            } else if (key === 'lang') {
+                try { localStorage.setItem('nexus_lang', value); } catch(e) {}
+                if (window.applyLanguage) window.applyLanguage(value);
+                showToast(value === 'hi' ? 'भाषा हिंदी में बदल दी गई' : 'Language set to English');
+            } else if (key === 'currency') {
+                try { localStorage.setItem('nexus_currency', value); } catch(e) {}
+                if (window.applyCurrency) window.applyCurrency(value);
+                showToast((window.i18n?.[window.currentLang]?.currencySet || 'Currency set to') + ' ' + value.toUpperCase());
+            }
+        };
+
+        window.saveDefaultPayment = async function(value) {
+            await saveSetting('defaultPayment', value);
+            showToast('Default payment: ' + value);
+        };
+
+        window.saveMinDeposit = async function(value) {
+            await saveSetting('minDepositAlert', value || '0');
+            showToast('Min deposit alert: ₹' + (value || '0'));
+        };
+
         window.updateDisplayName = async function() {
             const input = document.getElementById('displayNameInput');
             const btn = document.getElementById('nameSaveBtn');
@@ -175,18 +446,48 @@
             btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Save';
             btn.style.pointerEvents = 'auto';
         };
+
         window.resetPassword = async function() {
             try {
                 const { auth, sendPasswordResetEmail } = await import('./../../js/firebase-config.js');
                 const user = auth.currentUser;
                 if (!user || !user.email) { showToast('No email on record', 'error'); return; }
                 await sendPasswordResetEmail(auth, user.email);
-                showToast('Reset email sent to ' + user.email);
+                showToast('Reset link sent to ' + user.email);
             } catch (e) { showToast('Error: ' + e.message, 'error'); }
         };
-        window.confirmDeleteAccount = function() {
-            showToast('Contact support to delete your account', 'info');
+
+        window.exportAccountData = async function() {
+            try {
+                const { auth, db, ref, get } = await import('./../../js/firebase-config.js');
+                const user = auth.currentUser;
+                if (!user) { showToast('Not authenticated', 'error'); return; }
+                const snap = await get(ref(db, 'users/' + user.uid));
+                if (!snap.exists()) { showToast('No data found', 'error'); return; }
+                const data = { exportedAt: new Date().toISOString(), uid: user.uid, email: user.email, data: snap.val() };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'nexus-account-data.json';
+                a.click();
+                URL.revokeObjectURL(a.href);
+                showToast('Account data exported!');
+            } catch (e) { showToast('Export failed', 'error'); }
         };
+
+        window.copyReferralLink = async function() {
+            const input = document.getElementById('referralLinkDisplay');
+            if (!input.value || input.value === 'Loading...') { showToast('Loading referral link...', 'info'); return; }
+            try {
+                await navigator.clipboard.writeText(input.value);
+                showToast('Referral link copied!');
+            } catch {
+                input.select();
+                document.execCommand('copy');
+                showToast('Referral link copied!');
+            }
+        };
+
         function showToast(msg, type = 'success') {
             const c = document.getElementById('toastContainer');
             const t = document.createElement('div');
@@ -198,14 +499,23 @@
         }
     </script>
     <script type="module">
-        import { auth, db, ref, get, onAuthStateChanged } from "./../../js/firebase-config.js";
+        import { auth, db, ref, get, update, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence } from "./../../js/firebase-config.js";
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
                     const snap = await get(ref(db, 'users/' + user.uid));
                     if (snap.exists()) {
                         const data = snap.val();
+
+                        document.getElementById('settingsEmail').innerText = user.email;
+                        if (data.joined) {
+                            const d = new Date(data.joined);
+                            document.getElementById('settingsJoined').innerText = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                        }
+
                         if (data.name) document.getElementById('displayNameInput').placeholder = data.name;
+
                         const settings = data.settings || {};
                         document.querySelectorAll('.toggle-track').forEach(track => {
                             const key = track.dataset.key;
@@ -215,8 +525,54 @@
                                 track.querySelector('.toggle-thumb').style.transform = 'translateX(18px)';
                             }
                         });
+
+                        if (settings.theme) {
+                            const btn = document.getElementById('theme' + settings.theme.charAt(0).toUpperCase() + settings.theme.slice(1));
+                            if (btn) btn.classList.add('active-chip');
+                            document.querySelectorAll('[onclick*="setPref(\'theme\'"]').forEach(b => { if(b.id !== 'theme' + settings.theme.charAt(0).toUpperCase() + settings.theme.slice(1)) b.classList.remove('active-chip'); });
+                            try { localStorage.setItem('nexus_theme', settings.theme); } catch(e) {}
+                            if (window.applyTheme) window.applyTheme(settings.theme);
+                        }
+                        if (settings.lang) {
+                            const btn = document.getElementById('lang' + settings.lang.toUpperCase());
+                            if (btn) btn.classList.add('active-chip');
+                            document.querySelectorAll('[onclick*="setPref(\'lang\'"]').forEach(b => { if(b.id !== 'lang' + settings.lang.toUpperCase()) b.classList.remove('active-chip'); });
+                            try { localStorage.setItem('nexus_lang', settings.lang); } catch(e) {}
+                            if (window.applyLanguage) window.applyLanguage(settings.lang);
+                        }
+                        if (settings.currency) {
+                            const btn = document.getElementById('cur' + settings.currency.toUpperCase());
+                            if (btn) btn.classList.add('active-chip');
+                            document.querySelectorAll('[onclick*="setPref(\'currency\'"]').forEach(b => { if(b.id !== 'cur' + settings.currency.toUpperCase()) b.classList.remove('active-chip'); });
+                            try { localStorage.setItem('nexus_currency', settings.currency); } catch(e) {}
+                            if (window.applyCurrency) window.applyCurrency(settings.currency);
+                        }
+                        if (settings.autoLogin !== undefined) {
+                            try { localStorage.setItem('nexus_autoLogin', settings.autoLogin ? 'true' : 'false'); } catch(e) {}
+                            setPersistence(auth, settings.autoLogin ? browserLocalPersistence : browserSessionPersistence);
+                        }
+                        if (settings.defaultPayment) {
+                            document.getElementById('defaultPayment').value = settings.defaultPayment;
+                        }
+                        if (settings.minDepositAlert) {
+                            document.getElementById('minDepositAlert').value = settings.minDepositAlert;
+                        }
+                        
+                        if (data.lastLogin) {
+                            const d = new Date(data.lastLogin);
+                            document.getElementById('lastLoginText').innerText = d.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                        } else {
+                            document.getElementById('lastLoginText').innerText = 'First session';
+                        }
+
+                        const uname = data.username || data.name || user.email.split('@')[0];
+                        const basePath = window.location.pathname.replace(/components\/menubar\/.*$/, '');
+                        const refLink = window.location.origin + basePath + 'index.html?ref=' + encodeURIComponent(uname);
+                        document.getElementById('referralLinkDisplay').value = refLink;
+
+                        await update(ref(db, 'users/' + user.uid), { lastLogin: new Date().toISOString() });
                     }
-                } catch (e) {}
+                } catch (e) { console.error(e); }
             }
         });
     </script>
@@ -235,6 +591,7 @@
         .toast-msg { background: rgba(15,17,24,0.96); border: 1px solid rgba(255,255,255,0.08); padding: 12px 18px; border-radius: 12px; color: #fff; font-size: 12px; font-weight: 500; pointer-events: all; display: flex; align-items: center; gap: 10px; box-shadow: 0 15px 30px rgba(0,0,0,0.8); animation: toastIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275) forwards; transition: all 0.3s ease; }
         .toast-msg.success i { color: #00ff66; } .toast-msg.error i { color: #ff2a5f; } .toast-msg.info i { color: #3b82f6; }
         @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(30px); opacity: 0; } }
         .setting-toggle { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 14px 16px; cursor: pointer; transition: all 0.3s ease; }
         .setting-toggle:hover { border-color: rgba(255,255,255,0.1); }
         .setting-toggle-left { display: flex; align-items: center; gap: 12px; }
@@ -242,6 +599,12 @@
         .toggle-thumb { width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .toggle-track.active { background: #e11d48; }
         .toggle-track.active .toggle-thumb { transform: translateX(18px); }
+        .setting-chip { background: transparent; border-color: rgba(255,255,255,0.1); color: #64748b; cursor: pointer; }
+        .setting-chip:hover { border-color: rgba(225,29,72,0.3); color: #fff; }
+        .active-chip { background: rgba(225,29,72,0.2); border-color: rgba(225,29,72,0.5) !important; color: #f43f5e !important; }
+        select { cursor: pointer; }
+        select option { background: #0a0c12; color: #fff; }
+        input[type=number]::-webkit-inner-spin-button { opacity: 1; }
     </style>
 </body>
 </html>

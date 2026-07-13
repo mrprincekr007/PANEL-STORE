@@ -6,6 +6,7 @@
     <title>Nexus Core | Refer & Earn</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../../js/i18n.js"></script>
 </head>
 <body class="text-gray-300 font-sans overflow-x-hidden selection:bg-emerald-600 selection:text-white  relative">
     <div class="premium-bg-container">
@@ -32,7 +33,7 @@
                         </div>
                         <div>
                             <p class="text-[10px] font-black text-emerald-400 uppercase tracking-wider">Referral Bonus Available</p>
-                            <p class="text-lg font-black text-white">₹<span id="claimableAmount">0.00</span></p>
+                            <p class="text-lg font-black text-white"><span id="claimableAmount" data-inr="0">₹0.00</span></p>
                         </div>
                     </div>
                     <button id="claimBtn" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] hover:translate-y-[-1px] transition-all duration-300 flex items-center gap-2">
@@ -64,7 +65,7 @@
                         <p class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">Total Referrals</p>
                     </div>
                     <div class="bg-black/40 border border-white/5 rounded-2xl p-4 text-center">
-                        <p class="text-2xl font-black text-emerald-400 font-mono">₹<span id="referralEarnings">0</span></p>
+                        <p class="text-2xl font-black text-emerald-400 font-mono"><span id="referralEarnings" data-inr="0">₹0</span></p>
                         <p class="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-1">Earnings</p>
                     </div>
                 </div>
@@ -197,8 +198,8 @@
                 if (claimable <= 0) { showToast('Nothing to claim', 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Claim'; return; }
                 await runTransaction(ref(db, `users/${currentUid}/balance`), (bal) => (bal || 0) + claimable);
                 await update(ref(db, `users/${currentUid}`), { referralClaimable: 0 });
-                document.getElementById('claimableAmount').innerText = '0.00';
-                showToast(`₹${claimable.toFixed(2)} claimed to wallet!`);
+                document.getElementById('claimableAmount').innerText = window.formatPrice ? window.formatPrice(0) : '0.00';
+                showToast((window.formatPrice ? window.formatPrice(claimable) : '₹' + claimable.toFixed(2)) + ' claimed to wallet!');
             } catch (e) { showToast('Claim failed', 'error'); }
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Claim';
@@ -212,12 +213,12 @@
                 const userSnap = await get(ref(db, 'users/' + uid));
                 const userData = userSnap.exists() ? userSnap.val() : {};
                 const username = userData.username || uid.substring(0, 8);
-                const baseUrl = window.location.origin;
-                const link = baseUrl + '/index.html?ref=' + encodeURIComponent(username);
+                const baseUrl = window.location.origin + window.location.pathname.replace(/components\/menubar\/.*$/, '');
+                const link = baseUrl + 'index.html?ref=' + encodeURIComponent(username);
                 document.getElementById('referralLink').innerText = link;
 
                 const claimable = parseFloat(userData.referralClaimable || 0);
-                document.getElementById('claimableAmount').innerText = claimable.toFixed(2);
+                document.getElementById('claimableAmount').innerText = window.formatPrice ? window.formatPrice(claimable) : '₹' + claimable.toFixed(2);
 
                 const refSnap = await get(ref(db, 'referrals/' + uid));
                 if (refSnap.exists()) {
@@ -244,9 +245,9 @@
                         html += '</div>';
                         document.getElementById('referralListContainer').innerHTML = html;
                     }
-                    document.getElementById('referralEarnings').innerText = totalEarned.toFixed(2);
+                    document.getElementById('referralEarnings').innerText = window.formatPrice ? window.formatPriceShort(totalEarned) : '₹' + totalEarned.toFixed(2);
                 } else {
-                    document.getElementById('referralEarnings').innerText = '0.00';
+                    document.getElementById('referralEarnings').innerText = window.formatPrice ? window.formatPriceShort(0) : '0.00';
                 }
             } catch (e) { console.error(e); }
         });

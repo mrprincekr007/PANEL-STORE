@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nexus Core | Admin Payment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../../js/i18n.js"></script>
+</head>
+<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-rose-600 selection:text-white relative">
+    <div class="premium-bg-container">
+        <div class="bg-orb bg-orb-1" style="background:#6b7280;"></div>
+        <div class="bg-orb bg-orb-2" style="background:#4b5563;"></div>
+        <div class="bg-grid-overlay"></div>
+    </div>
+    <div id="header-container"></div>
+    <main class="w-full max-w-3xl mx-auto px-4 md:px-8 py-6 space-y-6 relative z-10">
+        <div class="text-center md:text-left">
+            <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight">
+                <i class="fas fa-shield-alt text-amber-400 mr-2 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]"></i>
+                Admin Payment Settings
+            </h1>
+            <p class="text-xs text-gray-500 mt-1">Manage all payment gateways, UPI, crypto & global USDT rate</p>
+        </div>
+
+        <!-- 1. AUTO PAYMENT (API) -->
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Auto Payment (API)</h2>
+                        <p class="text-[10px] text-gray-500">ZapKey for automatic payment processing</p>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">ZapKey / API Key</label>
+                        <input type="text" id="zapKeyInput"
+                            class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all font-mono"
+                            placeholder="Enter ZapKey">
+                    </div>
+                    <button onclick="saveAutoPayment()"
+                        class="w-full px-6 py-3.5 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_35px_rgba(59,130,246,0.7)] hover:translate-y-[-2px] transition-all duration-300">
+                        <i class="fas fa-save mr-1"></i> Save API Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MANUAL PAYMENT (UPI) -->
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Manual Payment (UPI)</h2>
+                        <p class="text-[10px] text-gray-500">UPI ID & QR code for manual deposits</p>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">UPI ID</label>
+                        <input type="text" id="upiIdInput"
+                            class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                            placeholder="e.g. shop@paytm">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">QR Image URL</label>
+                        <input type="text" id="upiQrInput"
+                            class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                            placeholder="Enter QR code image URL (leave empty for auto)">
+                    </div>
+                    <button onclick="saveManualPayment()"
+                        class="w-full px-6 py-3.5 bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_35px_rgba(16,185,129,0.7)] hover:translate-y-[-2px] transition-all duration-300">
+                        <i class="fas fa-save mr-1"></i> Save UPI Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CRYPTO SETTINGS -->
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-lg">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Crypto Settings</h2>
+                        <p class="text-[10px] text-gray-500">Binance Pay ID, USDT wallet & crypto QR</p>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Binance Pay ID</label>
+                        <input type="text" id="binancePayInput"
+                            class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                            placeholder="Enter Binance Pay ID">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">USDT Address (TRC20)</label>
+                        <input type="text" id="usdtAddressInput"
+                            class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                            placeholder="Enter USDT TRC20 address">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Crypto QR Image URL</label>
+                        <input type="text" id="cryptoQrInput"
+                            class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                            placeholder="Enter QR code image URL">
+                    </div>
+                    <button onclick="saveCryptoSettings()"
+                        class="w-full px-6 py-3.5 bg-gradient-to-r from-amber-600 to-amber-500 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_20px_rgba(217,119,6,0.4)] hover:shadow-[0_0_35px_rgba(217,119,6,0.7)] hover:translate-y-[-2px] transition-all duration-300">
+                        <i class="fas fa-save mr-1"></i> Save Crypto Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. USDT RATE (GLOBAL) -->
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-lg">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Global USDT Rate</h2>
+                        <p class="text-[10px] text-gray-500">Set 1 USDT value in INR — applies everywhere</p>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">1 USDT = ? INR</label>
+                        <div class="flex items-center gap-3">
+                            <input type="number" id="cryptoRateInput" step="0.01" min="0"
+                                class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all font-mono"
+                                placeholder="e.g. 88.00">
+                            <button onclick="saveCryptoRate()"
+                                class="shrink-0 px-6 py-3.5 bg-gradient-to-r from-purple-600 to-purple-500 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_20px_rgba(147,51,234,0.4)] hover:shadow-[0_0_35px_rgba(147,51,234,0.7)] hover:translate-y-[-2px] transition-all duration-300">
+                                <i class="fas fa-save mr-1"></i> Save
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-gray-600 mt-2">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Current rate: 1 USDT = ₹<span id="currentRateDisplay">88.00</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PENDING CRYPTO DEPOSITS -->
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-lg">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider">Pending Crypto Deposits</h2>
+                        <p class="text-[10px] text-gray-500">Verify & approve user crypto deposits</p>
+                    </div>
+                </div>
+                <div id="pendingDeposits" class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-amber-400 text-2xl"></i>
+                    <p class="text-xs text-gray-500 mt-2">Loading pending deposits...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toastContainer" class="fixed top-20 right-4 z-[99999] flex flex-col gap-2 pointer-events-none"></div>
+
+    <style>
+        .toast-msg { display: flex; align-items: center; gap: 8px; background: rgba(12,14,20,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); padding: 12px 18px; border-radius: 14px; font-size: 11px; font-weight: 700; color: white; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transition: all 0.3s ease; min-width: 200px; pointer-events: auto; }
+        .toast-msg.success { border-left: 3px solid #10b981; }
+        .toast-msg.error { border-left: 3px solid #ef4444; }
+        .toast-msg.info { border-left: 3px solid #3b82f6; }
+    </style>
+
+    <script>
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast-msg ' + type;
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            t.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> <span>${msg}</span>`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(30px)'; setTimeout(() => t.remove(), 300); }, 2500);
+        }
+    </script>
+
+    <script type="module">
+        import { auth, db, ref, get, set, onValue, onAuthStateChanged, update, serverTimestamp } from "./../../js/firebase-config.js";
+
+        function loadComponent(id, url) {
+            fetch(url).then(r => r.text()).then(html => {
+                document.getElementById(id).innerHTML = html;
+                document.querySelectorAll('#' + id + ' script').forEach(s => {
+                    const ns = document.createElement('script');
+                    Array.from(s.attributes).forEach(a => ns.setAttribute(a.name, a.value));
+                    ns.textContent = s.textContent;
+                    s.parentNode.replaceChild(ns, s);
+                });
+            }).catch(() => {});
+        }
+        loadComponent('header-container', '../../components/header/header_menubar.html');
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                const base = window.location.pathname.includes('/components/') ? '../../index.html' : 'index.html';
+                window.location.href = base;
+                return;
+            }
+            loadAllSettings();
+        });
+
+        async function loadAllSettings() {
+            try {
+                const paySnap = await get(ref(db, 'settings/payment'));
+                if (paySnap.exists()) {
+                    const d = paySnap.val();
+                    document.getElementById('zapKeyInput').value = d.zap_key || '';
+                    document.getElementById('upiIdInput').value = d.upiId || '';
+                    document.getElementById('upiQrInput').value = d.qrImage || '';
+                }
+                const depSnap = await get(ref(db, 'deposit_settings'));
+                if (depSnap.exists()) {
+                    const d = depSnap.val();
+                    document.getElementById('zapKeyInput').value = d.zap_key || document.getElementById('zapKeyInput').value;
+                    document.getElementById('cryptoRateInput').value = d.crypto_rate || '88.00';
+                    document.getElementById('currentRateDisplay').innerText = d.crypto_rate || '88.00';
+                    document.getElementById('binancePayInput').value = d.binance_pay_id || '';
+                    document.getElementById('usdtAddressInput').value = d.usdt_address || '';
+                    document.getElementById('cryptoQrInput').value = d.crypto_qr || '';
+                } else {
+                    document.getElementById('cryptoRateInput').value = '88.00';
+                    document.getElementById('currentRateDisplay').innerText = '88.00';
+                }
+            } catch (e) {
+                showToast('Error loading settings: ' + e.message, 'error');
+            }
+        }
+
+        window.saveAutoPayment = async function() {
+            const zap_key = document.getElementById('zapKeyInput').value.trim();
+            if (!zap_key) { showToast('Please enter a ZapKey', 'error'); return; }
+            try {
+                await update(ref(db, 'settings/payment'), { zap_key });
+                await update(ref(db, 'deposit_settings'), { zap_key });
+                showToast('Auto payment API key saved');
+            } catch (e) {
+                showToast('Error saving: ' + e.message, 'error');
+            }
+        };
+
+        window.saveManualPayment = async function() {
+            const upiId = document.getElementById('upiIdInput').value.trim();
+            const qrImage = document.getElementById('upiQrInput').value.trim();
+            try {
+                await update(ref(db, 'settings/payment'), { upiId, qrImage });
+                showToast('UPI settings saved');
+            } catch (e) {
+                showToast('Error saving: ' + e.message, 'error');
+            }
+        };
+
+        window.saveCryptoSettings = async function() {
+            const binance_pay_id = document.getElementById('binancePayInput').value.trim();
+            const usdt_address = document.getElementById('usdtAddressInput').value.trim();
+            const crypto_qr = document.getElementById('cryptoQrInput').value.trim();
+            try {
+                await update(ref(db, 'deposit_settings'), { binance_pay_id, usdt_address, crypto_qr });
+                showToast('Crypto settings saved');
+            } catch (e) {
+                showToast('Error saving: ' + e.message, 'error');
+            }
+        };
+
+        window.saveCryptoRate = async function() {
+            const rate = parseFloat(document.getElementById('cryptoRateInput').value);
+            if (!rate || rate <= 0) { showToast('Please enter a valid rate', 'error'); return; }
+            try {
+                await update(ref(db, 'deposit_settings'), { crypto_rate: rate.toString() });
+                document.getElementById('currentRateDisplay').innerText = rate.toString();
+                showToast('Global USDT rate updated: 1 USDT = ₹' + rate);
+            } catch (e) {
+                showToast('Error saving rate: ' + e.message, 'error');
+            }
+        };
+
+        onValue(ref(db, 'deposit_settings/crypto_rate'), (snap) => {
+            const rate = snap.val() || '88.00';
+            document.getElementById('currentRateDisplay').innerText = rate;
+        });
+
+        onValue(ref(db, 'crypto_deposits'), (snap) => {
+            const container = document.getElementById('pendingDeposits');
+            if (!snap.exists()) {
+                container.innerHTML = `
+                    <i class="fas fa-inbox text-amber-400 text-3xl mb-2"></i>
+                    <p class="text-xs text-gray-500">No pending deposits</p>
+                `;
+                return;
+            }
+            let html = '<div class="space-y-3">';
+            snap.forEach(child => {
+                const d = child.val();
+                if (d.status === 'pending') {
+                    const ts = d.timestamp ? new Date(d.timestamp).toLocaleString() : 'Unknown';
+                    const usdtAmt = d.usdt_amount || '0';
+                    html += `
+                        <div class="bg-black/30 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-bold text-white truncate">${d.email || d.uid || 'Unknown'}</p>
+                                <p class="text-[9px] text-gray-500">${ts} · $${usdtAmt} USDT</p>
+                            </div>
+                            <button onclick="approveDeposit('${child.key}')"
+                                class="shrink-0 ml-3 px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-xl font-black text-[9px] uppercase tracking-wider text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all">
+                                <i class="fas fa-check mr-1"></i> Approve
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        });
+
+        window.approveDeposit = async function(txId) {
+            try {
+                const snap = await get(ref(db, `crypto_deposits/${txId}`));
+                if (!snap.exists()) { showToast('Deposit not found', 'error'); return; }
+                const d = snap.val();
+                await update(ref(db, `crypto_deposits/${txId}`), { status: 'approved', approvedAt: serverTimestamp() });
+                await update(ref(db, `transactions/${d.uid}/${txId}`), { status: 'approved' });
+                const balSnap = await get(ref(db, `users/${d.uid}/balance`));
+                const curBal = balSnap.val() || 0;
+                const rateSnap = await get(ref(db, 'deposit_settings/crypto_rate'));
+                const rate = parseFloat(rateSnap.val() || '88.00');
+                const inrAmount = parseFloat(d.usdt_amount || 0) * rate;
+                await set(ref(db, `users/${d.uid}/balance`), curBal + inrAmount);
+                showToast('Deposit approved! ₹' + inrAmount.toFixed(2) + ' credited at rate 1 USDT = ₹' + rate);
+            } catch (e) {
+                showToast('Error approving deposit: ' + e.message, 'error');
+            }
+        };
+    </script>
+</body>
+</html>

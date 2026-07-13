@@ -6,6 +6,7 @@
     <title>Nexus Core | Helpdesk</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../../js/i18n.js"></script>
 </head>
 <body class="text-gray-300 font-sans overflow-x-hidden selection:bg-blue-600 selection:text-white  relative">
     <div class="premium-bg-container">
@@ -22,27 +23,36 @@
             </h1>
             <p class="text-xs text-gray-500 mt-1">Get support and assistance</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="premium-glass-card p-5 text-center relative overflow-hidden group cursor-pointer" onclick="window.open('mailto:support@nexus.io')">
-                <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg mx-auto mb-3 group-hover:scale-110 transition">
-                    <i class="fas fa-envelope"></i>
+        <div id="supportCards" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex flex-col gap-4" id="supportCol1">
+                <div class="premium-glass-card p-5 text-center relative overflow-hidden group cursor-pointer" id="supportWa" onclick="window.open(getLink('wa'))" style="display:none">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg mx-auto mb-3 group-hover:scale-110 transition">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-wider">WhatsApp</h4>
+                    <p class="text-[10px] text-gray-500 mt-1 truncate" id="supportWaLabel">Loading...</p>
                 </div>
-                <h4 class="text-xs font-black text-white uppercase tracking-wider">Email</h4>
-                <p class="text-[10px] text-gray-500 mt-1 truncate">support@nexus.io</p>
+                <div class="premium-glass-card p-5 text-center relative overflow-hidden group cursor-pointer" id="supportEmail" onclick="window.open(getLink('email'))" style="display:none">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg mx-auto mb-3 group-hover:scale-110 transition">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4 class="text-xs font-black text-white uppercase tracking-wider">Email</h4>
+                    <p class="text-[10px] text-gray-500 mt-1 truncate" id="supportEmailLabel">Loading...</p>
+                </div>
             </div>
-            <div class="premium-glass-card p-5 text-center relative overflow-hidden group cursor-pointer" onclick="window.open('https://t.me/nexus_support')">
+            <div class="premium-glass-card p-5 text-center relative overflow-hidden group cursor-pointer" id="supportTg" onclick="window.open(getLink('tg'))" style="display:none">
                 <div class="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 text-lg mx-auto mb-3 group-hover:scale-110 transition">
                     <i class="fab fa-telegram-plane"></i>
                 </div>
                 <h4 class="text-xs font-black text-white uppercase tracking-wider">Telegram</h4>
-                <p class="text-[10px] text-gray-500 mt-1 truncate">@nexus_support</p>
+                <p class="text-[10px] text-gray-500 mt-1 truncate" id="supportTgLabel">Loading...</p>
             </div>
-            <div class="premium-glass-card p-5 text-center relative overflow-hidden group cursor-pointer" onclick="window.open('https://discord.gg/nexus')">
+            <div class="premium-glass-card p-5 text-center relative overflow-hidden group cursor-pointer" id="supportDc" onclick="window.open(getLink('dc'))" style="display:none">
                 <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg mx-auto mb-3 group-hover:scale-110 transition">
                     <i class="fab fa-discord"></i>
                 </div>
                 <h4 class="text-xs font-black text-white uppercase tracking-wider">Discord</h4>
-                <p class="text-[10px] text-gray-500 mt-1 truncate">discord.gg/nexus</p>
+                <p class="text-[10px] text-gray-500 mt-1 truncate" id="supportDcLabel">Loading...</p>
             </div>
         </div>
         <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden">
@@ -60,31 +70,66 @@
                 <div class="space-y-2" id="faqContainer">
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFaq(this)">
-                            <span>How do I reset my HWID?</span>
+                            <span>How to Register & Login?</span>
                             <i class="fas fa-chevron-down text-[10px] transition"></i>
                         </div>
-                        <div class="faq-answer">Go to the HWID Reset page from the menu, paste your new hardware identifier, and click Update HWID. Your HWID will be updated instantly.</div>
+                        <div class="faq-answer">Open the panel and click "Create Account". Enter your Email, Username, Password, and Referral Code (if any). After registering, log in with your email and password. Tick "Auto Login" to stay logged in even after closing the browser — you won't need to enter credentials again.</div>
                     </div>
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFaq(this)">
-                            <span>How does the referral system work?</span>
+                            <span>How to Add Money (Deposit)?</span>
                             <i class="fas fa-chevron-down text-[10px] transition"></i>
                         </div>
-                        <div class="faq-answer">Share your unique referral link with friends. When they register using your link, you earn a commission on their first purchase.</div>
+                        <div class="faq-answer">Go to Wallet → Deposit. You'll see 3 options: <b>• Auto (UPI)</b> — Enter amount, pay via UPI app, and your wallet updates instantly. <b>• Manual (QR)</b> — Scan QR code, send payment, upload screenshot, wait for manual approval (5-30 min). <b>• Crypto (USDT)</b> — Copy the wallet address, send USDT on the selected network, wait for network confirmations (10-30 min). Minimum deposit amounts are shown on the deposit page.</div>
                     </div>
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFaq(this)">
-                            <span>How long does deposit take?</span>
+                            <span>How to Buy a Product / Key?</span>
                             <i class="fas fa-chevron-down text-[10px] transition"></i>
                         </div>
-                        <div class="faq-answer">UPI Auto deposits are instant. Manual QR deposits are processed within 5-30 minutes after payment confirmation. Crypto deposits may take 10-30 minutes depending on network.</div>
+                        <div class="faq-answer">Go to Store → browse categories → select a product. Set the quantity and click "Buy Now". Your balance must be sufficient. After purchase, the product key appears instantly on screen. You can also view all your purchased keys in My Keys section. If Auto Redeem is enabled by admin, the key is automatically delivered to your registered HWID.</div>
                     </div>
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFaq(this)">
-                            <span>I didn't receive my purchase key</span>
+                            <span>How to Reset HWID?</span>
                             <i class="fas fa-chevron-down text-[10px] transition"></i>
                         </div>
-                        <div class="faq-answer">Check your purchase history on the Profile page. If the key is missing, contact support via email or Telegram with your transaction ID.</div>
+                        <div class="faq-answer">Go to HWID Reset from the menu. Paste your new HWID (Hardware ID) into the field and click Update HWID. Your HWID will be updated instantly. You can only reset a limited number of times as set by the admin. Use this when you change your PC hardware or reinstall your OS.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>How to Change Language / Theme / Currency?</span>
+                            <i class="fas fa-chevron-down text-[10px] transition"></i>
+                        </div>
+                        <div class="faq-answer">Go to Settings in the menu. <b>• Language</b> — Switch between English and Hindi. The entire panel language changes instantly. <b>• Theme</b> — Toggle Light Mode on/off for a brighter interface. <b>• Currency</b> — Switch between INR (₹) and USD ($ USDT). In USD mode, all prices are calculated using the live USDT rate set by admin. Your preference is saved and remembered next time you log in.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>How to Share & Earn (Referral)?</span>
+                            <i class="fas fa-chevron-down text-[10px] transition"></i>
+                        </div>
+                        <div class="faq-answer">Go to Refer page from the menu. You'll see your unique referral link and code. Share this link with friends — when they register using your link and make their first purchase, you earn a commission (set by admin). You can track your earnings, total referrals, and claimed amount on the same page. Click "Claim" to withdraw your referral earnings to your wallet.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>How to View My Keys & Purchase History?</span>
+                            <i class="fas fa-chevron-down text-[10px] transition"></i>
+                        </div>
+                        <div class="faq-answer">Go to My Keys from the menu. Here you can see all your purchased keys with product name, key, purchase date, and status. Use the search bar to find specific keys. Your full purchase history with amounts and dates is available on the Profile page.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>I didn't receive my key / Payment issue</span>
+                            <i class="fas fa-chevron-down text-[10px] transition"></i>
+                        </div>
+                        <div class="faq-answer">First check your purchase history on Profile or My Keys page. If the key is missing: <b>• Auto Deposit</b> — If payment was deducted but wallet not updated, contact support with your UPI transaction ID (UTR number). <b>• Manual Deposit</b> — Wait for admin approval (5-30 min). If still pending, share your payment screenshot with support. <b>• Purchase</b> — If key not delivered despite balance deduction, share the product name and transaction time with support. Contact via WhatsApp, Email, or Telegram — links are on this page.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>How to Open a Support Ticket?</span>
+                            <i class="fas fa-chevron-down text-[10px] transition"></i>
+                        </div>
+                        <div class="faq-answer">Scroll down to "Open a Ticket". Select a <b>Category</b> (Payment, Product, etc.) and <b>Priority</b>. Enter a subject (e.g., "Payment not received") and your transaction/order ID if relevant. Describe your issue in detail. Click Submit Ticket — the admin will see your full details (username, email, balance, category, priority) and respond. Set priority to <b>Urgent</b> for time-sensitive issues. For instant help, use WhatsApp or Telegram.</div>
                     </div>
                 </div>
             </div>
@@ -101,18 +146,72 @@
                     </div>
                 </div>
                 <form id="ticketForm" onsubmit="submitTicket(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Category</label>
+                            <div class="cdrop">
+                                <div class="cdrop-trigger" data-for="ticketCategory">
+                                    <span class="cdrop-label">Select category</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="cdrop-menu" data-for="ticketCategory">
+                                    <div class="cdrop-item" data-value="">Select category</div>
+                                    <div class="cdrop-item" data-value="payment"><i class="fas fa-credit-card"></i> Payment / Deposit Issue</div>
+                                    <div class="cdrop-item" data-value="product"><i class="fas fa-box"></i> Product / Key Issue</div>
+                                    <div class="cdrop-item" data-value="hwid"><i class="fas fa-microchip"></i> HWID Reset Issue</div>
+                                    <div class="cdrop-item" data-value="account"><i class="fas fa-user"></i> Account Issue</div>
+                                    <div class="cdrop-item" data-value="other"><i class="fas fa-ellipsis"></i> Other</div>
+                                </div>
+                                <select id="ticketCategory" class="cdrop-native" required><option value="">Select category</option><option value="payment">Payment / Deposit Issue</option><option value="product">Product / Key Issue</option><option value="hwid">HWID Reset Issue</option><option value="account">Account Issue</option><option value="other">Other</option></select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Priority</label>
+                            <div class="cdrop">
+                                <div class="cdrop-trigger" data-for="ticketPriority">
+                                    <span class="cdrop-label">Medium</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="cdrop-menu" data-for="ticketPriority">
+                                    <div class="cdrop-item" data-value="low"><i class="fas fa-flag"></i> Low</div>
+                                    <div class="cdrop-item" data-value="medium" data-selected><i class="fas fa-flag"></i> Medium</div>
+                                    <div class="cdrop-item" data-value="high"><i class="fas fa-flag"></i> High</div>
+                                    <div class="cdrop-item" data-value="urgent"><i class="fas fa-exclamation"></i> Urgent</div>
+                                </div>
+                                <select id="ticketPriority" class="cdrop-native" required><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+                            </div>
+                        </div>
+                    </div>
                     <div>
                         <label class="block text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Subject</label>
                         <input type="text" id="ticketSubject" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition-all placeholder-gray-600" placeholder="Brief description of your issue" required>
                     </div>
                     <div>
+                        <label class="block text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Transaction / Order ID <span class="text-gray-600 font-normal normal-case">(optional)</span></label>
+                        <input type="text" id="ticketTxnId" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-all placeholder-gray-600" placeholder="Enter UTR / Order ID if related to a payment">
+                    </div>
+                    <div>
                         <label class="block text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Message</label>
-                        <textarea id="ticketMessage" rows="4" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition-all placeholder-gray-600 resize-none" placeholder="Describe your issue in detail" required></textarea>
+                        <textarea id="ticketMessage" rows="5" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:shadow-[0_0_15px_rgba(37,99,235,0.2)] transition-all placeholder-gray-600 resize-none" placeholder="Describe your issue in detail — include what happened, what you expected, and any steps to reproduce" required></textarea>
                     </div>
                     <button type="submit" id="ticketSubmitBtn" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-sky-500 rounded-2xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_35px_rgba(37,99,235,0.7)] hover:translate-y-[-2px] transition-all duration-300 flex items-center justify-center gap-2">
                         <i class="fas fa-paper-plane"></i> Submit Ticket
                     </button>
                 </form>
+            </div>
+        </div>
+        <div class="premium-glass-card p-6 md:p-8 relative overflow-hidden" id="myTicketsSection" style="display:none;">
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
+                        <i class="fas fa-clock-rotate"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-white uppercase tracking-wider">My Tickets</h2>
+                        <p class="text-[10px] text-gray-500">Track your support requests & admin replies</p>
+                    </div>
+                </div>
+                <div id="myTicketsList" style="display:flex;flex-direction:column;gap:10px;"></div>
             </div>
         </div>
     </main>
@@ -152,23 +251,42 @@
             const btn = document.getElementById('ticketSubmitBtn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
             btn.style.pointerEvents = 'none';
-            const { auth, db, ref, push, serverTimestamp } = await import('./../../js/firebase-config.js');
+            const { auth, db, ref, push, get, serverTimestamp } = await import('./../../js/firebase-config.js');
             try {
                 const user = auth.currentUser;
                 if (!user) { showToast('Not authenticated', 'error'); btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Ticket'; btn.style.pointerEvents = 'auto'; return; }
+                const category = document.getElementById('ticketCategory').value;
+                const priority = document.getElementById('ticketPriority').value;
                 const subject = document.getElementById('ticketSubject').value.trim();
+                const txnId = document.getElementById('ticketTxnId').value.trim();
                 const message = document.getElementById('ticketMessage').value.trim();
-                if (!subject || !message) { showToast('Please fill all fields', 'error'); btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Ticket'; btn.style.pointerEvents = 'auto'; return; }
+                if (!category || !subject || !message) { showToast('Please fill all required fields', 'error'); btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Ticket'; btn.style.pointerEvents = 'auto'; return; }
+                const userSnap = await get(ref(db, `users/${user.uid}`));
+                const userData = userSnap.exists() ? userSnap.val() : {};
                 await push(ref(db, 'tickets'), {
                     uid: user.uid,
+                    username: userData.username || 'Unknown',
                     email: user.email,
+                    balance: parseFloat(userData.balance || 0),
+                    category: category,
+                    priority: priority,
                     subject: subject,
+                    txnId: txnId || '',
                     message: message,
                     status: 'open',
+                    adminReply: '',
                     createdAt: serverTimestamp()
                 });
                 document.getElementById('ticketForm').reset();
-                showToast('Ticket submitted successfully!');
+                document.getElementById('ticketCategory').selectedIndex = 0;
+                document.querySelectorAll('.cdrop-trigger .cdrop-label').forEach(l => {
+                    const parent = l.closest('.cdrop');
+                    if (!parent) return;
+                    const first = parent.querySelector('.cdrop-item:first-child');
+                    if (first) l.textContent = first.textContent.trim();
+                });
+                initCustomDropdowns();
+                showToast('Ticket submitted! Admin will respond shortly.');
             } catch (e) { showToast('Error: ' + e.message, 'error'); }
             btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Ticket';
             btn.style.pointerEvents = 'auto';
@@ -182,10 +300,114 @@
             c.appendChild(t);
             setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(30px)'; setTimeout(() => t.remove(), 300); }, 2500);
         }
+        window.supportLinks = {};
+
+        window.getLink = function(type) {
+            const links = { wa: 'whatsapp', email: 'email', tg: 'telegram', dc: 'discord' };
+            return window.supportLinks[links[type]] || '#';
+        };
+
+        function initCustomDropdowns() {
+            document.querySelectorAll('.cdrop').forEach(wrap => {
+                const trigger = wrap.querySelector('.cdrop-trigger');
+                const menu = wrap.querySelector('.cdrop-menu');
+                const native = wrap.querySelector('.cdrop-native');
+                if (!trigger || !menu || !native) return;
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.cdrop-menu.open').forEach(m => { if (m !== menu) m.classList.remove('open'); });
+                    menu.classList.toggle('open');
+                });
+                menu.querySelectorAll('.cdrop-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        native.value = item.dataset.value;
+                        trigger.querySelector('.cdrop-label').textContent = item.textContent.trim();
+                        menu.classList.remove('open');
+                        native.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                });
+            });
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.cdrop-menu.open').forEach(m => m.classList.remove('open'));
+            });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 document.querySelectorAll('.faq-answer').forEach(a => { a.style.maxHeight = '0'; a.style.padding = '0 16px'; a.style.overflow = 'hidden'; a.style.transition = 'all 0.3s ease'; });
+                initCustomDropdowns();
             }, 100);
+        });
+    </script>
+    <script type="module">
+        import { db, ref, get } from "./../../js/firebase-config.js";
+        const snap = await get(ref(db, 'support_links'));
+        const d = snap.exists() ? snap.val() : {};
+        window.supportLinks = d;
+
+        const info = [
+            { el: 'supportWa', lbl: 'supportWaLabel', val: d.whatsapp, txt: d.whatsapp_display || 'Chat' },
+            { el: 'supportEmail', lbl: 'supportEmailLabel', val: d.email, txt: d.email },
+            { el: 'supportTg', lbl: 'supportTgLabel', val: d.telegram, txt: d.telegram_display || 'Join' },
+            { el: 'supportDc', lbl: 'supportDcLabel', val: d.discord, txt: d.discord_display || 'Join' }
+        ];
+
+        const vis = info.filter(x => x.val);
+        vis.forEach(x => {
+            document.getElementById(x.el).style.display = '';
+            document.getElementById(x.lbl).innerText = x.txt;
+        });
+
+        const grid = document.getElementById('supportCards');
+        const col1 = document.getElementById('supportCol1');
+        const tg = document.getElementById('supportTg');
+        const dc = document.getElementById('supportDc');
+
+        if (vis.length === 4) {
+            grid.className = 'grid grid-cols-2 gap-4';
+            col1.className = 'flex flex-col gap-4';
+            const right = document.createElement('div');
+            right.className = 'flex flex-col gap-4';
+            right.appendChild(tg);
+            right.appendChild(dc);
+            while (grid.children.length > 1) grid.removeChild(grid.lastChild);
+            grid.appendChild(right);
+        } else {
+            grid.className = 'grid grid-cols-1 md:grid-cols-3 gap-4';
+            col1.className = 'flex flex-col gap-4';
+        }
+    </script>
+    <script type="module">
+        import { auth, db, ref, onValue, onAuthStateChanged } from "./../../js/firebase-config.js";
+        onAuthStateChanged(auth, (user) => {
+            if (!user) return;
+            const section = document.getElementById('myTicketsSection');
+            section.style.display = '';
+            onValue(ref(db, 'tickets'), (snap) => {
+                const data = snap.val() || {};
+                const tickets = Object.entries(data).filter(([, t]) => t.uid === user.uid).map(([id, t]) => ({ id, ...t }));
+                const list = document.getElementById('myTicketsList');
+                if (!tickets.length) {
+                    list.innerHTML = `<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.2);font-size:12px;">No tickets submitted yet</div>`;
+                    return;
+                }
+                tickets.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                list.innerHTML = tickets.map(t => {
+                    const date = t.createdAt ? new Date(t.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+                    const isOpen = t.status === 'open';
+                    return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <span style="background:${isOpen ? 'rgba(0,255,102,0.15)' : 'rgba(255,255,255,0.05)'};color:${isOpen ? '#00ff66' : '#888'};font-size:9px;font-weight:800;padding:2px 8px;border-radius:50px;text-transform:uppercase;">${t.status}</span>
+                                <span style="color:#888;font-size:10px;font-weight:600;">${t.subject}</span>
+                            </div>
+                            <span style="color:#555;font-size:9px;font-family:monospace;">${date}</span>
+                        </div>
+                        <div style="font-size:11px;color:#94a3b8;margin-bottom:${t.adminReply ? '8px' : '0'};line-height:1.5;">${t.message}</div>
+                        ${t.adminReply ? `<div style="font-size:11px;color:#00f0ff;background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.12);border-radius:10px;padding:10px;line-height:1.5;"><i class="fas fa-reply" style="margin-right:5px;"></i> <b style="color:#fff;">Admin:</b> ${t.adminReply}</div>` : ''}
+                    </div>`;
+                }).join('');
+            });
         });
     </script>
     <style>
@@ -207,6 +429,44 @@
         .faq-question { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 12px; font-weight: 700; color: #e2e8f0; transition: all 0.3s ease; user-select: none; }
         .faq-question:hover { background: rgba(255,255,255,0.03); }
         .faq-answer { padding: 0 16px; color: #94a3b8; font-size: 11px; line-height: 1.6; max-height: 0; overflow: hidden; transition: all 0.3s ease; }
+        /* ── Custom Dropdown ── */
+        .cdrop { position:relative; width:100%; z-index:20; }
+        .cdrop-native { display:none; }
+        .cdrop-trigger {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:13px 18px; background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.08);
+            border-radius:16px; cursor:pointer; transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            backdrop-filter:blur(10px); user-select:none; gap:10px;
+        }
+        .cdrop-trigger:hover { background:rgba(37,99,235,0.06); border-color:rgba(37,99,235,0.2); }
+        .cdrop-trigger .cdrop-label { font-size:13px; font-weight:500; color:rgba(255,255,255,0.5); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:0.3s; }
+        .cdrop-trigger:hover .cdrop-label { color:rgba(255,255,255,0.8); }
+        .cdrop-trigger i { font-size:11px; color:rgba(37,99,235,0.5); transition:0.4s; flex-shrink:0; }
+        .cdrop-menu {
+            position:absolute; top:calc(100% + 6px); left:0; right:0;
+            background:rgba(8,10,18,0.98); border:1px solid rgba(37,99,235,0.15);
+            border-radius:14px; overflow:hidden; opacity:0; visibility:hidden;
+            transform:translateY(-8px) scale(0.96); transform-origin:top center;
+            transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow:0 20px 60px rgba(0,0,0,0.8),0 0 40px rgba(37,99,235,0.05);
+            backdrop-filter:blur(20px); max-height:220px; overflow-y:auto;
+        }
+        .cdrop-menu.open { opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+        .cdrop-menu::-webkit-scrollbar { width:4px; }
+        .cdrop-menu::-webkit-scrollbar-track { background:transparent; }
+        .cdrop-menu::-webkit-scrollbar-thumb { background:rgba(37,99,235,0.3); border-radius:10px; }
+        .cdrop-item {
+            display:flex; align-items:center; gap:10px; padding:12px 16px;
+            font-size:13px; font-weight:500; color:rgba(255,255,255,0.5); cursor:pointer;
+            transition:all 0.25s; border-left:3px solid transparent;
+        }
+        .cdrop-item i { font-size:13px; color:rgba(37,99,235,0.35); transition:0.25s; width:18px; text-align:center; }
+        .cdrop-item:hover { background:rgba(37,99,235,0.08); color:#fff; border-left-color:#3b82f6; padding-left:20px; }
+        .cdrop-item:hover i { color:#3b82f6; }
+        .cdrop-item:active { background:rgba(37,99,235,0.15); transform:scale(0.98); }
+        .cdrop-item + .cdrop-item { border-top:1px solid rgba(255,255,255,0.03); }
+        .cdrop-item:first-child { color:rgba(255,255,255,0.3); font-style:italic; font-size:12px; }
+        .cdrop-item:first-child:hover { color:#fff; }
     </style>
 </body>
 </html>

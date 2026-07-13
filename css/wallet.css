@@ -83,6 +83,12 @@
 @keyframes statPop { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+/* ── PREMIUM ENTRANCE ANIMATIONS ── */
+@keyframes walletCardIn { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes walletFadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.animate-wallet-in { opacity: 0; animation: walletCardIn 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+.animate-wallet-up { opacity: 0; animation: walletFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+
 /* --- 3. UTILITIES --- */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -95,6 +101,7 @@
     -webkit-backdrop-filter: blur(25px);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(16, 185, 129, 0.2);
     transition: transform 0.4s ease;
+    animation: walletCardIn 0.8s cubic-bezier(0.16,1,0.3,1) both;
 }
 .balance-card:hover {
     transform: translateY(-5px);

@@ -1,13 +1,27 @@
 /* ==========================================================================
    NEXUS CORE - PROFILE PAGE PREMIUM STYLESHEET
    Theme: Purple / Indigo (Identity & Vault)
-========================================================================== */
+   ========================================================================== */
 
-/* --- 1. PREMIUM ANIMATED BACKGROUND --- */
+/* --- 0. FAST BACKGROUND FADE-IN --- */
+@keyframes profileBgFadeIn { from { opacity:0; } to { opacity:1; } }
 .premium-bg-container {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     z-index: -100; background-color: #030305; overflow: hidden;
+    animation: profileBgFadeIn 0.8s ease-out forwards;
 }
+
+/* Profile page premium animations */
+@keyframes profileCardIn { from { opacity:0; transform: translateY(35px) scale(0.97); } to { opacity:1; transform: translateY(0) scale(1); } }
+@keyframes profileFadeUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+.animate-profile-card { opacity:0; animation: profileCardIn 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+.animate-profile-up { opacity:0; animation: profileFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+/* Master card extra punch */
+.profile-master-card { animation: profileCardIn 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+/* Smooth stat cards */
+.premium-stat-card { animation: profileFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+/* Keys in vault with delay for effect */
+.key-item-card { opacity:0; animation: profileFadeUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
 .bg-orb {
     position: absolute; border-radius: 50%; filter: blur(130px); opacity: 0.25;
     animation: orbMoveProfile 20s infinite alternate ease-in-out;
@@ -50,11 +64,17 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     transition: all 0.3s ease;
+    animation: fadeUpProfile 0.6s cubic-bezier(0.16,1,0.3,1) both;
 }
 .premium-stat-card:hover {
     background: rgba(255, 255, 255, 0.03);
     border-color: rgba(168, 85, 247, 0.3);
     transform: translateY(-5px);
+}
+
+/* --- 4. PROFILE MASTER CARD --- */
+.profile-master-card {
+    animation: fadeUpProfile 0.6s cubic-bezier(0.16,1,0.3,1) both;
 }
 
 /* --- 4. PURCHASED KEYS (THE VAULT) STYLING --- */
@@ -68,7 +88,7 @@
     animation: fadeUpProfile 0.5s ease forwards;
 }
 @keyframes fadeUpProfile {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(25px); }
     to { opacity: 1; transform: translateY(0); }
 }
 .key-item-card:hover {

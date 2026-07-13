@@ -3,7 +3,8 @@
    ========================================================================== */
 
 /* --- BACKGROUND --- */
-.premium-bg-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -100; background-color: #030305; overflow: hidden; }
+@keyframes bgFadeIn { from { opacity:0; } to { opacity:1; } }
+.premium-bg-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -100; background-color: #030305; overflow: hidden; animation: bgFadeIn 1.2s ease-out forwards; }
 .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.35; animation: orbMove 15s infinite alternate ease-in-out; }
 .bg-orb-1 { width: 50vw; height: 50vw; background: #e11d48; top: -15%; left: -15%; animation-duration: 22s; animation-name: orbMove, orbPulse1; }
 .bg-orb-2 { width: 60vw; height: 60vw; background: #9333ea; bottom: -20%; right: -15%; animation-duration: 28s, 7s; animation-direction: alternate-reverse, normal; animation-name: orbMove, orbPulse2; }
@@ -38,29 +39,33 @@
 .section-title { font-size: 13px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; }
 
 /* ====================================================================
-   ANIMATIONS
+   ANIMATIONS — Premium Smooth Entrance
    ==================================================================== */
 
 /* Float */
 @keyframes floatAnim { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 .animate-float { animation: floatAnim 3s ease-in-out infinite; }
 
-/* Slide Right */
-@keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-.animate-slide-right { animation: slideRight 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards; opacity: 0; }
+/* Premium Slide Right — smoother, longer */
+@keyframes slideRight { from { opacity: 0; transform: translateX(-30px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
+.animate-slide-right { animation: slideRight 0.7s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
 
-/* Scale In */
-@keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-.animate-scale-in { animation: scaleIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards; opacity: 0; }
+/* Premium Scale In — with a subtle bounce */
+@keyframes scaleIn { 0% { opacity: 0; transform: scale(0.85) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.animate-scale-in { animation: scaleIn 0.8s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
 
-/* Fade Up for sections */
-@keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+/* Premium Fade Up — for section reveals */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(35px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .animate-on-view { opacity: 0; }
-.animate-on-view.visible { animation: fadeUp 0.6s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
+.animate-on-view.visible { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
 
-/* Fade Up for stat cards */
-@keyframes fadeUpCard { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.animate-fade-up { opacity: 0; animation: fadeUpCard 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
+/* Premium Fade Up for stat cards */
+@keyframes fadeUpCard { from { opacity: 0; transform: translateY(25px) scale(0.93); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.animate-fade-up { opacity: 0; animation: fadeUpCard 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* Glass reveal — subtle border glow on mount */
+@keyframes glassReveal { 0% { border-color: rgba(255,255,255,0); box-shadow: 0 0 0 rgba(225,29,72,0); } 100% { border-color: rgba(255,255,255,0.08); box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.05); } }
+.premium-glass-card { animation: glassReveal 0.6s ease-out forwards; }
 
 /* ====================================================================
    STAT CARDS

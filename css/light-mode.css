@@ -1,0 +1,54 @@
+html.light-mode, html.light-mode body { background: #f0f2f5 !important; color: #1a1a2e; }
+html.light-mode .bottom-nav { background: rgba(255,255,255,0.92) !important; border-color: rgba(0,0,0,0.08) !important; box-shadow: 0 -4px 20px rgba(0,0,0,0.06) !important; }
+html.light-mode .nav-item { color: #6b7280 !important; }
+html.light-mode .nav-item.active { color: #e11d48 !important; }
+html.light-mode .premium-glass-card { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.06) !important; box-shadow: 0 8px 30px rgba(0,0,0,0.06) !important; }
+html.light-mode .nexus-header-container { background: rgba(255,255,255,0.92) !important; border-bottom-color: rgba(0,0,0,0.06) !important; }
+html.light-mode .header-main-title,
+html.light-mode h1, html.light-mode h2, html.light-mode h3,
+html.light-mode h4, html.light-mode h5 { color: #1a1a2e !important; }
+html.light-mode .text-white { color: #1a1a2e !important; }
+html.light-mode .text-gray-300 { color: #374151 !important; }
+html.light-mode .text-gray-400,
+html.light-mode .text-gray-500 { color: #6b7280 !important; }
+html.light-mode .text-gray-600 { color: #9ca3af !important; }
+html.light-mode input, html.light-mode select, html.light-mode textarea { background: #ffffff !important; color: #1a1a2e !important; border-color: #d1d5db !important; }
+html.light-mode .premium-bg-container { background: #f0f2f5 !important; }
+html.light-mode .bg-grid-overlay { opacity: 0.03 !important; }
+html.light-mode .bg-orb { opacity: 0.05 !important; }
+html.light-mode .setting-toggle { background: rgba(255,255,255,0.8) !important; }
+html.light-mode .wallet-icon-box { background: #e11d48 !important; }
+html.light-mode .header-wallet-btn { background: rgba(225,29,72,0.08) !important; border-color: rgba(225,29,72,0.2) !important; }
+html.light-mode .profile-master-card { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.06) !important; }
+html.light-mode .premium-stat-card { background: rgba(255,255,255,0.8) !important; }
+html.light-mode .balance-card { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.05)) !important; }
+html.light-mode .wallet-stats-grid .stat-card { background: rgba(255,255,255,0.8) !important; }
+html.light-mode .glass-dropdown-box { background: rgba(255,255,255,0.95) !important; border-color: rgba(0,0,0,0.08) !important; }
+html.light-mode .center-circle { border-color: #f0f2f5 !important; }
+html.light-mode .section-title { color: #1a1a2e !important; }
+html.light-mode .stat-label { color: #6b7280 !important; }
+html.light-mode .stat-value { color: #1a1a2e !important; }
+html.light-mode .quick-action-btn span { color: #374151 !important; }
+html.light-mode .bg-black\/30, html.light-mode .bg-black\/40, html.light-mode .bg-black\/60,
+html.light-mode .bg-\[rgba\(0\2c 0\2c 0\2c 0\.3\)\],
+html.light-mode .bg-\[rgba\(0\2c 0\2c 0\2c 0\.4\)\],
+html.light-mode .bg-\[rgba\(0\2c 0\2c 0\2c 0\.6\)\] { background: rgba(255,255,255,0.85) !important; }
+html.light-mode .border-white\/5, html.light-mode .border-white\/10 { border-color: rgba(0,0,0,0.06) !important; }
+html.light-mode .border-gray-800\/80 { border-color: rgba(0,0,0,0.1) !important; }
+html.light-mode .bg-\[#0a0c12\]\/90, html.light-mode .bg-\[#0a0c12\]\/80 { background: rgba(255,255,255,0.85) !important; }
+html.light-mode .login-card { background: rgba(255,255,255,0.95) !important; border-color: rgba(0,0,0,0.06) !important; }
+html.light-mode .input-box input { background: #f5f5f5 !important; color: #1a1a2e !important; }
+html.light-mode .tab { color: #6b7280 !important; }
+html.light-mode .tab.active { color: #e11d48 !important; }
+html.light-mode .divider span { color: #9ca3af !important; }
+html.light-mode .store-modal { background: rgba(255,255,255,0.96) !important; }
+html.light-mode .store-modal-header h3 { color: #1a1a2e !important; }
+html.light-mode .checkout-row strong { color: #1a1a2e !important; }
+html.light-mode .checkout-row span { color: #6b7280 !important; }
+html.light-mode .checkout-total span { color: #6b7280 !important; }
+html.light-mode .checkout-total div span:last-child { color: #e11d48 !important; }
+html.light-mode .coupon-header span { color: #374151 !important; }
+html.light-mode .product-card { background: rgba(255,255,255,0.9) !important; }
+html.light-mode .product-title { color: #1a1a2e !important; }
+html.light-mode .product-price { color: #e11d48 !important; }
+html.light-mode .product-desc { color: #6b7280 !important; }

@@ -372,7 +372,7 @@ animation:NavShow .7s ease;
 
 opacity:0;
 
-transform:translateY(120px);
+transform:translateX(-50%) translateY(120px);
 
 }
 
@@ -380,7 +380,7 @@ transform:translateY(120px);
 
 opacity:1;
 
-transform:translateY(0);
+transform:translateX(-50%) translateY(0);
 
 }
 

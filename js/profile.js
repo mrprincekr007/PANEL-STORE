@@ -21,14 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("[SYSTEM] Profile Engine Booted Successfully.");
     let currentUserUid = null;
 
+    // Premium entrance animations:
+    // 1. Stat cards stagger with enhanced cubic-bezier
+    document.querySelectorAll('.premium-stat-card').forEach((card, i) => {
+        const d = parseFloat(card.dataset.delay || 0.1);
+        card.style.animationDelay = (i * 0.1 + d) + 's';
+        card.classList.add('fade-in');
+    });
+
+    // 2. Master card reveals after a tiny delay for impact
+    setTimeout(() => {
+        const master = document.querySelector('.profile-master-card');
+        if (master) master.classList.add('fade-in-active');
+    }, 100);
+
     // ==========================================
-    // 1. AUTHENTICATION & FETCH USER DETAILS
+    // 2. AUTHENTICATION & FETCH USER DETAILS
     // ==========================================
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUserUid = user.uid;
             
-            // Set basic info from email (fallback)
+            // Set basic info from email (fallback) — UI already has placeholders
             const alias = user.email.split('@')[0];
             document.getElementById('mainAvatar').innerText = alias.charAt(0).toUpperCase();
             document.getElementById('profileName').innerText = alias;
@@ -47,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('statBalance').innerText = window.formatPriceShort ? window.formatPriceShort(parseFloat(data.balance || 0)) : '₹' + parseFloat(data.balance || 0).toFixed(2);
                     const uname = data.username || data.name || alias;
                     document.getElementById('profileName').innerText = uname;
-            document.getElementById('profileUid').innerText = user.uid.substring(0, 8);
+                    document.getElementById('profileUid').innerText = user.uid.substring(0, 8);
                     document.getElementById('mainAvatar').innerText = uname.charAt(0).toUpperCase();
                 }
             });

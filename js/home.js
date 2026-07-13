@@ -2,6 +2,12 @@ import { auth, db, ref, onValue, get, onAuthStateChanged, serverTimestamp } from
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // UI pehle — Firebase ke wait kiye bina boxes dikh jayenge
+    initScrollAnimations();
+    loadFeaturedPanels();
+    loadAnnouncement();
+    loadPromotions();
+
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const uid = user.uid;
@@ -57,14 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i class="fas fa-lock"></i>
                     </div>
                     <p class="text-[10px] font-mono tracking-widest text-gray-500">Login to see your purchases</p>
-                    <button onclick="window.location.href='index.html?tab=login'" class="mt-3 px-5 py-2.5 bg-gradient-to-r from-rose-600 to-rose-500 rounded-xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_15px_rgba(225,29,72,0.4)] cursor-pointer">LOGIN NOW</button>
+                    <button onclick="window.location.href='index.html?tab=login'" class="mt-3 px-5 py-2.5 bg-gradient-to-r from-rose-600 to-rose-500 rounded-xl font-black text-[10px] uppercase tracking-wider text-white shadow-[0_0_15px rgba(225,29,72,0.4)] cursor-pointer">LOGIN NOW</button>
                 </div>`;
         }
-
-        loadFeaturedPanels();
-        loadAnnouncement();
-        loadPromotions();
-        initScrollAnimations();
     });
 
     // ==========================================
@@ -269,12 +270,12 @@ document.addEventListener('DOMContentLoaded', () => {
             promos = promos.slice(0, 8);
             let html = '<div class="flex overflow-x-auto gap-4 pb-3 no-scrollbar snap-x snap-mandatory" id="promoScrollContainer">';
             promos.forEach((p, idx) => {
-                const image = p.image || '';
+                const image = (p.image || '').replace(/['"]/g, '');
                 const discount = p.discount || 0;
-                const link = p.link || '#';
+                const link = (p.link || '#').replace(/['"]/g, '');
                 const imgStyle = image ? `background-image:url('${image}');background-size:cover;background-position:center;` : '';
                 html += `
-                    <div class="snap-center shrink-0 w-[75%] md:w-[30%] promo-carousel-card" onclick="window.open('${link}','_blank')" style="animation-delay:${idx * 0.08}s">
+                    <div class="snap-center shrink-0 w-[75%] md:w-[30%] promo-carousel-card" onclick="window.open('${link.replace(/'/g,'')}','_blank')" style="animation-delay:${idx * 0.08}s">
                         <div class="promo-carousel-bg ${image ? 'has-img' : 'no-img'}" style="${imgStyle}">
                             ${!image ? '<div class="promo-carousel-icon"><i class="fas fa-tags"></i></div>' : ''}
                             ${image ? '<div class="promo-carousel-overlay"></div>' : ''}
@@ -330,9 +331,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Stat cards stagger
         document.querySelectorAll('.stat-card').forEach((card, i) => {
+            card.classList.add('animate-fade-up');
             const d = parseFloat(card.dataset.delay || 0.1);
             card.style.animationDelay = (i * 0.1 + d) + 's';
-            card.classList.add('animate-fade-up');
         });
     }
 

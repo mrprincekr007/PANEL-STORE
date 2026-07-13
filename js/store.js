@@ -15,6 +15,7 @@ const loader = document.getElementById('storeLoader');
 
 document.addEventListener('DOMContentLoaded', () => {
     initParticles();
+    initBgFollowLight();
     authCheck();
 });
 
@@ -261,8 +262,26 @@ function initParticles() {
     animate();
 }
 
+/* ── MOUSE FOLLOW LIGHT ── */
+function initBgFollowLight() {
+    const el = document.getElementById('bgFollowLight');
+    if (!el) return;
+    let ticking = false;
+    document.addEventListener('mousemove', (e) => {
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(() => {
+                const x = (e.clientX / window.innerWidth) * 100;
+                const y = (e.clientY / window.innerHeight) * 100;
+                el.style.setProperty('--mx', x + '%');
+                el.style.setProperty('--my', y + '%');
+                ticking = false;
+            });
+        }
+    });
+}
+
 window.togglePlanPopup = (panelId) => {
-    if (!currentUser) { showLoginPrompt(); return; }
     const popup = document.getElementById(`popup-${panelId}`);
     if (!popup) return;
     const wasOpen = popup.classList.contains('show');
@@ -271,7 +290,7 @@ window.togglePlanPopup = (panelId) => {
 };
 
 window.selectPlan = (panelId, encodedPlanData, panelName, link) => {
-    if (!currentUser) { showLoginPrompt(); return; }
+    if (!currentUser) { window.location.href = 'index.html?tab=login'; return; }
     const planData = JSON.parse(decodeURIComponent(encodedPlanData));
     currentCheckout = {
         panelId, panelName, link,
@@ -290,23 +309,6 @@ window.selectPlan = (panelId, encodedPlanData, panelName, link) => {
     document.querySelectorAll('.plan-popup.show').forEach(el => el.classList.remove('show'));
     document.getElementById('modalCheckout').classList.remove('hidden');
 };
-
-function showLoginPrompt() {
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-    overlay.innerHTML = `
-        <div class="modal" style="text-align:center;max-width:360px;">
-            <i class="fas fa-lock" style="font-size:40px;color:#e11d48;margin-bottom:15px;filter:drop-shadow(0 0 15px rgba(225,29,72,0.5));"></i>
-            <h3 style="color:#fff;font-weight:800;margin-bottom:8px;text-transform:uppercase;font-size:16px;letter-spacing:0.5px;">Login Required</h3>
-            <p style="color:rgba(255,255,255,0.3);font-size:12px;margin-bottom:20px;">Please login to purchase panels and access your keys.</p>
-            <div style="display:flex;gap:10px;justify-content:center;">
-                <button class="btn btn-primary" onclick="window.location.href='index.html?tab=login'" style="padding:10px 24px;font-size:10px;flex:0;">LOGIN NOW</button>
-                <button class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()" style="padding:10px 24px;font-size:10px;flex:0;">BROWSE</button>
-            </div>
-        </div>`;
-    document.body.appendChild(overlay);
-}
 
 function extractYTId(url) {
     if (!url) return null;
@@ -354,7 +356,7 @@ document.getElementById('btnApplyCoupon').addEventListener('click', async () => 
 });
 
 window.executePurchase = async () => {
-    if (!currentUser) { showLoginPrompt(); return; }
+    if (!currentUser) { window.location.href = 'index.html?tab=login'; return; }
     const checkout = currentCheckout;
     const priceToPay = checkout.finalPrice;
     const btn = document.getElementById('btnConfirmPay');

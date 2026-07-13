@@ -26,6 +26,8 @@ import {
     set,
     get,
     push,
+    update,
+    runTransaction,
     serverTimestamp
 } from "./firebase-config.js";
 
@@ -366,12 +368,20 @@ if(loginForm) {
                         });
                         if (referrerUid) {
                             userData.referredBy = referrerUid;
-                            await set(ref(db, `referrals/${referrerUid}/${user.uid}`), {
+                            const refData = {
                                 email: emailVal,
                                 date: Date.now(),
                                 deposited: 0,
-                                commission: 0
-                            });
+                                commission: 0,
+                                signupReward: 0
+                            };
+                            await set(ref(db, `referrals/${referrerUid}/${user.uid}`), refData);
+                            // ₹5 referral bonus credited immediately to referrer's claimable balance
+                            try {
+                                const REF_BONUS = 5;
+                                await runTransaction(ref(db, `users/${referrerUid}/referralClaimable`), (bal) => (bal || 0) + REF_BONUS);
+                                await update(ref(db, `referrals/${referrerUid}/${user.uid}`), { signupReward: REF_BONUS });
+                            } catch (e) { console.error("[REF] Bonus credit failed:", e); }
                         }
                     }
                 } catch (e) { console.error("[REF] Error processing referral:", e); }
@@ -441,12 +451,19 @@ if(googleLogin) {
                                 }
                             });
                             if (googleUserData.referredBy) {
-                                await set(ref(db, `referrals/${googleUserData.referredBy}/${user.uid}`), {
+                                const refData = {
                                     email: user.email,
                                     date: Date.now(),
                                     deposited: 0,
-                                    commission: 0
-                                });
+                                    commission: 0,
+                                    signupReward: 0
+                                };
+                                await set(ref(db, `referrals/${googleUserData.referredBy}/${user.uid}`), refData);
+                                try {
+                                    const REF_BONUS = 5;
+                                    await runTransaction(ref(db, `users/${googleUserData.referredBy}/referralClaimable`), (bal) => (bal || 0) + REF_BONUS);
+                                    await update(ref(db, `referrals/${googleUserData.referredBy}/${user.uid}`), { signupReward: REF_BONUS });
+                                } catch (e) { console.error("[REF] Google bonus credit failed:", e); }
                             }
                         }
                     } catch (e) { console.error("[REF] Google referral error:", e); }

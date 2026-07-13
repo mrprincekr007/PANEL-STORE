@@ -229,16 +229,21 @@
                     if (referrals.length > 0) {
                         let html = '<div class="space-y-2">';
                         referrals.slice(0, 20).forEach((r) => {
-                            totalEarned += parseFloat(r.commission || 0);
+                            const signupReward = parseFloat(r.signupReward || 0);
+                            const commission = parseFloat(r.commission || 0);
+                            totalEarned += signupReward + commission;
                             const date = r.date ? new Date(r.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
                             const deposited = r.deposited ? '₹' + parseFloat(r.deposited).toFixed(2) : '₹0.00';
-                            const earned = r.commission ? '₹' + parseFloat(r.commission).toFixed(2) : '₹0.00';
+                            const parts = [];
+                            if (signupReward > 0) parts.push('<span class="text-green-400">₹' + signupReward.toFixed(2) + ' Signup</span>');
+                            if (commission > 0) parts.push('<span class="text-emerald-400">₹' + commission.toFixed(2) + '</span>');
+                            const earned = parts.length > 0 ? parts.join(' + ') : '₹0.00';
                             html += '<div class="flex items-center justify-between bg-black/30 border border-white/5 rounded-xl px-4 py-3">'
                                 + '<div class="flex items-center gap-3">'
                                 + '<div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xs"><i class="fas fa-user"></i></div>'
                                 + '<div>'
                                 + '<p class="text-xs font-mono text-gray-300">' + (r.email || 'User') + '</p>'
-                                + '<p class="text-[9px] text-gray-500">Deposited: ' + deposited + ' • Earned: <span class="text-emerald-400">' + earned + '</span></p>'
+                                + '<p class="text-[9px] text-gray-500">Deposited: ' + deposited + ' • Earned: ' + earned + '</p>'
                                 + '<p class="text-[8px] text-gray-600">' + date + '</p>'
                                 + '</div></div></div>';
                         });

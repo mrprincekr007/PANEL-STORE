@@ -6,9 +6,10 @@
     <title>Nexus Core | Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/i18n.js"></script>
     <link rel="stylesheet" href="css/home.css">
 </head>
-<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-rose-600 selection:text-white  relative">
+<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-rose-600 selection:text-white pb-32 relative">
 
     <div class="premium-bg-container">
         <div class="bg-orb bg-orb-1"></div>
@@ -21,6 +22,19 @@
 
     <main class="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 flex flex-col gap-6 md:gap-8 relative z-10">
 
+        <!-- ANNOUNCEMENT BANNER -->
+        <div id="announcementContainer" style="display:none;">
+            <div class="announcement-banner">
+                <div class="announcement-icon">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div class="announcement-content">
+                    <span class="announcement-label">ANNOUNCEMENT</span>
+                    <p id="announcementText" class="announcement-text"></p>
+                </div>
+            </div>
+        </div>
+
         <!-- SECTION 1: WELCOME + BALANCE -->
         <section class="animate-on-view" data-delay="0">
             <div class="premium-glass-card p-5 md:p-8 relative overflow-hidden">
@@ -30,7 +44,7 @@
                     <div class="flex items-center gap-3 md:gap-4">
                         <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-purple-600 flex items-center justify-center text-xl md:text-2xl font-black text-white shadow-[0_0_25px_rgba(225,29,72,0.4)] animate-float shrink-0" id="homeAvatar">U</div>
                         <div class="min-w-0">
-                            <p class="text-[9px] md:text-[10px] font-black uppercase tracking-[3px] text-gray-500 animate-slide-right" style="animation-delay:0.1s">Welcome Back,</p>
+                            <p class="text-[9px] md:text-[10px] font-black uppercase tracking-[3px] text-gray-500 animate-slide-right" style="animation-delay:0.1s" data-i18n="welcomeBack">Welcome Back,</p>
                             <h2 class="text-lg md:text-2xl font-black text-white tracking-tight truncate animate-slide-right" style="animation-delay:0.2s" id="homeUserName">Client</h2>
                             <p class="text-[9px] md:text-[10px] font-mono text-gray-600 mt-0.5 truncate animate-slide-right" style="animation-delay:0.3s" id="homeUserEmail">Loading...</p>
                         </div>
@@ -43,7 +57,7 @@
                             <div>
                                 <p class="text-[7px] font-black uppercase tracking-[2px] text-gray-500">Available Balance</p>
                                 <p class="text-xl md:text-2xl font-black text-white font-mono tracking-tight leading-tight">
-                                    <span class="text-emerald-400 text-sm md:text-lg">₹</span><span id="homeBalance" class="animate-count">0.00</span>
+                                    <span id="homeBalance" class="animate-count" data-inr="0">₹0.00</span>
                                 </p>
                             </div>
                         </div>
@@ -70,7 +84,7 @@
                 <div class="stat-icon bg-blue-500/10 text-blue-400 border-blue-500/20"><i class="fas fa-indian-rupee-sign"></i></div>
                 <div class="stat-info">
                     <p class="stat-label">Total Spent</p>
-                    <p class="stat-value"><span class="text-blue-400 text-xs">₹</span><span id="statSpent" class="animate-count">0</span></p>
+                    <p class="stat-value"><span id="statSpent" class="animate-count" data-inr="0">₹0</span></p>
                 </div>
             </div>
             <div class="stat-card" data-delay="0.3">
@@ -118,31 +132,22 @@
                 <a href="store.html" class="text-[9px] font-black uppercase tracking-wider text-rose-400 hover:text-rose-300 transition flex items-center gap-1">View All <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="flex overflow-x-auto gap-4 pb-3 no-scrollbar snap-x snap-mandatory" id="featuredPanelContainer">
-                <div class="snap-center shrink-0 w-[75%] md:w-[30%] h-36 bg-gradient-to-br from-[#0a0c12] to-[#05070a] border border-white/5 rounded-2xl flex flex-col justify-center items-center">
-                    <div class="relative">
-                        <i class="fas fa-circle-notch fa-spin text-rose-500 text-2xl"></i>
-                    </div>
-                    <p class="text-[9px] font-mono tracking-widest text-gray-500 mt-3">Syncing Database</p>
-                    <div class="flex gap-1 mt-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500/50 animate-pulse" style="animation-delay:0s"></span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500/50 animate-pulse" style="animation-delay:0.2s"></span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500/50 animate-pulse" style="animation-delay:0.4s"></span>
-                    </div>
+                <div class="snap-center shrink-0 w-[75%] md:w-[30%] h-36 bg-[#0a0c12] border border-gray-800 rounded-2xl flex flex-col justify-center items-center opacity-50">
+                    <i class="fas fa-circle-notch fa-spin text-rose-500 text-2xl mb-2"></i>
+                    <p class="text-[9px] font-mono tracking-widest uppercase text-gray-500">Loading...</p>
                 </div>
             </div>
         </section>
 
         <!-- SECTION 5: RECENT PURCHASES -->
-        <section class="animate-on-view" data-delay="0.6">
+        <section class="animate-on-view" data-delay="0.6" id="recentPurchasesSection">
             <div class="flex justify-between items-center mb-4 px-1">
                 <h3 class="section-title"><i class="fas fa-clock-rotate text-emerald-400 mr-2"></i> Recent Purchases</h3>
             </div>
             <div id="recentPurchasesContainer">
                 <div class="premium-glass-card p-8 flex flex-col items-center justify-center opacity-60">
-                    <div class="w-14 h-14 rounded-2xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-center text-rose-500/30 text-2xl mb-3">
-                        <i class="fas fa-box-open"></i>
-                    </div>
-                    <p class="text-[10px] font-mono tracking-widest text-gray-500">No purchases yet</p>
+                    <i class="fas fa-box-open text-3xl text-gray-700 mb-3"></i>
+                    <p class="text-[10px] font-mono tracking-widest uppercase text-gray-500">No purchases yet</p>
                     <a href="store.html" class="text-[10px] font-black text-rose-400 mt-2 hover:text-rose-300 transition">Browse Store →</a>
                 </div>
             </div>
@@ -155,10 +160,8 @@
             </div>
             <div id="promotionsContainer">
                 <div class="premium-glass-card p-8 flex flex-col items-center justify-center opacity-60">
-                    <div class="w-14 h-14 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex items-center justify-center text-amber-500/30 text-2xl mb-3">
-                        <i class="fas fa-tags"></i>
-                    </div>
-                    <p class="text-[10px] font-mono tracking-widest text-gray-500">No promotions active</p>
+                    <i class="fas fa-tags text-3xl text-gray-700 mb-3"></i>
+                    <p class="text-[10px] font-mono tracking-widest uppercase text-gray-500">No promotions active</p>
                 </div>
             </div>
         </section>
@@ -187,5 +190,6 @@
     </script>
 
     <script type="module" src="js/home.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
 </body>
 </html>

@@ -80,6 +80,8 @@ Login Page Design
 rel="stylesheet"
 href="css/index.css">
 
+<script src="js/i18n.js"></script>
+
 </head>
 
 <body>
@@ -638,6 +640,7 @@ src="js/index.js">
 
 </div>
 
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
 </body>
 
 </html>

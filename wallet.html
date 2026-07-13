@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://zapupi.com/single-html-web-kit.js"></script>
+    <script src="js/i18n.js"></script>
     <link rel="stylesheet" href="css/wallet.css">
 </head>
 <body class="text-gray-300 font-sans overflow-x-hidden selection:bg-emerald-600 selection:text-white  relative">
@@ -29,7 +30,7 @@
             <div class="text-center md:text-left relative z-10 w-full md:w-auto">
                 <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400/80 mb-2 block"><i class="fas fa-shield-halved mr-1"></i> Available Funds</span>
                 <h2 class="text-5xl md:text-6xl font-black text-white tracking-tighter" style="filter: drop-shadow(0 0 12px rgba(16,185,129,0.7));">
-                    <span class="text-emerald-500">₹</span><span id="mainBalance">0.00</span>
+                    <span id="mainBalance" data-inr="0">₹0.00</span>
                 </h2>
                 <p class="text-[9px] font-mono text-gray-500 mt-2 uppercase tracking-widest">UID: <span id="walletUid">Loading...</span></p>
             </div>
@@ -46,28 +47,28 @@
                 <div class="stat-icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="fas fa-wallet"></i></div>
                 <div class="stat-info">
                     <h4>Current Balance</h4>
-                    <h2>₹<span id="statBalance">0.00</span></h2>
+                    <h2><span id="statBalance" data-inr="0">₹0.00</span></h2>
                 </div>
             </div>
             <div class="stat-card today-card">
                 <div class="stat-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="fas fa-calendar-day"></i></div>
                 <div class="stat-info">
                     <h4>Today Deposit</h4>
-                    <h2>₹<span id="statToday">0.00</span></h2>
+                    <h2><span id="statToday" data-inr="0">₹0.00</span></h2>
                 </div>
             </div>
             <div class="stat-card total-card">
                 <div class="stat-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;"><i class="fas fa-arrow-down"></i></div>
                 <div class="stat-info">
                     <h4>Total Deposit</h4>
-                    <h2>₹<span id="statTotal">0.00</span></h2>
+                    <h2><span id="statTotal" data-inr="0">₹0.00</span></h2>
                 </div>
             </div>
             <div class="stat-card pending-card">
                 <div class="stat-icon" style="background:rgba(234,179,8,0.1);color:#eab308;"><i class="fas fa-clock"></i></div>
                 <div class="stat-info">
                     <h4>Pending Deposit</h4>
-                    <h2>₹<span id="statPending">0.00</span></h2>
+                    <h2><span id="statPending" data-inr="0">₹0.00</span></h2>
                 </div>
             </div>
         </div>
@@ -198,5 +199,6 @@
     </script>
     
     <script type="module" src="js/wallet.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
 </body>
 </html>

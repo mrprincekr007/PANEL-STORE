@@ -7,85 +7,75 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
     <link rel="stylesheet" href="css/store.css">
 </head>
-<body class="text-gray-300 font-sans overflow-x-hidden selection:bg-rose-600 selection:text-white  relative">
+<body>
 
     <div class="premium-bg-container">
         <div class="bg-orb bg-orb-1"></div>
         <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
         <div class="bg-grid-overlay"></div>
     </div>
 
     <div id="header-container"></div>
 
-    <main class="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 relative z-10">
+    <main class="w-full max-w-7xl mx-auto px-4 md:px-8 xl:px-12 py-8 xl:py-12 relative z-10">
         
-        <div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="w-full md:w-auto text-center md:text-left">
-                <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight drop-shadow-[0_0_10px_rgba(225,29,72,0.5)]">
-                    Payload <span class="text-rose-500">Modules</span>
-                </h2>
-                <p class="text-[10px] md:text-xs text-gray-400 font-medium mt-1">Select scripts matching your target architecture.</p>
-            </div>
-            
-            <div class="relative w-full md:w-80 group">
-                <i class="fas fa-search absolute left-4 top-3.5 text-gray-500 text-sm group-focus-within:text-rose-500 transition-colors"></i>
-                <input type="text" id="searchInput" class="w-full bg-[#0a0c12]/80 backdrop-blur-md border border-gray-700/50 rounded-2xl pl-10 pr-4 py-3 text-xs text-white focus:outline-none focus:border-rose-500 focus:shadow-[0_0_15px_rgba(225,29,72,0.3)] transition-all placeholder-gray-600" placeholder="Search panels, features...">
-            </div>
+        <div class="store-header">
+            <h1>Payload Modules</h1>
+            <p>Select scripts matching your target architecture</p>
         </div>
 
-        <div class="bg-[#0a0c12]/90 backdrop-blur-xl border border-gray-800/80 rounded-2xl p-3 mb-8 flex flex-col md:flex-row justify-between items-center gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
-            
-            <div class="flex overflow-x-auto w-full md:w-auto space-x-3 pb-1 md:pb-0 no-scrollbar" id="categoryChipsContainer">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search panels, features...">
+        </div>
+
+        <div class="store-toolbar">
+            <div class="category-chips no-scrollbar" id="categoryChipsContainer">
                 <button class="category-chip active" onclick="filterStore('All')">
-                    <i class="fas fa-layer-group mr-1.5"></i> All Items
+                    <i class="fas fa-layer-group"></i> All Items
                 </button>
             </div>
-            
-            <div class="text-[10px] font-mono text-gray-500 flex items-center w-full md:w-auto justify-center md:justify-end bg-black/50 px-3 py-1.5 rounded-lg border border-white/5">
-                <i class="fas fa-database mr-2 text-rose-500 animate-pulse"></i> 
-                <span id="productCounter" class="text-white font-bold mx-1 text-xs">0</span> Nodes Found
-            </div>
         </div>
 
-        <div id="storeProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            
-            <div id="storeLoader" class="col-span-full flex flex-col items-center justify-center py-24 opacity-80">
-                <div class="relative w-16 h-16 mb-4">
-                    <div class="absolute inset-0 border-4 border-rose-500/20 rounded-full"></div>
-                    <div class="absolute inset-0 border-4 border-rose-500 rounded-full border-t-transparent animate-spin"></div>
-                </div>
-                <h3 class="text-white font-black uppercase tracking-widest text-sm drop-shadow-[0_0_8px_rgba(225,29,72,0.8)]">Syncing Database</h3>
-                <p class="text-[10px] font-mono text-gray-500 mt-2">Connecting to secure nodes...</p>
+
+        <div class="products-grid" id="storeProductsGrid">
+            <div id="storeLoader" class="empty-state" style="padding:80px 20px;">
+                <div class="spinner" style="width:48px;height:48px;margin-bottom:20px;"></div>
+                <h3>Syncing Database</h3>
+                <p>Connecting to secure nodes...</p>
             </div>
-            
-            </div>
+        </div>
 
     </main>
 
     <!-- CHECKOUT MODAL -->
-    <div class="store-modal-overlay hidden" id="modalCheckout">
-        <div class="store-modal">
-            <div class="store-modal-header">
+    <div class="modal-overlay hidden" id="modalCheckout">
+        <div class="modal">
+            <div class="modal-header">
                 <h3><i class="fas fa-shopping-cart" style="color:#e11d48;"></i> Checkout</h3>
-                <button class="store-modal-close" onclick="closeCheckoutModal()"><i class="fas fa-times"></i></button>
+                <button class="modal-close" onclick="closeCheckoutModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div class="store-modal-body">
+            <div class="modal-body">
                 <div class="checkout-row"><span>Item:</span><strong id="chkPanelName">-</strong></div>
                 <div class="checkout-row"><span>Plan:</span><strong id="chkPlanLabel" style="color:#f59e0b;">-</strong></div>
-                <div class="checkout-row"><span>Price:</span><strong>₹<span id="chkPrice">0.00</span></strong></div>
+                <div class="checkout-row"><span>Price:</span><strong><span id="chkPrice" data-inr="0">₹0.00</span></strong></div>
                 <div class="checkout-total">
                     <span>To Pay:</span>
                     <div>
-                        <span id="chkStrike" class="strike-price hidden">₹0.00</span>
-                        <span>₹<span id="chkFinalPrice">0.00</span></span>
+                        <span id="chkStrike" class="strike-price hidden" data-inr="0">₹0.00</span>
+                        <span><span id="chkFinalPrice" data-inr="0">₹0.00</span></span>
                     </div>
                 </div>
             </div>
             <div class="coupon-section">
                 <div class="coupon-header">
-                    <span>Promo Code?</span>
+                    <span>Promo Code</span>
                     <span id="chkBadge" class="discount-badge hidden">0% OFF</span>
                 </div>
                 <div class="coupon-box">
@@ -93,26 +83,26 @@
                     <button class="coupon-apply-btn" id="btnApplyCoupon">APPLY</button>
                 </div>
             </div>
-            <div class="store-modal-actions">
-                <button class="store-btn store-btn-outline" onclick="closeCheckoutModal()">CANCEL</button>
-                <button class="store-btn store-btn-primary" id="btnConfirmPay" onclick="executePurchase()">CONFIRM PAY</button>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeCheckoutModal()">CANCEL</button>
+                <button class="btn btn-primary" id="btnConfirmPay" onclick="executePurchase()">CONFIRM PAY</button>
             </div>
         </div>
     </div>
 
     <!-- SUCCESS MODAL -->
-    <div class="store-modal-overlay hidden" id="modalSuccess">
-        <div class="store-modal" style="text-align:center;">
-            <i class="fas fa-check-circle" style="font-size:50px;color:#10b981;margin-bottom:15px;filter:drop-shadow(0 0 15px rgba(16,185,129,0.5));"></i>
-            <h3 style="color:#fff;font-weight:800;margin-bottom:8px;">PURCHASE SUCCESS!</h3>
-            <p style="color:#888;font-size:12px;margin-bottom:20px;">Your license key is ready.</p>
-            <div class="key-box">
-                <span style="display:block;font-size:10px;color:#888;text-transform:uppercase;font-weight:700;margin-bottom:6px;letter-spacing:1px;">License Key</span>
-                <strong id="successKey" style="font-family:monospace;font-size:18px;color:#10b981;letter-spacing:2px;word-break:break-all;text-shadow:0 0 10px rgba(16,185,129,0.4);">XXXXXX</strong>
+    <div class="modal-overlay hidden" id="modalSuccess">
+        <div class="modal" style="text-align:center;">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h3 class="success-title">PURCHASE SUCCESSFUL</h3>
+            <p class="success-sub">Your license key is ready for use.</p>
+            <div class="key-box" onclick="copySuccessKey()" title="Click to copy license key">
+                <span class="key-label">License Key</span>
+                <strong class="key-value" id="successKey">XXXXXX</strong>
             </div>
-            <div style="display:flex;gap:10px;margin-top:20px;">
-                <button class="store-btn store-btn-primary" id="btnAccessTool" style="flex:1;"><i class="fas fa-download"></i> ACCESS</button>
-                <button class="store-btn store-btn-outline" onclick="closeModalSuccess()" style="flex:1;">CLOSE</button>
+            <div class="modal-actions" style="margin-top:20px;">
+                <button class="btn btn-primary" id="btnAccessTool"><i class="fas fa-download"></i> ACCESS</button>
+                <button class="btn btn-outline" onclick="closeModalSuccess()">CLOSE</button>
             </div>
         </div>
     </div>
@@ -145,5 +135,6 @@
     </script>
 
     <script type="module" src="js/store.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
 </body>
 </html>

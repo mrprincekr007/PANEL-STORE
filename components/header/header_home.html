@@ -1,5 +1,5 @@
 <nav id="nexusHeaderHome" class="nexus-header-container">
-    <div class="header-brand-box" onclick="window.location.href='/home.html'">
+    <div class="header-brand-box" onclick="window.location.href='home.html'">
         <div class="header-icon-glow"><i class="fas fa-biohazard"></i></div>
         <div class="header-titles">
             <h1 class="header-main-title">FF<span class="text-rose-500">.PANEL</span></h1>
@@ -8,20 +8,25 @@
     </div>
     <div class="header-actions-box">
         <div class="auth-ui-logged-in" style="display:none">
-            <div class="header-wallet-btn" onclick="window.location.href='/wallet.html'">
+            <div class="header-wallet-btn" onclick="window.location.href='wallet.html'">
                 <div class="wallet-icon-box"><i class="fas fa-wallet"></i></div>
                 <div class="wallet-amount-box">
-                    <span class="currency-symbol">₹</span>
-                    <span id="headerLiveBalance" class="balance-digits">0.00</span>
+                    <span id="headerLiveBalance" class="balance-digits" data-inr="0">₹0.00</span>
                 </div>
+            </div>
+            <div class="header-notif-wrap">
+                <button class="header-notif-btn" onclick="openNotificationPopup()" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span id="notifBadge" class="notif-badge" style="display:none">0</span>
+                </button>
             </div>
             <button id="headerMenuToggleBtn" class="header-menu-btn" onclick="toggleNexusMenu()">
                 <i class="fas fa-bars-staggered pointer-events-none"></i>
             </button>
         </div>
         <div class="auth-ui-logged-out" style="display:none">
-            <button class="header-login-btn" onclick="window.location.href='/index.html?tab=login'"><i class="fas fa-sign-in-alt"></i> LOGIN</button>
-            <button class="header-register-btn" onclick="window.location.href='/index.html?tab=register'"><i class="fas fa-user-plus"></i> REGISTER</button>
+            <button class="header-login-btn" onclick="window.location.href='index.html?tab=login'"><i class="fas fa-sign-in-alt"></i> LOGIN</button>
+            <button class="header-register-btn" onclick="window.location.href='index.html?tab=register'"><i class="fas fa-user-plus"></i> REGISTER</button>
         </div>
     </div>
 </nav>
@@ -39,11 +44,14 @@
     .header-wallet-btn:hover { background: rgba(225, 29, 72, 0.25); box-shadow: 0 0 25px rgba(225, 29, 72, 0.4); transform: translateY(-1px); }
     .wallet-icon-box { background: #e11d48; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 10px; margin-right: 8px; box-shadow: 0 0 10px rgba(225, 29, 72, 0.6); }
     .wallet-amount-box { display: flex; align-items: baseline; }
-    .currency-symbol { font-size: 10px; color: #f43f5e; font-weight: 900; margin-right: 2px; }
     .balance-digits { font-size: 13px; color: white; font-weight: 900; }
     .header-menu-btn { background: transparent; border: none; color: #cbd5e1; font-size: 24px; cursor: pointer; transition: all 0.3s ease; padding: 5px; }
     .header-menu-btn:hover { color: white; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
     .header-menu-btn:active { transform: scale(0.85); }
+    .header-notif-wrap { position:relative; }
+    .header-notif-btn { background:transparent; border:none; color:#cbd5e1; font-size:20px; cursor:pointer; padding:5px; position:relative; transition:all 0.3s ease; }
+    .header-notif-btn:hover { color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.5); }
+    .notif-badge { position:absolute; top:0; right:0; background:#ff2a5f; color:#fff; font-size:7px; font-weight:900; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 8px rgba(255,42,95,0.6); }
     .auth-ui-logged-in, .auth-ui-logged-out { display: flex; align-items: center; gap: 10px; }
     .header-login-btn, .header-register-btn { padding: 8px 14px; border-radius: 30px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s ease; border: none; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
     .header-login-btn { background: transparent; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); }
@@ -52,8 +60,26 @@
     .header-register-btn:hover { box-shadow: 0 0 25px rgba(225,29,72,0.6); transform: translateY(-1px); }
 </style>
 
+<script>
+    window.notifPopupOpen = false;
+    window.openNotificationPopup = function() {
+        const container = document.getElementById('notification-container');
+        if (container && window.notifPopupOpen) {
+            container.remove();
+            window.notifPopupOpen = false;
+            return;
+        }
+        if (container) container.remove();
+        const div = document.createElement('div');
+        div.id = 'notification-container';
+        document.body.appendChild(div);
+        window.notifPopupOpen = true;
+        const base = window.location.pathname.includes('/components/menubar/') ? '..' : 'components';
+        loadComponentAndRunScripts(base + '/notification.html', 'notification-container');
+    };
+</script>
 <script type="module">
-    import { auth, db, ref, onValue, onAuthStateChanged } from "/js/firebase-config.js";
+    import { auth, db, ref, onValue, get, onAuthStateChanged } from "./js/firebase-config.js";
     onAuthStateChanged(auth, (user) => {
         const li = document.querySelector('.auth-ui-logged-in');
         const lo = document.querySelector('.auth-ui-logged-out');
@@ -64,8 +90,25 @@
             onValue(userRef, (snap) => {
                 if(snap.exists()) {
                     const el = document.getElementById('headerLiveBalance');
-                    if(el) el.innerText = parseFloat(snap.val().balance || 0).toFixed(2);
+                    if(el) { const b = parseFloat(snap.val().balance || 0); el.setAttribute('data-inr', b); el.textContent = window.formatPriceShort ? window.formatPriceShort(b) : '₹' + b.toFixed(2); }
                 }
+            });
+            onValue(ref(db, `notifications/${user.uid}`), async (snap) => {
+                const data = snap.val() || {};
+                const items = Object.values(data);
+                let unread = items.filter(n => !n.read).length;
+                // Count unseen global alerts (promotions)
+                try {
+                    const gSnap = await get(ref(db, 'global_alerts/promotions'));
+                    if (gSnap.exists()) {
+                        const seen = JSON.parse(localStorage.getItem('nexus_seen_global_' + user.uid)) || [];
+                        Object.keys(gSnap.val()).forEach(id => { if (!seen.includes(id)) unread++; });
+                    }
+                } catch(_) {}
+                // Count welcome notification
+                try { if (localStorage.getItem('nexus_welcome_' + user.uid) === '1') unread++; } catch(_) {}
+                const badge = document.getElementById('notifBadge');
+                if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? 'flex' : 'none'; }
             });
         } else {
             if (li) li.style.display = 'none';

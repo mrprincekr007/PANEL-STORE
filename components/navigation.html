@@ -1,30 +1,30 @@
 <nav id="bottomNav" class="bottom-nav">
     
-    <a href="/home.html" class="nav-item" id="navHome">
+    <a href="home.html" class="nav-item" id="navHome">
         <i class="fa-solid fa-house nav-icon"></i>
-        <span class="nav-text">Home</span>
+        <span class="nav-text" data-i18n="home">Home</span>
     </a>
 
-    <a href="/store.html" class="nav-item" id="navStore">
+    <a href="store.html" class="nav-item" id="navStore">
         <i class="fa-solid fa-layer-group nav-icon"></i>
-        <span class="nav-text">Store</span>
+        <span class="nav-text" data-i18n="store">Store</span>
     </a>
 
-    <a href="/store.html" class="nav-center" id="navCenter">
+    <a href="store.html" class="nav-center" id="navCenter">
         <div class="center-circle">
             <i class="fa-solid fa-cart-shopping"></i>
             <span id="cartBadge" class="cart-badge">0</span>
         </div>
     </a>
 
-    <a href="/wallet.html" class="nav-item" id="navWallet">
+    <a href="wallet.html" class="nav-item" id="navWallet">
         <i class="fa-solid fa-wallet nav-icon"></i>
-        <span class="nav-text">Wallet</span>
+        <span class="nav-text" data-i18n="wallet">Wallet</span>
     </a>
 
-    <a href="/profile.html" class="nav-item" id="navProfile">
+    <a href="profile.html" class="nav-item" id="navProfile">
         <i class="fa-solid fa-user-astronaut nav-icon"></i>
-        <span class="nav-text">Profile</span>
+        <span class="nav-text" data-i18n="profile">Profile</span>
     </a>
 
 </nav>
@@ -43,11 +43,10 @@
     /* * Main Navigation Container Styling 
      */
     .bottom-nav {
-        position: relative; /* Scrolls with page */
-        left: auto;
-        bottom: auto;
-        transform: none;
-        margin: 20px auto 0;
+        position: fixed; /* Fix to the screen */
+        left: 50%; /* Center alignment trick step 1 */
+        bottom: 20px; /* Gap from the bottom of the screen */
+        transform: translateX(-50%); /* Center alignment trick step 2 */
         width: min(94%, 500px); /* Responsive width, max 500px for PC */
         height: 75px; /* Height of the navigation bar */
         background: var(--nav-bg-color); /* Apply dark background */
@@ -213,6 +212,18 @@
 
 <script>
 (function() {
+    // Fix navigation hrefs for subpage compatibility
+    (function() {
+        const isSubPage = window.location.pathname.includes('/components/');
+        const prefix = isSubPage ? '../../' : '';
+        document.querySelectorAll('#bottomNav a[href]').forEach(el => {
+            const href = el.getAttribute('href');
+            if (href && !href.startsWith('http') && !href.startsWith('/') && !href.startsWith('../')) {
+                el.setAttribute('href', prefix + href);
+            }
+        });
+    })();
+
     console.log("[SYSTEM] Advanced Navigation Matrix Initialized.");
 
     // ==============================================================
@@ -228,14 +239,17 @@
         // Step A: Pehle sabme se 'active' class hatao (Clear state)
         link.classList.remove('active');
         
-        // Step B: Link ka href attribute nikalo
-        const linkHref = link.getAttribute('href');
+        // Step B: Link ka href attribute nikalo aur normalize karo
+        let linkHref = link.getAttribute('href');
+        // Strip '../../' prefix for subpage comparison
+        if (linkHref && linkHref.startsWith('../../')) {
+            linkHref = linkHref.replace('../../', '');
+        }
         
         // Step C: Agar current page URL aur link ka href match hota hai
-        // (linkHref starts with /, currentPath also starts with /)
         if (currentPath === linkHref || currentPath.endsWith(linkHref)) {
             link.classList.add('active');
-            console.log(`[SYSTEM] Active state applied to: ${linkHref}`);
+            console.log(`[SYSTEM] Active state applied to: ${link.getAttribute('href')}`);
         }
     });
 

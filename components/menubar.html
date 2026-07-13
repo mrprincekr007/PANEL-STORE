@@ -11,25 +11,29 @@
     </div>
 
     <div class="dropdown-body">
-        <a href="/components/menubar/hwid.htm" class="dd-item group">
+        <a href="components/menubar/hwid.htm" class="dd-item group">
             <i class="fas fa-microchip icon-purple group-hover:drop-shadow-[0_0_8px_rgba(188,19,254,0.8)]"></i>
             <span>HWID Reset</span>
         </a>
-        <a href="/components/menubar/mykeys.html" class="dd-item group">
+        <a href="components/menubar/mykeys.html" class="dd-item group">
             <i class="fas fa-key icon-blue group-hover:drop-shadow-[0_0_8px_rgba(0,115,255,0.8)]"></i>
             <span>My Keys</span>
         </a>
-        <a href="/components/menubar/refer.html" class="dd-item group">
+        <a href="components/menubar/refer.html" class="dd-item group">
             <i class="fas fa-users icon-emerald group-hover:drop-shadow-[0_0_8px_rgba(0,255,102,0.8)]"></i>
             <span>Refer & Earn</span>
         </a>
-        <a href="/components/menubar/support.html" class="dd-item group">
+        <a href="components/menubar/support.html" class="dd-item group">
             <i class="fas fa-headset icon-yellow group-hover:drop-shadow-[0_0_8px_rgba(243,186,47,0.8)]"></i>
             <span>Helpdesk</span>
         </a>
-        <a href="/components/menubar/settings.html" class="dd-item group">
+        <a href="components/menubar/settings.html" class="dd-item group">
             <i class="fas fa-cog icon-gray group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"></i>
             <span>App Settings</span>
+        </a>
+        <a href="components/menubar/admin-payment.html" class="dd-item group" id="adminPanelLink" style="display:none">
+            <i class="fas fa-shield-alt icon-yellow group-hover:drop-shadow-[0_0_8px_rgba(243,186,47,0.8)]"></i>
+            <span>Admin Panel</span>
         </a>
     </div>
 
@@ -69,6 +73,21 @@
 </style>
 
 <script>
+    (function() {
+        // Fix dropdown hrefs for subpage compatibility (GitHub Pages subdirectory)
+        const isSubPage = window.location.pathname.includes('/components/') || window.location.pathname.includes('/menubar/');
+        document.querySelectorAll('.dd-item[href*="components/menubar/"]').forEach(el => {
+            if (isSubPage) {
+                el.setAttribute('href', el.getAttribute('href').replace('components/menubar/', ''));
+            }
+        });
+        const isAdminSub = window.location.pathname.includes('/components/') || window.location.pathname.includes('/menubar/');
+        const adminLink = document.getElementById('adminPanelLink');
+        if (adminLink && isAdminSub) {
+            adminLink.setAttribute('href', adminLink.getAttribute('href').replace('components/menubar/', ''));
+        }
+    })();
+
     window.toggleNexusMenu = function() {
         const menu = document.getElementById('nexusDropdownMenu');
         if(menu) {
@@ -90,7 +109,8 @@
 </script>
 
 <script type="module">
-    import { auth, db, ref, get, signOut, onAuthStateChanged } from "/js/firebase-config.js";
+    const fbPath = window.location.pathname.includes('/components/') || window.location.pathname.includes('/menubar/') ? "../../js/firebase-config.js" : "./js/firebase-config.js";
+    const { auth, db, ref, get, signOut, onAuthStateChanged } = await import(fbPath);
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -98,15 +118,19 @@
             document.getElementById('ddEmail').innerText = user.email;
             document.getElementById('ddName').innerText = alias;
             document.getElementById('ddAvatar').innerText = alias.charAt(0).toUpperCase();
-            try {
-                const snap = await get(ref(db, `users/${user.uid}`));
-                if (snap.exists()) {
-                    const data = snap.val();
-                    const uname = data.username || data.name || alias;
-                    document.getElementById('ddName').innerText = uname;
-                    document.getElementById('ddAvatar').innerText = uname.charAt(0).toUpperCase();
-                }
-            } catch(e) {}
+                try {
+                    const snap = await get(ref(db, `users/${user.uid}`));
+                    if (snap.exists()) {
+                        const data = snap.val();
+                        const uname = data.username || data.name || alias;
+                        document.getElementById('ddName').innerText = uname;
+                        document.getElementById('ddAvatar').innerText = uname.charAt(0).toUpperCase();
+                        if (data.role === 'admin') {
+                            const link = document.getElementById('adminPanelLink');
+                            if (link) link.style.display = '';
+                        }
+                    }
+                } catch(e) {}
         }
     });
 
@@ -116,7 +140,8 @@
         btn.style.pointerEvents = 'none';
         try {
             await signOut(auth);
-            window.location.href = 'index.html'; 
+            const isSub = window.location.pathname.includes('/components/') || window.location.pathname.includes('/menubar/');
+            window.location.href = isSub ? '../../index.html' : 'index.html'; 
         } catch (error) {
             console.error("Logout Error:", error);
             btn.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> Error';

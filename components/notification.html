@@ -1,0 +1,144 @@
+<div id="notifOverlay" class="notif-overlay" onclick="window.closeNotifPopup(event)">
+    <div class="notif-popup" onclick="event.stopPropagation()">
+        <div class="notif-popup-header">
+            <div class="notif-popup-title"><i class="fas fa-bell" style="color:#00f0ff;"></i> Notifications</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button class="notif-mark-all-btn" onclick="window.markAllRead()">Clear all</button>
+                <button class="notif-close-btn" onclick="window.closeNotifPopup()"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div id="notifPopupList" class="notif-popup-list">
+            <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.15);font-size:12px;">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .notif-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:99999; display:flex; align-items:center; justify-content:center; animation:fadeIn 0.2s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .notif-popup { background:rgba(15,17,24,0.98); border:1px solid rgba(255,255,255,0.08); border-radius:20px; width:90%; max-width:420px; max-height:80vh; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,0.8); animation:popIn 0.25s cubic-bezier(0.175,0.885,0.32,1.275); }
+    @keyframes popIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+    .notif-popup-header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .notif-popup-title { font-size:13px; font-weight:900; text-transform:uppercase; letter-spacing:1px; color:#fff; display:flex; align-items:center; gap:8px; }
+    .notif-mark-all-btn { background:transparent; border:none; color:#3b82f6; font-size:9px; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; padding:4px 8px; border-radius:6px; }
+    .notif-mark-all-btn:hover { background:rgba(59,130,246,0.1); }
+    .notif-close-btn { background:rgba(255,255,255,0.05); border:none; color:#888; width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+    .notif-close-btn:hover { background:rgba(255,42,95,0.15); color:#ff2a5f; }
+    .notif-popup-list { overflow-y:auto; max-height:calc(80vh - 70px); padding:8px 0; }
+    .notif-popup-item { padding:14px 20px; display:flex; gap:12px; align-items:start; border-bottom:1px solid rgba(255,255,255,0.03); transition:0.2s; }
+    .notif-popup-item:hover { background:rgba(255,255,255,0.02); }
+    .notif-popup-item.unread { background:rgba(59,130,246,0.06); border-left:3px solid #3b82f6; }
+    .notif-popup-item.notif-clickable { cursor:pointer; }
+    .notif-popup-icon { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
+    .notif-popup-icon.reply { background:rgba(0,240,255,0.1); color:#00f0ff; }
+    .notif-popup-icon.deposit { background:rgba(0,255,102,0.1); color:#00ff66; }
+    .notif-popup-icon.info { background:rgba(188,19,254,0.1); color:#bc13fe; }
+    .notif-popup-icon.promotion { background:rgba(245,158,11,0.1); color:#f59e0b; }
+    .notif-popup-icon.welcome { background:rgba(16,185,129,0.1); color:#10b981; }
+    .notif-popup-content { flex:1; min-width:0; }
+    .notif-popup-title-text { font-size:12px; font-weight:700; color:#fff; margin-bottom:3px; }
+    .notif-popup-msg { font-size:11px; color:#94a3b8; line-height:1.4; margin-bottom:4px; }
+    .notif-popup-time { font-size:9px; color:#555; font-family:'Space Mono',monospace; }
+</style>
+<script>
+(async function(){
+    const base = window.location.pathname.includes('/components/menubar/') ? '../../' : './';
+    const { auth, db, ref, onValue, get, set, update } = await import(base + 'js/firebase-config.js');
+    const user = auth.currentUser;
+    if (!user) { document.getElementById('notifPopupList').innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.15);font-size:12px;">Not logged in</div>'; return; }
+
+    const list = document.getElementById('notifPopupList');
+    const icons = { reply:'fa-reply', deposit:'fa-coins', info:'fa-info-circle', promotion:'fa-tags', welcome:'fa-star' };
+    const cls = { reply:'reply', deposit:'deposit', info:'info', promotion:'promotion', welcome:'welcome' };
+
+    function renderAll(items) {
+        if (!items.length) { list.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.15);font-size:12px;">No notifications yet</div>'; return; }
+        items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        list.innerHTML = items.map(n => {
+            const time = n.createdAt ? new Date(n.createdAt).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+            const link = n.link || '#';
+            const clickHandler = link !== '#' ? `onclick="window.closeNotifPopup();setTimeout(()=>window.location.href='${link}',200)"` : '';
+            return `<div class="notif-popup-item${n.read ? '' : ' unread'} ${link !== '#' ? 'notif-clickable' : ''}" ${clickHandler}>
+                <div class="notif-popup-icon ${cls[n.type] || 'info'}"><i class="fas ${icons[n.type] || 'fa-info-circle'}"></i></div>
+                <div class="notif-popup-content">
+                    <div class="notif-popup-title-text">${n.title}</div>
+                    <div class="notif-popup-msg">${n.message}</div>
+                    <div class="notif-popup-time">${time}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    const CUTOFF_DAYS = 7;
+
+    async function loadAll() {
+        const all = [];
+        const cutoff = Date.now() - CUTOFF_DAYS * 24 * 60 * 60 * 1000;
+
+        // 1. User notifications from Firebase — delete old ones
+        const snap = await get(ref(db, `notifications/${user.uid}`));
+        if (snap.exists()) {
+            const deletes = {};
+            Object.entries(snap.val()).forEach(([id, n]) => {
+                const ts = n.createdAt || 0;
+                if (ts > 0 && ts < cutoff) {
+                    deletes[`${id}`] = null;
+                } else {
+                    all.push({ id, ...n });
+                }
+            });
+            if (Object.keys(deletes).length) await update(ref(db, `notifications/${user.uid}`), deletes);
+        }
+
+        // 2. Global alerts (promotions) — read once, cache seen in localStorage
+        const seenKey = 'nexus_seen_global_' + user.uid;
+        let seen = [];
+        try { seen = JSON.parse(localStorage.getItem(seenKey)) || []; } catch (_) {}
+        try {
+            const gSnap = await get(ref(db, 'global_alerts/promotions'));
+            if (gSnap.exists()) {
+                Object.entries(gSnap.val()).forEach(([id, n]) => {
+                    if (!seen.includes(id)) {
+                        all.push({ id: 'g_' + id, type: 'promotion', title: n.title || 'New Promotion', message: n.message || '', link: n.link || '#', createdAt: n.createdAt, read: false });
+                        seen.push(id);
+                    }
+                });
+                localStorage.setItem(seenKey, JSON.stringify(seen));
+            }
+        } catch (_) {}
+
+        // 3. Welcome notification (localStorage)
+        try {
+            const wKey = 'nexus_welcome_' + user.uid;
+            if (localStorage.getItem(wKey) === '1') {
+                all.push({ id: 'welcome', type: 'welcome', title: 'Welcome to ' + (window.siteName || 'Nexus') + '!', message: 'Your account has been created successfully. Start exploring our panels!', link: 'store.html', createdAt: Date.now(), read: false });
+            }
+        } catch (_) {}
+
+        renderAll(all);
+    }
+
+    loadAll();
+
+    // Mark user notifications as read on open
+    onValue(ref(db, `notifications/${user.uid}`), (snap) => {
+        if (!snap.exists()) return;
+        const batch = {};
+        Object.entries(snap.val()).forEach(([id, n]) => { if (!n.read) batch[`${id}/read`] = true; });
+        if (Object.keys(batch).length) update(ref(db, `notifications/${user.uid}`), batch);
+    }, { onlyOnce: true });
+
+    window.closeNotifPopup = function(e) {
+        const container = document.getElementById('notification-container');
+        if (container) container.remove();
+        window.notifPopupOpen = false;
+    };
+    window.markAllRead = async function() {
+        // Delete all user notifications
+        await set(ref(db, `notifications/${user.uid}`), null);
+        // Clear welcome
+        try { localStorage.removeItem('nexus_welcome_' + user.uid); } catch (_) {}
+        loadAll();
+    };
+})();
+</script>
